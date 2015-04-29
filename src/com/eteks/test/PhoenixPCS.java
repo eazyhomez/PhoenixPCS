@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import javax.swing.JOptionPane;
+
 import com.eteks.sweethome3d.model.CatalogPieceOfFurniture;
 import com.eteks.sweethome3d.model.FurnitureCategory;
 import com.eteks.sweethome3d.model.Home;
@@ -23,6 +24,11 @@ public class PhoenixPCS extends Plugin
 
 		public Home home = null;
 		public Room room = null;
+		
+		public int MARKBOX_COUNT = 6;
+		public HomePieceOfFurniture[] markBoxes = new HomePieceOfFurniture[MARKBOX_COUNT];
+		
+		public List<String> markBoxName = new ArrayList<String>();
 		
 		public List<String> furnIds = new ArrayList<String>();
 		public List<float[][]> furnRects = new ArrayList<float[][]>();
@@ -53,14 +59,18 @@ public class PhoenixPCS extends Plugin
 		public float FURNITURE_PLACE_TOLERANCE = 0.0f;	// 0cm  // 5cm
 		public float FURNITURE_INTERSECTION_PADDING = 60.0f;  // 2 feet
 		
-		public boolean bDebug = false;
-		
+		public boolean bDebug = false;		
 		
 		public float MEDIA_CAB_MIN = 122.0f; //355.7f;//461.6f;//122.0f;
 		public float MEDIA_CAB_MAX = 244.0f; //375.0f;//
 		public float MEDIA_CAB_CLEARANCE = 5.0f;
 		
 		public float MEDIA_CAB_TOLERANCE = 0.05f;
+		
+		public float CONV_INCH_CM = 2.54f;
+		public float CONV_FT_CM = (12.0f * CONV_INCH_CM);
+		
+		public int markerIndx = 1;
 				
 		// ======================= CLASSES ======================= //
 		
@@ -191,6 +201,7 @@ public class PhoenixPCS extends Plugin
 		{	
 			home = getHome();
 			room = home.getRooms().get(0);
+			markBoxes = getMarkerBoxes();
 			
 			long startTime = System.currentTimeMillis();
 			
@@ -203,24 +214,23 @@ public class PhoenixPCS extends Plugin
 				
 				checkWalls();
 				
-				float CURR_ELEVATION_LEVEL = 100.0f;				
+				// 1. Check for intersection at given elevation ----------------- //
+				float CURR_ELEVATION_LEVEL = 0.0f;				
 				
-				// For Floor Objects
-				//String str = calcFurnIntersectionsAtElev(CURR_ELEVATION_LEVEL);  
+				markerIndx = 2;	
+				calcFurnIntersectionsAtElev(CURR_ELEVATION_LEVEL);				
 				
-				// masterFreeWallSegList - contains list of all free wall segements
+				markerIndx = 3;	
+				CURR_ELEVATION_LEVEL = (5.0f * CONV_FT_CM);
+				calcFurnIntersectionsAtElev(CURR_ELEVATION_LEVEL); 
 				
-				// For Wall Objects
-				calcFurnIntersectionsAtElev(CURR_ELEVATION_LEVEL);  
+				markerIndx = 4;	
+				CURR_ELEVATION_LEVEL = (7.0f * CONV_FT_CM);
+				calcFurnIntersectionsAtElev(CURR_ELEVATION_LEVEL); 
 				
-				List<List<WallSegement>> currFWSeg = calculateFreeWallSeg(MEDIA_CAB_MIN);
+				//long endTime = System.currentTimeMillis();
 				
-				// Check for maximum and place accordingly
-				chkFurnitureDimsAndPlace(currFWSeg, "Box345", MEDIA_CAB_MAX, MEDIA_CAB_CLEARANCE);
-				
-				long endTime = System.currentTimeMillis();
-				
-				JOptionPane.showMessageDialog(null, "No. of Designs generated : " + designList.size() + "\nTime : " + (endTime - startTime) + " ms");
+				//JOptionPane.showMessageDialog(null, "No. of Designs generated : " + designList.size() + "\nTime : " + (endTime - startTime) + " ms");
 				
 			}
 			catch(Exception e)
@@ -327,7 +337,6 @@ public class PhoenixPCS extends Plugin
 				JOptionPane.showMessageDialog(null, "180 rotation");
 			}
 		}
-		
 		
 		public HomePieceOfFurniture searchMatchFurn(String furnName)
 		{
@@ -489,7 +498,6 @@ public class PhoenixPCS extends Plugin
 			//JOptionPane.showMessageDialog(null, wsStr);
 		}
 		
-		
 		public List<List<WallSegement>> calculateFreeWallSeg(float minWidth)
 		{
 			List<List<WallSegement>> outMasterFreeWallSegList = new ArrayList<List<WallSegement>>();
@@ -518,7 +526,6 @@ public class PhoenixPCS extends Plugin
 			
 			return outMasterFreeWallSegList;
 		}
-		
 		
 		public String printMasterFreeWallSegList(List<List<WallSegement>> inMastWallSegList)
 		{
@@ -592,7 +599,7 @@ public class PhoenixPCS extends Plugin
 									if(checkPointInBetween(ws.startP, ws.endP, inter.p, 0.0f, 0.0f, 0.0f))
 									{
 										interMap.put(inter.dist, inter);
-										//JOptionPane.showMessageDialog(null, (m+1) + ", " + wallCounter + " -> Final Intersection (" + furnIds.get(f) + ") -> X : " + inter.p.x + ", Y : " + inter.p.y + ", Distance : " + inter.dist + " ----> " + ws.len);
+										putMarkers(inter.p, markerIndx);
 									}
 									
 								}
@@ -628,7 +635,7 @@ public class PhoenixPCS extends Plugin
 					}				
 					
 					retStr += "-----------------------------\n";
-					masterFreeWallSegList.add(m, freeWallSegList);
+					//masterFreeWallSegList.add(m, freeWallSegList);
 				}
 
 				//JOptionPane.showMessageDialog(null, fwsStr);
@@ -760,7 +767,6 @@ public class PhoenixPCS extends Plugin
 			return inter;			
 		}		
 		
-		
 		// ================== getIntersectPoint() ==================//
 		
 		public boolean checkPointInBetween(Points start, Points end, Points test, float P, float Q, float R)
@@ -792,7 +798,6 @@ public class PhoenixPCS extends Plugin
 			
 			return bRet;			
 		}
-		
 		
 		// ======================= INIT FUNCTIONS ======================= //
 		
@@ -885,8 +890,7 @@ public class PhoenixPCS extends Plugin
 				
 		
 		// ======================= UTIL FUNCTIONS ======================= //
-		
-		
+				
 		public float calcDistance(Points p1, Points p2)
 		{
 			float d = (float) Math.sqrt(((p2.x - p1.x) * (p2.x - p1.x)) + ((p2.y - p1.y) * (p2.y - p1.y)));
@@ -954,6 +958,80 @@ public class PhoenixPCS extends Plugin
 			
 			return newP;
 		}
+	
+		// ======================= DEBUG FUNCTIONS ======================= //
+
+		public void putMarkers(Points p, int indx)
+		{
+			HomePieceOfFurniture box = null;
+
+			box = markBoxes[indx].clone();			
+			box.setX(p.x);
+			box.setY(p.y);
+			home.addPieceOfFurniture(box);
+		}
+
+		public HomePieceOfFurniture[] getMarkerBoxes()
+		{
+			HomePieceOfFurniture[] markBoxes = new HomePieceOfFurniture[MARKBOX_COUNT];
+			int count = 0;
+
+			List<FurnitureCategory> fCatg = getUserPreferences().getFurnitureCatalog().getCategories();
+
+			for(int c = 0; c < fCatg.size(); c++ )
+			{
+				if(count >= MARKBOX_COUNT)
+					break;
+
+				List<CatalogPieceOfFurniture> catPOF = fCatg.get(c).getFurniture();
+
+				for(int p = 0; p < catPOF.size(); p++ )
+				{
+					if(catPOF.get(p).getName().equals("boxred"))
+					{
+						markBoxes[0] = new HomePieceOfFurniture(catPOF.get(p));
+						markBoxName.add("boxred");
+						count++;
+					}
+					else if(catPOF.get(p).getName().equals("boxgreen"))
+					{
+						markBoxes[1] = new HomePieceOfFurniture(catPOF.get(p));
+						markBoxName.add("boxgreen");
+						count++;
+					}
+					else if(catPOF.get(p).getName().equals("boxblue"))
+					{
+						markBoxes[2] = new HomePieceOfFurniture(catPOF.get(p));
+						markBoxName.add("boxblue");
+						count++;
+					}
+					else if(catPOF.get(p).getName().equals("boxyellow"))
+					{
+						markBoxes[3] = new HomePieceOfFurniture(catPOF.get(p));
+						markBoxName.add("boxyellow");
+						count++;
+					}
+					else if(catPOF.get(p).getName().equals("boxteal"))
+					{
+						markBoxes[4] = new HomePieceOfFurniture(catPOF.get(p));
+						markBoxName.add("boxteal");
+						count++;
+					}
+					else if(catPOF.get(p).getName().equals("boxblack"))
+					{
+						markBoxes[5] = new HomePieceOfFurniture(catPOF.get(p));
+						markBoxName.add("boxblack");
+						count++;
+					}
+
+					if(count >= MARKBOX_COUNT)
+						break;
+				}	
+			}
+
+			return markBoxes;
+		}
+	
 	}
 	
 	
