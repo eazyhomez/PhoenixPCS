@@ -2,7 +2,6 @@ package com.eteks.test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -25,6 +24,7 @@ public class PhoenixPCS extends Plugin
 
 		public Home home = null;
 		public Room room = null;
+		public Room livingRoom = null;
 		
 		public List<String> furnIds = new ArrayList<String>();
 		public List<float[][]> furnRects = new ArrayList<float[][]>();
@@ -47,6 +47,12 @@ public class PhoenixPCS extends Plugin
 		
 		public float FURNITURE_BLOAT_SIZE = 2.0f;	// 2cm
 				
+		public float VALID_INNERWALL_TOLERANCE = 5.0f;	// 5mm
+		
+		public float SLOPE_TOLERANCE = 0.01f;
+		public float INFINITY = 10000.0f; 
+		public float tolerance = 0.5f; 	// 5 mm
+		
 		// ======================= CLASSES ======================= //
 		
 		public class Points
@@ -76,6 +82,12 @@ public class PhoenixPCS extends Plugin
 			{
 				startP = sP;
 				endP = eP;
+			}
+			
+			public LineSegement(WallSegement ws)
+			{
+				startP = ws.startP;
+				endP = ws.endP;
 			}
 		}	
 		
@@ -172,7 +184,49 @@ public class PhoenixPCS extends Plugin
 				markBoxes = getMarkerBoxes();
 				
 				// 1. Get inner wall segments ----------- //
+				//List<WallSegement> innerWSList = getInnerWalls();
+				
+				// 2. Calculate distance (perpendicular) of a point from a line ----------- //				
+				getLivingRoom();
+				float[][] livinRect = livingRoom.getPoints();
+				
 				List<WallSegement> innerWSList = getInnerWalls();
+				
+				int count = 0;
+				
+				for(int l = 0; l < livinRect.length; l++)
+				{
+					count++;
+					
+					Points startP = new Points(livinRect[l][0], livinRect[l][1]);
+					Points endP = null;
+					
+					if(l == (livinRect.length - 1))
+						endP = new Points(livinRect[0][0], livinRect[0][1]);
+					else
+						endP = new Points(livinRect[l+1][0], livinRect[l+1][1]);
+					
+					Points midP = new Points(((startP.x + endP.x)/2.0f),((startP.y + endP.y)/2.0f));
+					LineSegement rs = new LineSegement(startP, endP);
+					
+					for(WallSegement ws : innerWSList)
+					{						
+						LineSegement ls = new LineSegement(ws);
+						
+						if(isParallel(rs, ls))
+						{							
+							float dist = calcDistancePointLine(midP, ls);
+									
+							if(dist <= VALID_INNERWALL_TOLERANCE)
+							{
+								putMarkers(midP, (count % MARKBOX_COUNT));
+								
+								Points midWS = new Points(((ws.startP.x + ws.endP.x)/2.0f),((ws.startP.y + ws.endP.y)/2.0f));
+								putMarkers(midWS, (count % MARKBOX_COUNT));
+							}
+						}
+					}
+				}			
 
 			}
 			catch(Exception e)
@@ -184,7 +238,7 @@ public class PhoenixPCS extends Plugin
 		
 		public List<WallSegement> getInnerWalls()
 		{
-			String wsStr = "";
+			//String wsStr = "";
 			List<WallSegement> wallSegList = new ArrayList<WallSegement>();
 			
 			for(int w = 0; w < wallIds.size(); w++)
@@ -204,23 +258,34 @@ public class PhoenixPCS extends Plugin
 					LineSegement ls = new LineSegement( (validPoints.get(i-1)), (validPoints.get(i)) );					
 					
 					float dist = calcDistance(ls.startP, ls.endP);
+					wallSegList.add(new WallSegement(ls.startP, ls.endP, dist));
 					
-					if(dist >= (WALL_TOLERANCE + wallThicks.get(w)))
-					{
-						wallSegList.add(new WallSegement(ls.startP, ls.endP, dist));
-						wsStr += (wallIds.get(w) + " : (" + ls.startP.x + "," + ls.startP.y + ") -> (" + ls.endP.x + "," + ls.endP.y + ")\n");
-					}					
+					//wsStr += (wallIds.get(w) + " : (" + ls.startP.x + "," + ls.startP.y + ") -> (" + ls.endP.x + "," + ls.endP.y + ")\n");			
 				}
 				
-				wsStr += ("------------------\n\n");
+				//wsStr += ("------------------\n\n");
 			}
 			
-			JOptionPane.showMessageDialog(null, wsStr);
+			//JOptionPane.showMessageDialog(null, wsStr);
 			
 			return wallSegList;
 		}
 				
 		// ======================= INIT FUNCTIONS ======================= //
+		
+		public void getLivingRoom()
+		{			
+			for(Room r : home.getRooms())
+			{			
+				String roomName = r.getName();
+				
+				if((roomName != null) && (roomName.equalsIgnoreCase("living")))
+				{
+					livingRoom = r;
+					break;
+				}
+			}
+		}
 		
 		public void init()
 		{
@@ -306,7 +371,76 @@ public class PhoenixPCS extends Plugin
 		{
 			float d = (float) Math.sqrt(((p2.x - p1.x) * (p2.x - p1.x)) + ((p2.y - p1.y) * (p2.y - p1.y)));
 			return d;
-		}		
+		}	
+		
+		public boolean isParallel(LineSegement ls1, LineSegement ls2)
+		{
+			boolean isPara = false;
+			
+			float slope1 = 0.0f;
+			float slope2 = 0.0f;
+			
+			if(Math.abs(ls1.endP.x - ls1.startP.x) <= tolerance)
+				slope1 = INFINITY;
+			else
+				slope1 = ((ls1.endP.y - ls1.startP.y) / (ls1.endP.x - ls1.startP.x));
+			
+			if(Math.abs(ls2.endP.x - ls2.startP.x) <= tolerance)
+				slope2 = INFINITY;
+			else
+				slope2 = ((ls2.endP.y - ls2.startP.y) / (ls2.endP.x - ls2.startP.x));
+					
+			isPara = (Math.abs(slope1 - slope2) < SLOPE_TOLERANCE) ? true : false;
+			
+			return isPara;
+		}
+		
+		public float calcDistancePointLine(Points p, LineSegement ls)
+		{
+			float dist = 0.0f;
+			
+			if(Math.abs(ls.endP.x - ls.startP.x) < tolerance)
+			{
+				dist = Math.abs(ls.endP.x - p.x);
+			}
+			else if(Math.abs(ls.endP.y - ls.startP.y) < tolerance)
+			{
+				dist = Math.abs(ls.endP.y - p.y);
+			}
+			else
+			{
+				float slope = ((ls.endP.y - ls.startP.y) / (ls.endP.x - ls.startP.x));
+				
+				float A = slope;
+				float B = -1.0f;
+				float C = (ls.startP.y - (slope * ls.startP.x));
+				
+				dist = ( Math.abs((A*p.x) + (B*p.y) + C) / ((float)Math.sqrt((A*A) + (B*B))) );
+			}
+
+			return dist;
+		}	
+		
+		public List<Points> sortPList(List<Points> interPList, Points ref)
+		{
+			List<Points> retPList = new ArrayList<Points>();
+			TreeMap<Float, Points> pMap = new TreeMap<Float, Points>();
+			
+			for(Points p : interPList)
+			{
+				float dist = calcDistance(p, ref);
+				pMap.put(dist, p);
+			}
+			
+			Set<Float> keys = pMap.keySet();
+			
+			for(Float d : keys)
+			{
+				retPList.add(pMap.get(d));
+			}
+					
+			return retPList;
+		}
 		
 		// ======================= DEBUG FUNCTIONS ======================= //
 
@@ -319,7 +453,7 @@ public class PhoenixPCS extends Plugin
 			box.setY(p.y);
 			home.addPieceOfFurniture(box);
 		}
-
+		
 		public HomePieceOfFurniture[] getMarkerBoxes()
 		{
 			HomePieceOfFurniture[] markBoxes = new HomePieceOfFurniture[MARKBOX_COUNT];

@@ -1,4 +1,4 @@
 Prep:
 ------
 1. Get inner wall segments
-3. Check for intersection below a given elevation of door (7ft)
+2. Get inner wall segments of a room (Living) 
