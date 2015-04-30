@@ -1,7 +1,6 @@
 package com.eteks.test;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.NavigableMap;
 import java.util.Set;
@@ -17,10 +16,6 @@ import com.eteks.sweethome3d.model.Room;
 import com.eteks.sweethome3d.model.Wall;
 import com.eteks.sweethome3d.plugin.Plugin;
 import com.eteks.sweethome3d.plugin.PluginAction;
-import com.eteks.test.PhoenixDining.RoomTestAction.Intersect;
-import com.eteks.test.PhoenixDining.RoomTestAction.LineSegement;
-import com.eteks.test.PhoenixDining.RoomTestAction.Points;
-
 
 public class PhoenixPCS extends Plugin 
 {
