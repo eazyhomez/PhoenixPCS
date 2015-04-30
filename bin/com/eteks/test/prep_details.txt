@@ -2,4 +2,5 @@ Prep:
 ------
 1. Get inner wall segments
 2. Calculate distance (perpendicular) of a point from a line
-3. Get inner wall segments of a room (Living) - Tested
+3. Get inner wall segments of a room (Living) - Tested [packaged]
+4. Get free inner wall segments of a room with length >= 3' 

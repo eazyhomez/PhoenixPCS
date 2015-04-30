@@ -29,7 +29,9 @@ public class PhoenixPCS extends Plugin
 		public List<String> furnIds = new ArrayList<String>();
 		public List<float[][]> furnRects = new ArrayList<float[][]>();
 		public List<float[][]> furnRectsBloated = new ArrayList<float[][]>();
-
+		
+		public List<HomePieceOfFurniture> furnList = new ArrayList<HomePieceOfFurniture>();
+		
 		public List<Float> furnElevs = new ArrayList<Float>();
 		public List<Float> furnHeights = new ArrayList<Float>();
 		
@@ -48,7 +50,7 @@ public class PhoenixPCS extends Plugin
 		public float ROOM_TOLERANCE = 0.51f;
 		public float WALL_TOLERANCE = 0.1f;
 
-		public float FURNITURE_BLOAT_SIZE = 2.0f;	// 2cm
+		public float FURNITURE_BLOAT_SIZE = 5.0f;	// 2cm
 
 		public float VALID_INNERWALL_TOLERANCE = 0.5f;	// 5mm
 
@@ -229,9 +231,9 @@ public class PhoenixPCS extends Plugin
 					{						
 						LineSegement ls = new LineSegement(ws);
 
-						if(isParallel(rs, ls))
+						if(isParallel(rs, ls, tolerance))
 						{							
-							float dist = calcDistancePointLine(midP, ls);
+							float dist = calcDistancePointLine(midP, ls, tolerance);
 
 							if(dist <= VALID_INNERWALL_TOLERANCE)
 							{
@@ -243,20 +245,42 @@ public class PhoenixPCS extends Plugin
 						}
 					}
 				}			
-				 */
+				*/
 
 				// ================================================== //
 
 				// 3. Get inner wall segments of a room (Living) ----------- //	
-
+				
 				getLivingRoom();
 				float[][] livinRect = livingRoom.getPoints();
 
 				List<WallSegement> innerWSList = getInnerWalls();
 
 				getValidInnerWallSegmentsOfRoom(innerWSList, livinRect, tolerance);			
-
 				
+				
+				// ================================================== //
+				/*
+				// 4. Get all FWS of a room (Living) below the given elevation (7' : door height)  ----------- //	
+				
+				getLivingRoom();
+				float[][] livinRect = livingRoom.getPoints();
+				List<WallSegement> innerWSList = getInnerWalls();
+				
+				List<WallSegement> validWSList = getValidInnerWallSegmentsOfRoom(innerWSList, livinRect, tolerance);	
+				
+				List<WallSegement> fWSList = calcFreeWallIntersectionsBelowElev(validWSList, DOOR_ELEVATION, livingRoom, 2.0f);
+				
+				for(WallSegement freeWS : fWSList)
+				{
+					if(freeWS.len >= VALID_RS_LENGTH)
+					{
+						// Marker
+						Points midWS = new Points(((freeWS.startP.x + freeWS.endP.x)/2.0f),((freeWS.startP.y + freeWS.endP.y)/2.0f));
+						putMarkers(midWS, 1);
+					}
+				}
+				*/
 				// ================================================== //
 
 			}
@@ -319,7 +343,7 @@ public class PhoenixPCS extends Plugin
 						List<WallSegement> validRSWallPieceList = new ArrayList<WallSegement>();
 
 						boolean bWSInRS1 = checkPointInBetween(ws.startP, rs.startP, rs.endP, tolr);
-
+						
 						//JOptionPane.showMessageDialog(null, "ws : " + ws.startP.x + ", " + ws.startP.y + " [" + ws.len + "] -> " + lenRS);
 
 						if(bWSInRS1)
@@ -359,26 +383,67 @@ public class PhoenixPCS extends Plugin
 						}
 						else
 						{
-							boolean bRSInWS1 = checkPointInBetween(rs.startP, ws.startP, ws.endP, tolr);
-
-							if(bRSInWS1)
+							boolean bWSEInRS1 = checkPointInBetween(ws.endP, rs.startP, rs.endP, tolr);
+									
+							if(bWSEInRS1)
 							{
-								Points sP = rs.startP;
+								boolean bWSEInRS2 = checkPointInBetween(ws.startP, rs.startP, rs.endP, tolr);
 
-								boolean bWSInRS2 = checkPointInBetween(ws.endP, rs.startP, rs.endP, tolr);
-
-								if(bWSInRS2)
-								{
-									float len = calcDistance(sP, ws.endP);
-
-									WallSegement newRS = new WallSegement(sP, ws.endP, len);
-									validRSWallPieceList.add(newRS);
+								if(bWSEInRS2)
+								{											
+									validRSWallPieceList.add(ws);
 
 									if(bShowMarkerInter)
 									{
 										// Marker
-										Points midWS = new Points(((newRS.startP.x + newRS.endP.x)/2.0f),((newRS.startP.y + newRS.endP.y)/2.0f));
-										putMarkers(midWS, 4);
+										Points midWS = new Points(((ws.startP.x + ws.endP.x)/2.0f),((ws.startP.y + ws.endP.y)/2.0f));
+										putMarkers(midWS, 3);
+									}
+								}
+								else
+								{
+									boolean bWSOverlapRS = checkPointInBetween(rs.endP, ws.endP, ws.endP, tolr);
+
+									if(bWSOverlapRS)
+									{
+										float len = calcDistance(ws.endP, rs.endP);
+
+										WallSegement newRS = new WallSegement(ws.endP, rs.endP, len);
+										validRSWallPieceList.add(newRS);
+
+										if(bShowMarkerInter)
+										{
+											// Marker
+											Points midWS = new Points(((newRS.startP.x + newRS.endP.x)/2.0f),((newRS.startP.y + newRS.endP.y)/2.0f));
+											putMarkers(midWS, 5);
+										}
+									}
+								}
+							
+							}
+							else
+							{
+								boolean bRSInWS1 = checkPointInBetween(rs.startP, ws.startP, ws.endP, tolr);
+
+								if(bRSInWS1)
+								{
+									Points sP = rs.startP;
+
+									boolean bWSInRS2 = checkPointInBetween(ws.endP, rs.startP, rs.endP, tolr);
+
+									if(bWSInRS2)
+									{
+										float len = calcDistance(sP, ws.endP);
+
+										WallSegement newRS = new WallSegement(sP, ws.endP, len);
+										validRSWallPieceList.add(newRS);
+
+										if(bShowMarkerInter)
+										{
+											// Marker
+											Points midWS = new Points(((newRS.startP.x + newRS.endP.x)/2.0f),((newRS.startP.y + newRS.endP.y)/2.0f));
+											putMarkers(midWS, 4);
+										}
 									}
 								}
 							}
@@ -389,7 +454,7 @@ public class PhoenixPCS extends Plugin
 						{
 							validRSWallList.add(rsPiece);
 
-							if(bShowMarker)
+							if(bShowMarkerInter)
 							{
 								// Marker
 								Points midRSp = new Points(((rsPiece.startP.x + rsPiece.endP.x)/2.0f),((rsPiece.startP.y + rsPiece.endP.y)/2.0f));
@@ -399,15 +464,88 @@ public class PhoenixPCS extends Plugin
 					}
 					else
 					{
-						WallSegement newWS = new WallSegement(rs.startP, rs.endP, lenRS);
-						validRSWallList.add(newWS);
-
-						if(bShowMarker)
+						boolean bRSSInWS = checkPointInBetween(rs.startP, ws.startP, ws.endP, tolr);
+						boolean bRSEInWS = checkPointInBetween(rs.endP, ws.startP, ws.endP, tolr);
+						
+						if(bRSSInWS && bRSEInWS)
 						{
-							// Marker
-							Points midWS = new Points(((newWS.startP.x + newWS.endP.x)/2.0f),((newWS.startP.y + newWS.endP.y)/2.0f));
-							putMarkers(midWS, 1);
+							WallSegement newWS = new WallSegement(rs.startP, rs.endP, lenRS);
+							validRSWallList.add(newWS);
+
+							if(bShowMarkerInter)
+							{
+								// Marker
+								Points midWS = new Points(((newWS.startP.x + newWS.endP.x)/2.0f),((newWS.startP.y + newWS.endP.y)/2.0f));
+								putMarkers(midWS, 1);
+							}
 						}
+						else if(!bRSSInWS)
+						{
+							boolean bWSSInRS = checkPointInBetween(ws.startP, rs.startP, rs.endP, tolr);
+							
+							if(bWSSInRS)
+							{
+								float len = calcDistance(ws.startP, rs.endP);
+								
+								WallSegement newWS = new WallSegement(ws.startP, rs.endP, len);
+								validRSWallList.add(newWS);
+
+								if(bShowMarkerInter)
+								{
+									// Marker
+									Points midWS = new Points(((newWS.startP.x + newWS.endP.x)/2.0f),((newWS.startP.y + newWS.endP.y)/2.0f));
+									putMarkers(midWS, 3);
+								}
+							}
+							else
+							{
+								float len = calcDistance(ws.endP, rs.endP);
+								
+								WallSegement newWS = new WallSegement(ws.endP, rs.endP, len);
+								validRSWallList.add(newWS);
+
+								if(bShowMarkerInter)
+								{
+									// Marker
+									Points midWS = new Points(((newWS.startP.x + newWS.endP.x)/2.0f),((newWS.startP.y + newWS.endP.y)/2.0f));
+									putMarkers(midWS, 3);
+								}
+							}
+						}
+						else if(!bRSEInWS)
+						{
+							boolean bWSSInRS = checkPointInBetween(ws.startP, rs.startP, rs.endP, tolr);
+							
+							if(bWSSInRS)
+							{
+								float len = calcDistance(ws.startP, rs.startP);
+								
+								WallSegement newWS = new WallSegement(ws.startP, rs.startP, len);
+								validRSWallList.add(newWS);
+
+								if(bShowMarkerInter)
+								{
+									// Marker
+									Points midWS = new Points(((newWS.startP.x + newWS.endP.x)/2.0f),((newWS.startP.y + newWS.endP.y)/2.0f));
+									putMarkers(midWS, 3);
+								}
+							}
+							else
+							{
+								float len = calcDistance(ws.endP, rs.startP);
+								
+								WallSegement newWS = new WallSegement(ws.endP, rs.startP, len);
+								validRSWallList.add(newWS);
+
+								if(bShowMarkerInter)
+								{
+									// Marker
+									Points midWS = new Points(((newWS.startP.x + newWS.endP.x)/2.0f),((newWS.startP.y + newWS.endP.y)/2.0f));
+									putMarkers(midWS, 3);
+								}
+							}
+						}
+						
 					}
 				}
 			}
@@ -419,7 +557,7 @@ public class PhoenixPCS extends Plugin
 				{
 					// Marker
 					Points midWS = new Points(((validWS.startP.x + validWS.endP.x)/2.0f),((validWS.startP.y + validWS.endP.y)/2.0f));
-					putMarkers(midWS, 6);
+					//putMarkers(midWS, 6);
 				}
 			}
 			
@@ -450,6 +588,8 @@ public class PhoenixPCS extends Plugin
 					float dist = calcDistance(ls.startP, ls.endP);
 					wallSegList.add(new WallSegement(ls.startP, ls.endP, dist));
 
+					//putMarkers(ls.startP, 6);
+					//putMarkers(ls.endP, 5);
 					//wsStr += (wallIds.get(w) + " : (" + ls.startP.x + "," + ls.startP.y + ") -> (" + ls.endP.x + "," + ls.endP.y + ")\n");			
 				}
 
@@ -461,18 +601,15 @@ public class PhoenixPCS extends Plugin
 			return wallSegList;
 		}
 
-		public List<WallSegement> calcFurnIntersectionsBelowElev(List<WallSegement> validWSList, float elv, float tolr)
+		public List<WallSegement> calcFreeWallIntersectionsBelowElev(List<WallSegement> validWSList, float elv, Room r, float tolr)
 		{
-			//String retStr = "";
 			List<WallSegement> freeWallSegList = new ArrayList<WallSegement>();
 
 			// Compare which furn obj have elevation less than "elv"
 			// Take intersection points for objects whose elevation < "elv"
 
 			try
-			{									
-				//int wallCounter  = 1;
-
+			{
 				for(WallSegement ws : validWSList)
 				{
 					TreeMap<Float, Intersect> interMap = new TreeMap<Float, Intersect>();
@@ -486,21 +623,48 @@ public class PhoenixPCS extends Plugin
 					for(int f = 0; f < furnElevs.size(); f++)
 					{
 						float furnElev = furnElevs.get(f);
-
+						
 						if(elv >= furnElev)
 						{							
 							LineSegement ref = new LineSegement(ws.startP, ws.endP);								
 							List<Intersect> interList = checkIntersect(ref, furnIds.get(f));
-
+							
+							int interCount = 0;
+							
 							for(Intersect inter : interList)
 							{
-								if(checkPointInBetween(ws.startP, ws.endP, inter.p, tolr))
-								{
+								if(r.containsPoint(inter.p.x, inter.p.y, tolr))
+								{			
+									interCount++;
+									
 									interMap.put(inter.dist, inter);
-									putMarkers(inter.p, markerIndx);
-									//JOptionPane.showMessageDialog(null, (m+1) + ", " + wallCounter + " -> Final Intersection (" + furnIds.get(f) + ") -> X : " + inter.p.x + ", Y : " + inter.p.y + ", Distance : " + inter.dist + " ----> " + ws.len);
+									
+									//if(bShowMarkerInter)
+										putMarkers(inter.p, 3);
 								}
-
+							}
+							
+							if(interCount == 1)
+							{
+								float X = furnList.get(f).getX();
+								float Y = furnList.get(f).getY();
+								
+								Points midP = new Points(X, Y);
+								
+								float calcDS = calcDistance(midP, ws.startP);
+								float calcDE = calcDistance(midP, ws.endP);
+								
+								Intersect inter;
+								
+								if(calcDS < calcDE)
+									inter = new Intersect(ws.startP, 0.5f);
+								else
+									inter = new Intersect(ws.endP, (ws.len - 0.5f));
+								
+								interMap.put(inter.dist, inter);
+								
+								//if(bShowMarkerInter)
+									putMarkers(inter.p, 4);
 							}
 						}
 					}
@@ -525,18 +689,18 @@ public class PhoenixPCS extends Plugin
 						freeWallSegList.add(fws);
 
 						k+= 2;
+						
+						if(bShowMarker)
+						{
+							//putMarkers(fws.startP, 1);
+							//putMarkers(fws.endP, 0);
+						}
 					}
-
-					//wallCounter++;
-				}				
-
-				//retStr += "-----------------------------\n";
-				//JOptionPane.showMessageDialog(null, fwsStr);
-
+				}
 			}
 			catch(Exception e) 
 			{
-				JOptionPane.showMessageDialog(null," -x-x-x- EXCEPTION [calcFurnIntersectionsAtElev]: " + e.getMessage()); 
+				JOptionPane.showMessageDialog(null," -x-x-x- EXCEPTION [calcFreeWallIntersectionsBelowElev]: " + e.getMessage()); 
 				e.printStackTrace();
 			}
 
@@ -575,12 +739,13 @@ public class PhoenixPCS extends Plugin
 			{
 				String fName = hp.getName();
 
-				if(!fName.equals("boxred") && !fName.equals("boxgreen") )
+				if(!markBoxName.contains(fName))
 				{					
 					furnIds.add(hp.getName());
 					furnRects.add(hp.getPoints());
 					furnElevs.add(hp.getElevation());
 					furnHeights.add(hp.getHeight());
+					furnList.add(hp);
 					
 					HomePieceOfFurniture hClone = hp.clone();
 					float d = hp.getDepth();
@@ -649,8 +814,8 @@ public class PhoenixPCS extends Plugin
 			
 			if((indx = furnIds.indexOf(furnId)) > -1)
 			{ 				
-				float[][] fRect = furnRects.get(indx);
-				//float[][] fRect = furnRectsBloated.get(indx);
+				//float[][] fRect = furnRects.get(indx);
+				float[][] fRect = furnRectsBloated.get(indx);
 						
 				if(fRect.length == 2)
 				{
@@ -806,13 +971,32 @@ public class PhoenixPCS extends Plugin
 			float distSE = calcDistance(start, end);
 
 			float distSEAbs = (float)(Math.abs(distST + distTE - distSE));
-
+			
 			if(distSEAbs <= tolPercent)
 				bRet = true;
 
 			return bRet;			
 		}
 
+		public boolean checkPointInBetween2(Points test, Points start, Points end, float tolPercent)
+		{
+			boolean bRet = false;
+
+			float distST = calcDistance(start, test);
+			float distTE = calcDistance(test, end);
+			float distSE = calcDistance(start, end);
+
+			float distSEAbs = (float)(Math.abs(distST + distTE - distSE));
+			float perc = Math.abs(distSEAbs / distSE);
+			
+			if(perc <= tolPercent)
+				bRet = true;
+			
+			JOptionPane.showMessageDialog(null, bRet + " -> " + perc + ", " + tolPercent);
+			
+			return bRet;		
+		}
+		
 		public List<Points> sortPList(List<Points> interPList, Points ref)
 		{
 			List<Points> retPList = new ArrayList<Points>();
