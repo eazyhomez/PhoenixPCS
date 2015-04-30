@@ -58,7 +58,7 @@ public class PhoenixPCS extends Plugin
 		public float INFINITY = 10000.0f; 
 		public float tolerance = 0.5f; 	// 5 mm
 
-		public boolean bShowMarkerInter = true;
+		public boolean bShowMarkerInter = false;
 		public boolean bShowMarker = true;
 
 		public float CONV_IN_CM = 2.54f;
@@ -248,7 +248,7 @@ public class PhoenixPCS extends Plugin
 				*/
 
 				// ================================================== //
-
+				/*
 				// 3. Get inner wall segments of a room (Living) ----------- //	
 				
 				getLivingRoom();
@@ -257,10 +257,10 @@ public class PhoenixPCS extends Plugin
 				List<WallSegement> innerWSList = getInnerWalls();
 
 				getValidInnerWallSegmentsOfRoom(innerWSList, livinRect, tolerance);			
-				
+				*/
 				
 				// ================================================== //
-				/*
+				
 				// 4. Get all FWS of a room (Living) below the given elevation (7' : door height)  ----------- //	
 				
 				getLivingRoom();
@@ -269,7 +269,7 @@ public class PhoenixPCS extends Plugin
 				
 				List<WallSegement> validWSList = getValidInnerWallSegmentsOfRoom(innerWSList, livinRect, tolerance);	
 				
-				List<WallSegement> fWSList = calcFreeWallIntersectionsBelowElev(validWSList, DOOR_ELEVATION, livingRoom, 2.0f);
+				List<WallSegement> fWSList = calcFreeWallIntersectionsBelowElev(validWSList, DOOR_ELEVATION, livingRoom, 1.0f);
 				
 				for(WallSegement freeWS : fWSList)
 				{
@@ -280,7 +280,7 @@ public class PhoenixPCS extends Plugin
 						putMarkers(midWS, 1);
 					}
 				}
-				*/
+				
 				// ================================================== //
 
 			}
@@ -620,6 +620,10 @@ public class PhoenixPCS extends Plugin
 					Intersect wallE = new Intersect(ws.endP, ws.len);
 					interMap.put(ws.len, wallE);
 
+					// Debug
+					Points midPWS = new Points(((ws.startP.x + ws.endP.x)/2.0f),((ws.startP.y + ws.endP.y)/2.0f));
+					putMarkers(midPWS, 5);
+					
 					for(int f = 0; f < furnElevs.size(); f++)
 					{
 						float furnElev = furnElevs.get(f);
@@ -633,7 +637,8 @@ public class PhoenixPCS extends Plugin
 							
 							for(Intersect inter : interList)
 							{
-								if(r.containsPoint(inter.p.x, inter.p.y, tolr))
+								//if(r.containsPoint(inter.p.x, inter.p.y, tolr))
+								if(checkPointInBetween(inter.p, ws.startP, ws.endP, tolr))
 								{			
 									interCount++;
 									
@@ -655,16 +660,25 @@ public class PhoenixPCS extends Plugin
 								float calcDE = calcDistance(midP, ws.endP);
 								
 								Intersect inter;
-								
-								if(calcDS < calcDE)
+
+								//if((calcDS <= calcDE) && (calcDS <= tolr))
+								if(calcDS <= calcDE)
+								{
 									inter = new Intersect(ws.startP, 0.5f);
+									interMap.put(inter.dist, inter);
+									
+									//if(bShowMarkerInter)
+										putMarkers(inter.p, 4);
+								}
+								//else if(calcDE <= tolr)
 								else
+								{
 									inter = new Intersect(ws.endP, (ws.len - 0.5f));
-								
-								interMap.put(inter.dist, inter);
-								
-								//if(bShowMarkerInter)
-									putMarkers(inter.p, 4);
+									interMap.put(inter.dist, inter);
+									
+									//if(bShowMarkerInter)
+										putMarkers(inter.p, 4);
+								}
 							}
 						}
 					}
