@@ -217,6 +217,14 @@ public class PhoenixPCS extends Plugin
 				}
 				
 				// ================================================== //
+				
+				// 6. Place furniture parallel to the wall --------- //
+				// 7. Get quadrant info --------- //
+				// 8. Get wall angles --------- //
+				// 9. Check for intersection with all furns/fixtures/walls --------- //
+				// 10. Check orientation --------- //
+				
+				// ================================================== //
 			}
 			catch(Exception e)
 			{
