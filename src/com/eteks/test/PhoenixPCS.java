@@ -262,6 +262,29 @@ public class PhoenixPCS extends Plugin
 				// ================================================== //
 				
 				// 4. Get all FWS of a room (Living) below the given elevation (7' : door height)  ----------- //	
+				/*
+				getLivingRoom();
+				float[][] livinRect = livingRoom.getPoints();
+				List<WallSegement> innerWSList = getInnerWalls();
+				
+				List<WallSegement> validWSList = getValidInnerWallSegmentsOfRoom(innerWSList, livinRect, tolerance);	
+				
+				List<WallSegement> fWSList = calcFreeWallIntersectionsBelowElev(validWSList, DOOR_ELEVATION, livingRoom, 1.0f);
+				
+				for(WallSegement freeWS : fWSList)
+				{
+					if(freeWS.len >= VALID_RS_LENGTH)
+					{
+						// Marker
+						Points midWS = new Points(((freeWS.startP.x + freeWS.endP.x)/2.0f),((freeWS.startP.y + freeWS.endP.y)/2.0f));
+						putMarkers(midWS, 1);
+					}
+				}
+				*/
+				
+				// ================================================== //
+				
+				// 5. Get free inner wall segments of a room with length >= 3'   ----------- //	
 				
 				getLivingRoom();
 				float[][] livinRect = livingRoom.getPoints();
@@ -282,7 +305,6 @@ public class PhoenixPCS extends Plugin
 				}
 				
 				// ================================================== //
-
 			}
 			catch(Exception e)
 			{
