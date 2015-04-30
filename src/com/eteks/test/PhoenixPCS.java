@@ -254,161 +254,8 @@ public class PhoenixPCS extends Plugin
 
 				List<WallSegement> innerWSList = getInnerWalls();
 
-				List<WallSegement> validRSWallList = new ArrayList<WallSegement>();
+				getValidInnerWallSegmentsOfRoom(innerWSList, livinRect, tolerance);			
 
-				for(int l = 0; l < livinRect.length; l++)
-				{					
-					Points startP = new Points(livinRect[l][0], livinRect[l][1]);
-					Points endP = null;
-
-					if(l == (livinRect.length - 1))
-						endP = new Points(livinRect[0][0], livinRect[0][1]);
-					else
-						endP = new Points(livinRect[l+1][0], livinRect[l+1][1]);
-
-					Points midP = new Points(((startP.x + endP.x)/2.0f),((startP.y + endP.y)/2.0f));
-					LineSegement rs = new LineSegement(startP, endP);
-
-					List<WallSegement> validList = new ArrayList<WallSegement>();
-
-					for(WallSegement ws : innerWSList)
-					{						
-						LineSegement ls = new LineSegement(ws);
-						boolean bIsParallel = isParallel(rs, ls);
-
-						if(bIsParallel)
-						{										
-							float dist = calcDistancePointLine(midP, ls);
-
-							if(dist <= VALID_INNERWALL_TOLERANCE)
-							{
-								validList.add(ws);
-
-								if(bShowMarkerInter)
-								{
-									// Marker
-									Points midWS = new Points(((ws.startP.x + ws.endP.x)/2.0f),((ws.startP.y + ws.endP.y)/2.0f));
-									putMarkers(midWS, 0);
-								}
-
-							}
-						}
-					}
-
-					float lenRS = calcDistance(rs.startP, rs.endP);
-
-					for(WallSegement ws : validList)
-					{
-						if(lenRS > ws.len)
-						{	
-							List<WallSegement> validRSWallPieceList = new ArrayList<WallSegement>();
-
-							boolean bWSInRS1 = checkPointInBetween(ws.startP, rs.startP, rs.endP, tolerance);
-
-							//JOptionPane.showMessageDialog(null, "ws : " + ws.startP.x + ", " + ws.startP.y + " [" + ws.len + "] -> " + lenRS);
-
-							if(bWSInRS1)
-							{
-								boolean bWSInRS2 = checkPointInBetween(ws.endP, rs.startP, rs.endP, tolerance);
-
-								if(bWSInRS2)
-								{											
-									validRSWallPieceList.add(ws);
-
-									if(bShowMarkerInter)
-									{
-										// Marker
-										Points midWS = new Points(((ws.startP.x + ws.endP.x)/2.0f),((ws.startP.y + ws.endP.y)/2.0f));
-										putMarkers(midWS, 3);
-									}
-								}
-								else
-								{
-									boolean bWSOverlapRS = checkPointInBetween(rs.endP, ws.startP, ws.endP, tolerance);
-
-									if(bWSOverlapRS)
-									{
-										float len = calcDistance(ws.startP, rs.endP);
-
-										WallSegement newRS = new WallSegement(ws.startP, rs.endP, len);
-										validRSWallPieceList.add(newRS);
-
-										if(bShowMarkerInter)
-										{
-											// Marker
-											Points midWS = new Points(((newRS.startP.x + newRS.endP.x)/2.0f),((newRS.startP.y + newRS.endP.y)/2.0f));
-											putMarkers(midWS, 5);
-										}
-									}
-								}
-							}
-							else
-							{
-								boolean bRSInWS1 = checkPointInBetween(rs.startP, ws.startP, ws.endP, tolerance);
-
-								if(bRSInWS1)
-								{
-									Points sP = rs.startP;
-
-									boolean bWSInRS2 = checkPointInBetween(ws.endP, rs.startP, rs.endP, tolerance);
-
-									if(bWSInRS2)
-									{
-										float len = calcDistance(sP, ws.endP);
-
-										WallSegement newRS = new WallSegement(sP, ws.endP, len);
-										validRSWallPieceList.add(newRS);
-
-										if(bShowMarkerInter)
-										{
-											// Marker
-											Points midWS = new Points(((newRS.startP.x + newRS.endP.x)/2.0f),((newRS.startP.y + newRS.endP.y)/2.0f));
-											putMarkers(midWS, 4);
-										}
-									}
-								}
-							}
-
-							// Concatenate valid pieces of RS
-							for(WallSegement rsPiece : validRSWallPieceList)
-							{
-								validRSWallList.add(rsPiece);
-
-								if(bShowMarker)
-								{
-									// Marker
-									Points midRSp = new Points(((rsPiece.startP.x + rsPiece.endP.x)/2.0f),((rsPiece.startP.y + rsPiece.endP.y)/2.0f));
-									putMarkers(midRSp, 2);
-								}
-							}							
-						}
-						else
-						{
-							WallSegement newWS = new WallSegement(rs.startP, rs.endP, lenRS);
-							validRSWallList.add(newWS);
-
-							if(bShowMarker)
-							{
-								// Marker
-								Points midWS = new Points(((newWS.startP.x + newWS.endP.x)/2.0f),((newWS.startP.y + newWS.endP.y)/2.0f));
-								putMarkers(midWS, 1);
-							}
-						}
-					}
-				}
-				
-				for(WallSegement validWS : validRSWallList)
-				{					
-					if(validWS.len >= VALID_RS_LENGTH)
-					{
-						if(bShowMarker)
-						{
-							// Marker
-							Points midWS = new Points(((validWS.startP.x + validWS.endP.x)/2.0f),((validWS.startP.y + validWS.endP.y)/2.0f));
-							putMarkers(midWS, 6);
-						}
-					}
-				}
 				
 				// ================================================== //
 
@@ -420,6 +267,165 @@ public class PhoenixPCS extends Plugin
 			}
 		}
 
+		public List<WallSegement> getValidInnerWallSegmentsOfRoom(List<WallSegement> innerWSList, float[][] roomRect, float tolr)
+		{
+			List<WallSegement> validRSWallList = new ArrayList<WallSegement>();
+			
+			for(int l = 0; l < roomRect.length; l++)
+			{					
+				Points startP = new Points(roomRect[l][0], roomRect[l][1]);
+				Points endP = null;
+
+				if(l == (roomRect.length - 1))
+					endP = new Points(roomRect[0][0], roomRect[0][1]);
+				else
+					endP = new Points(roomRect[l+1][0], roomRect[l+1][1]);
+
+				Points midP = new Points(((startP.x + endP.x)/2.0f),((startP.y + endP.y)/2.0f));
+				LineSegement rs = new LineSegement(startP, endP);
+
+				List<WallSegement> validList = new ArrayList<WallSegement>();
+
+				for(WallSegement ws : innerWSList)
+				{						
+					LineSegement ls = new LineSegement(ws);
+					boolean bIsParallel = isParallel(rs, ls, tolr);
+
+					if(bIsParallel)
+					{										
+						float dist = calcDistancePointLine(midP, ls, tolr);
+
+						if(dist <= VALID_INNERWALL_TOLERANCE)
+						{
+							validList.add(ws);
+
+							if(bShowMarkerInter)
+							{
+								// Marker
+								Points midWS = new Points(((ws.startP.x + ws.endP.x)/2.0f),((ws.startP.y + ws.endP.y)/2.0f));
+								putMarkers(midWS, 0);
+							}
+
+						}
+					}
+				}
+
+				float lenRS = calcDistance(rs.startP, rs.endP);
+
+				for(WallSegement ws : validList)
+				{
+					if(lenRS > ws.len)
+					{	
+						List<WallSegement> validRSWallPieceList = new ArrayList<WallSegement>();
+
+						boolean bWSInRS1 = checkPointInBetween(ws.startP, rs.startP, rs.endP, tolr);
+
+						//JOptionPane.showMessageDialog(null, "ws : " + ws.startP.x + ", " + ws.startP.y + " [" + ws.len + "] -> " + lenRS);
+
+						if(bWSInRS1)
+						{
+							boolean bWSInRS2 = checkPointInBetween(ws.endP, rs.startP, rs.endP, tolr);
+
+							if(bWSInRS2)
+							{											
+								validRSWallPieceList.add(ws);
+
+								if(bShowMarkerInter)
+								{
+									// Marker
+									Points midWS = new Points(((ws.startP.x + ws.endP.x)/2.0f),((ws.startP.y + ws.endP.y)/2.0f));
+									putMarkers(midWS, 3);
+								}
+							}
+							else
+							{
+								boolean bWSOverlapRS = checkPointInBetween(rs.endP, ws.startP, ws.endP, tolr);
+
+								if(bWSOverlapRS)
+								{
+									float len = calcDistance(ws.startP, rs.endP);
+
+									WallSegement newRS = new WallSegement(ws.startP, rs.endP, len);
+									validRSWallPieceList.add(newRS);
+
+									if(bShowMarkerInter)
+									{
+										// Marker
+										Points midWS = new Points(((newRS.startP.x + newRS.endP.x)/2.0f),((newRS.startP.y + newRS.endP.y)/2.0f));
+										putMarkers(midWS, 5);
+									}
+								}
+							}
+						}
+						else
+						{
+							boolean bRSInWS1 = checkPointInBetween(rs.startP, ws.startP, ws.endP, tolr);
+
+							if(bRSInWS1)
+							{
+								Points sP = rs.startP;
+
+								boolean bWSInRS2 = checkPointInBetween(ws.endP, rs.startP, rs.endP, tolr);
+
+								if(bWSInRS2)
+								{
+									float len = calcDistance(sP, ws.endP);
+
+									WallSegement newRS = new WallSegement(sP, ws.endP, len);
+									validRSWallPieceList.add(newRS);
+
+									if(bShowMarkerInter)
+									{
+										// Marker
+										Points midWS = new Points(((newRS.startP.x + newRS.endP.x)/2.0f),((newRS.startP.y + newRS.endP.y)/2.0f));
+										putMarkers(midWS, 4);
+									}
+								}
+							}
+						}
+
+						// Concatenate valid pieces of RS
+						for(WallSegement rsPiece : validRSWallPieceList)
+						{
+							validRSWallList.add(rsPiece);
+
+							if(bShowMarker)
+							{
+								// Marker
+								Points midRSp = new Points(((rsPiece.startP.x + rsPiece.endP.x)/2.0f),((rsPiece.startP.y + rsPiece.endP.y)/2.0f));
+								putMarkers(midRSp, 2);
+							}
+						}							
+					}
+					else
+					{
+						WallSegement newWS = new WallSegement(rs.startP, rs.endP, lenRS);
+						validRSWallList.add(newWS);
+
+						if(bShowMarker)
+						{
+							// Marker
+							Points midWS = new Points(((newWS.startP.x + newWS.endP.x)/2.0f),((newWS.startP.y + newWS.endP.y)/2.0f));
+							putMarkers(midWS, 1);
+						}
+					}
+				}
+			}
+			
+					
+			if(bShowMarker)
+			{			
+				for(WallSegement validWS : validRSWallList)
+				{
+					// Marker
+					Points midWS = new Points(((validWS.startP.x + validWS.endP.x)/2.0f),((validWS.startP.y + validWS.endP.y)/2.0f));
+					putMarkers(midWS, 6);
+				}
+			}
+			
+			return validRSWallList;
+		}
+		
 		public List<WallSegement> getInnerWalls()
 		{
 			//String wsStr = "";
@@ -743,19 +749,19 @@ public class PhoenixPCS extends Plugin
 			return d;
 		}	
 
-		public boolean isParallel(LineSegement ls1, LineSegement ls2)
+		public boolean isParallel(LineSegement ls1, LineSegement ls2, float tolr)
 		{
 			boolean isPara = false;
 
 			float slope1 = 0.0f;
 			float slope2 = 0.0f;
 
-			if(Math.abs(ls1.endP.x - ls1.startP.x) <= tolerance)
+			if(Math.abs(ls1.endP.x - ls1.startP.x) <= tolr)
 				slope1 = INFINITY;
 			else
 				slope1 = ((ls1.endP.y - ls1.startP.y) / (ls1.endP.x - ls1.startP.x));
 
-			if(Math.abs(ls2.endP.x - ls2.startP.x) <= tolerance)
+			if(Math.abs(ls2.endP.x - ls2.startP.x) <= tolr)
 				slope2 = INFINITY;
 			else
 				slope2 = ((ls2.endP.y - ls2.startP.y) / (ls2.endP.x - ls2.startP.x));
@@ -765,15 +771,15 @@ public class PhoenixPCS extends Plugin
 			return isPara;
 		}
 
-		public float calcDistancePointLine(Points p, LineSegement ls)
+		public float calcDistancePointLine(Points p, LineSegement ls, float tolr)
 		{
 			float dist = 0.0f;
 
-			if(Math.abs(ls.endP.x - ls.startP.x) < tolerance)
+			if(Math.abs(ls.endP.x - ls.startP.x) < tolr)
 			{
 				dist = Math.abs(ls.endP.x - p.x);
 			}
-			else if(Math.abs(ls.endP.y - ls.startP.y) < tolerance)
+			else if(Math.abs(ls.endP.y - ls.startP.y) < tolr)
 			{
 				dist = Math.abs(ls.endP.y - p.y);
 			}
