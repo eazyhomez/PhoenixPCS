@@ -265,11 +265,12 @@ public class PhoenixPCS extends Plugin
 				
 				// D. Snap to the nearest wall
 				// 11. Get set of wall segments parallel to given line segment --------- //
+				// 12. Find distance between two parallel line segments --------- //
 				
 				HomePieceOfFurniture hpRef = searchMatchFurn("PCSRect_2");
 				float[][] fRect = hpRef.getPoints();
 				
-				for(int f = 0; f < fRect.length; f++)
+				for(int f = 0; f < 1 /*fRect.length*/; f++)
 				{
 					Points startP = new Points(fRect[f][0], fRect[f][1]);
 					Points endP = null;
@@ -289,15 +290,11 @@ public class PhoenixPCS extends Plugin
 						
 						if(bIsParallel)
 						{
-							putMarkers(ls.startP, 5);
-							putMarkers(fs.startP, 5);
-							
-							JOptionPane.showMessageDialog(null, ws.endP.x + "," + ws.endP.y);
+							float dist = calcDistanceParallel(fs, ls);							
+							JOptionPane.showMessageDialog(null, dist + " : " +  fs.startP.x + "," + fs.startP.y + ":" + fs.endP.x + "," + fs.endP.y + " || " +  ws.startP.x + "," + ws.startP.y + " : " +  ws.endP.x + "," + ws.endP.y);
 						}
 					}
-				}
-				
-				
+				}				
 			}
 			catch(Exception e)
 			{
@@ -940,6 +937,18 @@ public class PhoenixPCS extends Plugin
 
 		// ======================= UTIL FUNCTIONS ======================= //
 
+		public float calcDistanceParallel(LineSegement ls1, LineSegement ls2)
+		{
+			float M = (ls1.endP.y - ls1.startP.y) / (ls1.endP.x - ls1.startP.x);										// (y2-y1)/(x2-x1)
+			
+			float B1 = ((ls1.startP.y * ls1.endP.x) - (ls1.endP.y * ls1.startP.x)) / (ls1.endP.x - ls1.startP.x);		// (y1x2 - y2x1)/(x2-x1)
+			float B2 = ((ls2.startP.y * ls2.endP.x) - (ls2.endP.y * ls2.startP.x)) / (ls2.endP.x - ls2.startP.x);
+			
+			float d = (Math.abs(B2 - B1) / ((float) Math.sqrt((M*M) + 1)));
+			
+			return d;
+		}
+		
 		public HomePieceOfFurniture searchMatchFurn(String furnName)
 		{
 			HomePieceOfFurniture matchFurn = null;
