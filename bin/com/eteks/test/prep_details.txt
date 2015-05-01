@@ -2,5 +2,17 @@ Prep:
 ------
 1. Get inner wall segments
 2. Calculate distance (perpendicular) of a point from a line
-3. Get inner wall segments of a room (Living) - Tested [packaged]
-4. Get free inner wall segments of a room with length >= 3' 
+3. Get inner wall segments of a room (Living) 
+4. Get all FWS of a room (Living) below the given elevation (7' : door height)
+5. Get free inner wall segments of a room with length >= 3'
+
+6. Place furniture parallel to the wall
+7. Get quadrant info
+8. Get wall angles
+9. Check for intersection with all furns/fixtures/walls
+10. Check orientation
+
+Code
+----
+A. Get all FWS in room (Living)
+B. Placement of PCSRect
