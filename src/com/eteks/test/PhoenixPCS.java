@@ -228,16 +228,6 @@ public class PhoenixPCS extends Plugin
 
 				List<WallSegement> fWSList = calcFreeWallIntersectionsBelowElev(validWSList, DOOR_ELEVATION, livingRoom, 1.0f);
 
-				for(WallSegement freeWS : fWSList)
-				{
-					if(freeWS.len >= VALID_RS_LENGTH)
-					{
-						// Marker
-						Points midWS = new Points(((freeWS.startP.x + freeWS.endP.x)/2.0f),((freeWS.startP.y + freeWS.endP.y)/2.0f));
-						putMarkers(midWS, 1);
-					}
-				}
-
 				// ================================================== //
 
 				// 6. Place furniture parallel to the wall --------- //
@@ -266,11 +256,14 @@ public class PhoenixPCS extends Plugin
 				// D. Snap to the nearest wall
 				// 11. Get set of wall segments parallel to given line segment --------- //
 				// 12. Find distance between two parallel line segments --------- //
+				// 13. Calculate the snap co-ordinates --------- //
 				
 				HomePieceOfFurniture hpRef = searchMatchFurn("PCSRect_2");
+				Points centerP = new Points(hpRef.getX(), hpRef.getY());
+						
 				float[][] fRect = hpRef.getPoints();
 				
-				for(int f = 0; f < 1 /*fRect.length*/; f++)
+				for(int f = 3; f < fRect.length; f++)
 				{
 					Points startP = new Points(fRect[f][0], fRect[f][1]);
 					Points endP = null;
@@ -282,17 +275,30 @@ public class PhoenixPCS extends Plugin
 					
 					LineSegement fs = new LineSegement(startP, endP);
 					
+					putMarkers(startP, 2);
+					putMarkers(endP, 2);
+					
 					for(WallSegement ws : innerWSList)
 					{
 						LineSegement ls = new LineSegement(ws);
 						
-						boolean bIsParallel = isParallel(fs, ls, tolerance);
+						boolean bIsParallel = isParallel(fs, ls, 2*tolerance);
 						
 						if(bIsParallel)
 						{
-							float dist = calcDistanceParallel(fs, ls);							
-							JOptionPane.showMessageDialog(null, dist + " : " +  fs.startP.x + "," + fs.startP.y + ":" + fs.endP.x + "," + fs.endP.y + " || " +  ws.startP.x + "," + ws.startP.y + " : " +  ws.endP.x + "," + ws.endP.y);
+							Points wsMidP = new Points(((ls.startP.x + ls.endP.x)/2),(ls.startP.y + ls.endP.y)/2);
+							putMarkers(wsMidP, 6);
+							
+							float dist = calcDistanceParallel(fs, ls, tolerance);
+							
+							if((dist > tolerance) && (dist <= SNAP_TOLERANCE))
+							{
+								Points snapP = calcSnapCoordinate(ls, centerP, dist, tolerance);
+								hpRef.setX(snapP.x);
+								hpRef.setY(snapP.y);
+							}
 						}
+						
 					}
 				}				
 			}
@@ -937,14 +943,206 @@ public class PhoenixPCS extends Plugin
 
 		// ======================= UTIL FUNCTIONS ======================= //
 
-		public float calcDistanceParallel(LineSegement ls1, LineSegement ls2)
+		public Points calcSnapCoordinate(LineSegement ws, Points centerP, float dist, float tolr) 
 		{
-			float M = (ls1.endP.y - ls1.startP.y) / (ls1.endP.x - ls1.startP.x);										// (y2-y1)/(x2-x1)
+			List<Points> retPList = new ArrayList<Points>();
 			
-			float B1 = ((ls1.startP.y * ls1.endP.x) - (ls1.endP.y * ls1.startP.x)) / (ls1.endP.x - ls1.startP.x);		// (y1x2 - y2x1)/(x2-x1)
-			float B2 = ((ls2.startP.y * ls2.endP.x) - (ls2.endP.y * ls2.startP.x)) / (ls2.endP.x - ls2.startP.x);
+			Points wsMidP = new Points(((ws.startP.x + ws.endP.x)/2),(ws.startP.y + ws.endP.y)/2);
 			
-			float d = (Math.abs(B2 - B1) / ((float) Math.sqrt((M*M) + 1)));
+			//putMarkers(ws.startP, 5);
+			//putMarkers(ws.endP, 5);
+			
+			float xLimit = Math.abs(ws.endP.x - ws.startP.x);
+			float yLimit = Math.abs(ws.endP.y - ws.startP.y);
+			
+			//JOptionPane.showMessageDialog(null, "xLimit:" + xLimit + ", yLimit:" + yLimit + ", tolr:" + tolr);
+					 
+			if(yLimit < tolr)
+			{
+				// Perpendicular - towards wall
+				if(yLimit < tolr)
+				{
+					Points p1 = new Points(centerP.x, (centerP.y + dist));
+					Points p2 = new Points(centerP.x, (centerP.y - dist));
+					
+					//JOptionPane.showMessageDialog(null, "1_ p1 : " + p1.x + ", " + p1.y + ",\np2 : " + p2.x + ", " + p2.y);
+					
+					List<Points> interPList2 = new ArrayList<Points>();
+					interPList2.add(p1);
+					interPList2.add(p2);
+					
+					List<Points> sortedPList2 = sortPList(interPList2, wsMidP);
+					retPList.addAll(sortedPList2);
+				}
+				else if(yLimit >= tolr)
+				{
+					float slopePara = ((ws.endP.y - ws.startP.y) / (ws.endP.x - ws.startP.x));
+					float slopePerp = (-1.0f / slopePara);
+					float intercept = centerP.y - (slopePerp * centerP.x);
+					
+					//JOptionPane.showMessageDialog(null, "1_ slopePara : " + slopePara + ",\nslopePerp : " + slopePerp);
+					
+					List<Points> interPList2 = getIntersectionCircleLine2(centerP, dist, slopePerp, intercept);
+					List<Points> sortedPList2 = sortPList(interPList2, wsMidP);
+					
+					retPList.addAll(sortedPList2);
+				}
+				
+				//JOptionPane.showMessageDialog(null, slopePerp + "/ interceptPerp : " + intercept);
+			}
+			else if(xLimit < tolr)
+			{
+				// Perpendicular - towards wall
+				if(xLimit < tolr)
+				{
+					Points p1 = new Points((centerP.x + dist), centerP.y);
+					Points p2 = new Points((centerP.x - dist), centerP.y);
+					
+					//JOptionPane.showMessageDialog(null, "2_ p1 : " + p1.x + ", " + p1.y + ",\np2 : " + p2.x + ", " + p2.y);
+							
+					List<Points> interPList1 = new ArrayList<Points>();
+					interPList1.add(p1);
+					interPList1.add(p2);
+					
+					List<Points> sortedPList1 = sortPList(interPList1, wsMidP);
+					retPList.addAll(sortedPList1);
+				}
+				else if(xLimit >= tolr)
+				{
+					float slopePara = ((ws.endP.y - ws.startP.y) / (ws.endP.x - ws.startP.x));
+					float slopePerp = (-1.0f / slopePara);
+					float intercept = centerP.y - (slopePerp * centerP.x);
+					
+					//JOptionPane.showMessageDialog(null, "2_ slopePara : " + slopePara + ",\nslopePerp : " + slopePerp);
+					
+					List<Points> interPList1 = getIntersectionCircleLine2(centerP, dist, slopePerp, intercept);				
+					List<Points> sortedPList1 = sortPList(interPList1, wsMidP);
+					
+					retPList.addAll(sortedPList1);
+				}			
+				//JOptionPane.showMessageDialog(null, slopePerp + "/ interceptPerp : " + intercept);				
+			}
+			else
+			{
+				// Perpendicular - towards longest wall
+				if(yLimit < tolr)
+				{
+					Points p1 = new Points(centerP.x, (centerP.y + dist));
+					Points p2 = new Points(centerP.x, (centerP.y - dist));
+					
+					//JOptionPane.showMessageDialog(null, "3_ p1 : " + p1.x + ", " + p1.y + ",\np2 : " + p2.x + ", " + p2.y);
+					
+					List<Points> interPList2 = new ArrayList<Points>();
+					interPList2.add(p1);
+					interPList2.add(p2);
+					
+					List<Points> sortedPList2 = sortPList(interPList2, wsMidP);
+					retPList.addAll(sortedPList2);
+				}
+				else if(yLimit >= tolr)
+				{
+					float slopePara = ((ws.endP.y - ws.startP.y) / (ws.endP.x - ws.startP.x));
+					float slopePerp = (-1.0f / slopePara);
+					float intercept = centerP.y - (slopePerp * centerP.x);
+					
+					//JOptionPane.showMessageDialog(null, "3_ slopePara : " + slopePara + ",\nslopePerp : " + slopePerp);
+					
+					List<Points> interPList2 = getIntersectionCircleLine2(centerP, dist, slopePerp, intercept);
+					List<Points> sortedPList2 = sortPList(interPList2, wsMidP);
+					
+					retPList.addAll(sortedPList2);
+				}			
+				//JOptionPane.showMessageDialog(null, slopePerp + "/ interceptPerp : " + intercept);
+			}
+			
+			List<Points> sortedPList = sortPList(retPList, wsMidP);
+			
+			Points snapCoords = sortedPList.get(0);	
+			putMarkers(snapCoords, 4);
+			
+			return snapCoords;
+		}
+		
+		public List<Points> getIntersectionCircleLine2(Points center, float rad, float slope, float intercept)
+		{
+			List<Points> interList = new ArrayList<Points>();
+			
+			try
+			{	
+				// Equation of Line
+				float m = slope;
+				float c = intercept;
+				
+				// (m^2+1)x^2 + 2(mcaˆ’mqâˆ’p)x + (q^2âˆ’r^2+p^2âˆ’2cq+c^2) = 0			
+				
+				float A = (m*m) + 1;
+				float B = 2*((m*c) - (m*center.y) - center.x);
+				float C = (center.y*center.y) - (rad*rad) + (center.x*center.x) - 2*(c*center.y) + (c*c);
+				
+				float D = (B*B) - 4*A*C;
+				
+				if(D == 0)
+				{
+					float x1 = ((-B) + (float)Math.sqrt(D)) / (2*A);
+					float y1 = (m*x1) + c;
+					
+					Points inter = new Points(x1, y1);
+					interList.add(inter);	
+					
+					//putMarkers(inter, true);
+				}
+				else if (D > 0)
+				{
+					float x1 = ((-B) + (float)Math.sqrt(D)) / (2*A);
+					float y1 = (m*x1) + c;
+					
+					Points inter1 = new Points(x1, y1);
+					interList.add(inter1);
+					
+					//putMarkers(inter1, false);
+					
+					float x2 = ((-B) - (float)Math.sqrt(D)) / (2*A);
+					float y2 = (m*x2) + c;
+					
+					Points inter2 = new Points(x2, y2);
+					interList.add(inter2);
+					
+					//putMarkers(inter2, false);
+				}		
+			}
+			catch(Exception e)
+			{
+				JOptionPane.showMessageDialog(null," -xxxxx- EXCEPTION : " + e.getMessage()); 
+				e.printStackTrace();
+			}
+			
+			return interList;
+		}
+		
+		public float calcDistanceParallel(LineSegement ls1, LineSegement ls2, float tolr)
+		{
+			float xLimit = Math.abs(ls1.endP.x - ls1.startP.x);
+			float yLimit = Math.abs(ls1.endP.y - ls1.startP.y);
+			
+			float d = 0.0f;
+			
+			if(xLimit < tolr)
+			{
+				d = Math.abs(ls2.endP.x - ls1.endP.x);
+			}
+			else if(yLimit < tolr)
+			{
+				d = Math.abs(ls2.endP.y - ls1.endP.y);
+			}
+			else
+			{			
+				float M = (ls1.endP.y - ls1.startP.y) / (ls1.endP.x - ls1.startP.x);									// (y2-y1)/(x2-x1)
+				
+				float B1 = ((ls1.startP.y * ls1.endP.x) - (ls1.endP.y * ls1.startP.x)) / (ls1.endP.x - ls1.startP.x);	// (y1x2 - y2x1)/(x2-x1)
+				float B2 = ((ls2.startP.y * ls2.endP.x) - (ls2.endP.y * ls2.startP.x)) / (ls2.endP.x - ls2.startP.x);
+				
+				d = (Math.abs(B2 - B1) / ((float) Math.sqrt((M*M) + 1)));
+			}
 			
 			return d;
 		}
@@ -1645,6 +1843,8 @@ public class PhoenixPCS extends Plugin
 			else
 				slope2 = ((ls2.endP.y - ls2.startP.y) / (ls2.endP.x - ls2.startP.x));
 
+			//JOptionPane.showMessageDialog(null, Math.abs(ls1.endP.x - ls1.startP.x) + ", " + Math.abs(ls2.endP.x - ls2.startP.x));
+			
 			isPara = (Math.abs(slope1 - slope2) < SLOPE_TOLERANCE) ? true : false;
 
 			return isPara;
