@@ -11,8 +11,11 @@ Prep:
 8. Get wall angles
 9. Check for intersection with all furns/fixtures/walls
 10. Check orientation
+11. Get set of wall segments parallel to given line segment
 
 Code
 ----
 A. Get all FWS in room (Living)
 B. Placement of PCSRect
+C. Accessibility check
+D. Snap to the nearest wall
