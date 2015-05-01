@@ -259,7 +259,7 @@ public class PhoenixPCS extends Plugin
 				// 13. Calculate the snap co-ordinates --------- //
 				
 				HomePieceOfFurniture hpRef = searchMatchFurn("PCSRect_2");
-				Points centerP = new Points(hpRef.getX(), hpRef.getY());
+				Points furnCenter = new Points(hpRef.getX(), hpRef.getY());
 						
 				float[][] fRect = hpRef.getPoints();
 				
@@ -293,9 +293,10 @@ public class PhoenixPCS extends Plugin
 							
 							if((dist > tolerance) && (dist <= SNAP_TOLERANCE))
 							{
-								Points snapP = calcSnapCoordinate(ls, centerP, dist, tolerance);
-								hpRef.setX(snapP.x);
-								hpRef.setY(snapP.y);
+								Points snapP = calcSnapCoordinate(ls, fs, dist, tolerance);
+								
+								hpRef.setX(furnCenter.x + snapP.x);
+								hpRef.setY(furnCenter.y + snapP.y);
 							}
 						}
 						
@@ -943,11 +944,13 @@ public class PhoenixPCS extends Plugin
 
 		// ======================= UTIL FUNCTIONS ======================= //
 
-		public Points calcSnapCoordinate(LineSegement ws, Points centerP, float dist, float tolr) 
+		public Points calcSnapCoordinate(LineSegement ws, LineSegement ls, float dist, float tolr) 
 		{
 			List<Points> retPList = new ArrayList<Points>();
 			
 			Points wsMidP = new Points(((ws.startP.x + ws.endP.x)/2),(ws.startP.y + ws.endP.y)/2);
+			
+			Points centerP = new Points(((ls.startP.x + ls.endP.x)/2),(ls.startP.y + ls.endP.y)/2);
 			
 			//putMarkers(ws.startP, 5);
 			//putMarkers(ws.endP, 5);
@@ -1057,9 +1060,7 @@ public class PhoenixPCS extends Plugin
 			
 			List<Points> sortedPList = sortPList(retPList, wsMidP);
 			
-			Points snapCoords = sortedPList.get(0);	
-			putMarkers(snapCoords, 4);
-			
+			Points snapCoords = new Points((sortedPList.get(0).x - centerP.x), (sortedPList.get(0).y - centerP.y));			
 			return snapCoords;
 		}
 		
