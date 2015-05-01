@@ -241,16 +241,16 @@ public class PhoenixPCS extends Plugin
 				// B. Placement of PCSRect  --------- //
 
 				List<WallSegement> finalWSList = shortlistWallSegments(fWSList, VALID_RS_LENGTH);
-				/*
+				
 				HomePieceOfFurniture pcsRect = getFurnItem("PCSRect");
-				float w = pcsRect.getWidth();
-				float d = pcsRect.getDepth();
+				
+				//float w = pcsRect.getWidth();
+				//float d = pcsRect.getDepth();
+				//pcsRect.setWidth(w/2.0f);
+				//pcsRect.setDepth(d/2.0f);
 
-				pcsRect.setWidth(w/2.0f);
-				pcsRect.setDepth(d/2.0f);
-
-				placePCSRect(finalWSList, pcsRect);
-				*/
+				//placePCSRectWithSnap(finalWSList, pcsRect, innerWSList);
+				
 				// ================================================== //
 				
 				// D. Snap to the nearest wall
@@ -259,49 +259,8 @@ public class PhoenixPCS extends Plugin
 				// 13. Calculate the snap co-ordinates --------- //
 				
 				HomePieceOfFurniture hpRef = searchMatchFurn("PCSRect_2");
-				Points furnCenter = new Points(hpRef.getX(), hpRef.getY());
-						
-				float[][] fRect = hpRef.getPoints();
+				checkAndSnap(hpRef, innerWSList);
 				
-				for(int f = 3; f < fRect.length; f++)
-				{
-					Points startP = new Points(fRect[f][0], fRect[f][1]);
-					Points endP = null;
-
-					if(f == (fRect.length - 1))
-						endP = new Points(fRect[0][0], fRect[0][1]);
-					else
-						endP = new Points(fRect[f+1][0], fRect[f+1][1]);
-					
-					LineSegement fs = new LineSegement(startP, endP);
-					
-					putMarkers(startP, 2);
-					putMarkers(endP, 2);
-					
-					for(WallSegement ws : innerWSList)
-					{
-						LineSegement ls = new LineSegement(ws);
-						
-						boolean bIsParallel = isParallel(fs, ls, 2*tolerance);
-						
-						if(bIsParallel)
-						{
-							Points wsMidP = new Points(((ls.startP.x + ls.endP.x)/2),(ls.startP.y + ls.endP.y)/2);
-							putMarkers(wsMidP, 6);
-							
-							float dist = calcDistanceParallel(fs, ls, tolerance);
-							
-							if((dist > tolerance) && (dist <= SNAP_TOLERANCE))
-							{
-								Points snapP = calcSnapCoordinate(ls, fs, dist, tolerance);
-								
-								hpRef.setX(furnCenter.x + snapP.x);
-								hpRef.setY(furnCenter.y + snapP.y);
-							}
-						}
-						
-					}
-				}				
 			}
 			catch(Exception e)
 			{
@@ -311,6 +270,57 @@ public class PhoenixPCS extends Plugin
 			
 		}
 
+		public void checkAndSnap(HomePieceOfFurniture hpRef, List<WallSegement> inWSList)
+		{
+			Points furnCenter = new Points(hpRef.getX(), hpRef.getY());
+			
+			float[][] fRect = hpRef.getPoints();
+			
+			for(int f = 0; f < fRect.length; f++)
+			{
+				Points startP = new Points(fRect[f][0], fRect[f][1]);
+				Points endP = null;
+
+				if(f == (fRect.length - 1))
+					endP = new Points(fRect[0][0], fRect[0][1]);
+				else
+					endP = new Points(fRect[f+1][0], fRect[f+1][1]);
+				
+				LineSegement fs = new LineSegement(startP, endP);
+				
+				//putMarkers(startP, 2);
+				//putMarkers(endP, 2);
+				
+				//JOptionPane.showMessageDialog(null,"!!!");
+						
+				for(WallSegement ws : inWSList)
+				{
+					LineSegement ls = new LineSegement(ws);
+					
+					boolean bIsParallel = isParallel(fs, ls, tolerance);
+					
+					if(bIsParallel)
+					{
+						Points wsMidP = new Points(((ls.startP.x + ls.endP.x)/2),(ls.startP.y + ls.endP.y)/2);
+						//putMarkers(wsMidP, 6);
+						
+						float dist = calcDistanceParallel(fs, ls, tolerance);
+						
+						if((dist > tolerance) && (dist <= SNAP_TOLERANCE))
+						{
+							Points snapP = calcSnapCoordinate(ls, fs, dist, tolerance);
+							
+							hpRef.setX(furnCenter.x + snapP.x);
+							hpRef.setY(furnCenter.y + snapP.y);
+							
+							furnCenter = new Points(hpRef.getX(), hpRef.getY());
+						}
+					}
+					
+				}
+			}
+		}
+		
 		public List<WallSegement> shortlistWallSegments(List<WallSegement> inWSList, float reqLen)
 		{
 			List<WallSegement> finalWSList = new ArrayList<WallSegement>();
@@ -326,23 +336,14 @@ public class PhoenixPCS extends Plugin
 			return finalWSList;
 		}
 
-		public void placePCSRect(List<WallSegement> finalWSList, HomePieceOfFurniture pcsRect)
+		public void placePCSRectWithSnap(List<WallSegement> finalWSList, HomePieceOfFurniture pcsRect, List<WallSegement> inWSList)
 		{
-			boolean bPlaceRect = false;
+			boolean bSuccess = false;
 			
 			int counter = 1; 
 
 			for(WallSegement ws : finalWSList)
-			{
-				if(bDebugMode && (counter == 3))
-					break;
-				
-				if(bDebugMode && (counter == 1))
-				{
-					counter++;
-					continue;
-				}
-				
+			{				
 				LineSegement ls = new LineSegement(ws);
 
 				Accessibility accessBox = new Accessibility(false, 0.0f, 0.0f);
@@ -350,34 +351,27 @@ public class PhoenixPCS extends Plugin
 				HomePieceOfFurniture hpfP = pcsRect.clone();
 				hpfP.setName(pcsRect.getName() + "_" + counter);
 				
-				if(bShowClearPlacements)
-				{					
-					if(ws.len >= hpfP.getWidth())
-						bPlaceRect = true;
-					else
-						bPlaceRect = false;
-				}
-				else
-					bPlaceRect = true;
+				Points pcsPoint = calcFurnMids(ws.startP, ws.endP, (0.5f * hpfP.getDepth()), livingRoom);
+				placeFurnParallelToWall(ls, hpfP, pcsPoint);
 
-				if(bPlaceRect)
+				boolean bIntersects = checkIntersectWithAllFurns(hpfP, accessBox.bAddAccess);
+
+				if(!bIntersects)
 				{
-					Points pcsPoint = calcFurnMids(ws.startP, ws.endP, (0.5f*hpfP.getDepth() + FURNITURE_PLACE_TOLERANCE));
-					placeFurnParallelToWall(ls, hpfP, pcsPoint);
-	
-					boolean bIntersects = checkIntersectWithAll(hpfP, livingRoom, accessBox.bAddAccess);
-	
-					//JOptionPane.showMessageDialog(null, bIntersects);
-	
-					if(!bIntersects)
-					{
-						HomePieceOfFurniture hpPlaced = searchMatchFurn(hpfP.getName());						
-						float orient = chkFurnOrient(hpPlaced , ws);						
-						//getAccessbilityPoints(hpPlaced, orient, ws);
-					}
-					else
-						home.deletePieceOfFurniture(hpfP);
+					HomePieceOfFurniture hpPlaced = searchMatchFurn(hpfP.getName());						
+					float orient = chkFurnOrient(hpPlaced , ws);
+					
+					checkAndSnap(hpPlaced, inWSList);
+					
+					bSuccess = checkInsideRoom(livingRoom, hpPlaced, accessBox.bAddAccess, FURNITURE_PLACE_TOLERANCE);						
+					
+					putMarkers((new Points(hpPlaced.getX(), hpPlaced.getY())), 6);
+					JOptionPane.showMessageDialog(null, bSuccess);
+					//getAccessbilityPoints(hpPlaced, orient, ws);
 				}
+				
+				if(!bSuccess)
+					home.deletePieceOfFurniture(hpfP);
 				
 				counter++;
 			}
@@ -1170,7 +1164,7 @@ public class PhoenixPCS extends Plugin
 			return matchFurn;
 		}
 
-		public Points calcFurnMids(Points p1, Points p2, float d)
+		public Points calcFurnMids(Points p1, Points p2, float d, Room inRoom)
 		{
 			Points retPoints = new Points();
 
@@ -1189,11 +1183,11 @@ public class PhoenixPCS extends Plugin
 			float y2 = p1.y + (f*k/p) + (e/p)*((float)Math.sqrt((r*r - k*k)));
 
 			// Check for in Room
-			if(room.containsPoint(x1, y1, 0.0f))
+			if(inRoom.containsPoint(x1, y1, 0.0f))
 			{
 				retPoints = new Points(x1, y1);
 			}
-			else if(room.containsPoint(x2, y2, 0.0f))
+			else if(inRoom.containsPoint(x2, y2, 0.0f))
 			{
 				retPoints = new Points(x2, y2);
 			}
@@ -1258,7 +1252,7 @@ public class PhoenixPCS extends Plugin
 		public void placeFurnParallelToWall(LineSegement ws, HomePieceOfFurniture furn, Points furnCoords)
 		{
 			FurnLoc furnLoc = new FurnLoc();
-			float furnAngle =  calcWallAngles(ws);
+			float furnAngle = calcWallAngles(ws);
 
 			furnLoc.w = furn.getWidth();
 			furnLoc.ang = furnAngle;			
@@ -1387,41 +1381,6 @@ public class PhoenixPCS extends Plugin
 
 			return bIntersects;
 		}
-
-		public boolean checkIntersectWithWalls(HomePieceOfFurniture hpf, List<WallSegement> inWSList, boolean bAddAccessibility)
-		{
-			boolean bIntersects = false;
-
-			for(WallSegement ws : inWSList)
-			{
-				LineSegement ls = new LineSegement(ws);
-
-				// For Accessibility check
-				List<Intersect> interList = new ArrayList<Intersect>();
-
-				if(bAddAccessibility)
-					interList = checkIntersectAccessibility(ls, hpf.getName());
-				else
-					interList = checkIntersect(ls, hpf.getName());
-
-				for(Intersect inter : interList)
-				{
-					if(inter != null)
-					{
-						bIntersects = checkPointInBetween(inter.p, ls.startP, ls.endP, FURN_TOLERANCE);
-
-						if(bIntersects)
-							break;
-					}
-					putMarkers(inter.p, 3);
-				}
-
-				if(bIntersects)
-					break;
-			}
-
-			return bIntersects;
-		}
 		
 		public boolean checkIntersectWitAllWalls(HomePieceOfFurniture hpf, boolean bAddAccessibility)
 		{
@@ -1472,31 +1431,52 @@ public class PhoenixPCS extends Plugin
 			return bIntersects;
 		}
 		
-		public boolean checkInsideRoom(Room r, float[][] fRect)
+		public boolean checkInsideRoom(Room inRoom, HomePieceOfFurniture hpf, boolean bAddAccessibility, float tolr)
 		{
 			boolean bLiesInside = false;
 			
-			for(int f = 0; f < fRect.length; f++)
+			float[][] roomRect = inRoom.getPoints();
+			
+			for(int r = 0; r < roomRect.length; r++)
 			{
-				bLiesInside = r.containsPoint(fRect[f][0], fRect[f][1], ROOM_TOLERANCE);
+				Points startLine = new Points(roomRect[r][0], roomRect[r][1]);
+
+				Points endLine = null;
+
+				if(r == (roomRect.length - 1))
+					endLine = new Points(roomRect[0][0], roomRect[0][1]);
+				else
+					endLine = new Points(roomRect[r+1][0], roomRect[r+1][1]);				
+
+				LineSegement ls = new LineSegement(startLine, endLine);
+				
+				// For Accessibility check
+				List<Intersect> interList = new ArrayList<Intersect>();
+				
+				if(bAddAccessibility)
+					interList = checkIntersectAccessibility(ls, hpf.getName());
+				else
+					interList = checkIntersect(ls, hpf.getName());
+
+				for(Intersect inter : interList)
+				{
+					if(inter != null)
+					{
+						bLiesInside = !checkPointInBetween(inter.p, ls.startP, ls.endP, tolr);
+
+						if(!bLiesInside)
+							break;
+					}
+					//putMarkers(inter.p, 3);
+				}
+				
+				if(!bLiesInside)
+					break;
 			}
 			
 			return bLiesInside;
 		}
 		
-		public boolean checkIntersectWithAll(HomePieceOfFurniture hpf, Room r, boolean bAddAccessibility)
-		{
-			boolean bIntersectFurn = checkIntersectWithAllFurns(hpf, bAddAccessibility);
-			//boolean bInRoom = checkInsideRoom(room, hpf.getPoints());
-			
-			//boolean bRet = (!bIntersectFurn && bInRoom);
-			
-			boolean bIntersectWall = checkIntersectWitAllWalls(hpf, bAddAccessibility);
-			
-			boolean bRet = (bIntersectFurn || bIntersectWall);
-			return bRet;
-		}
-
 		public List<Intersect> checkIntersectAccessibility(LineSegement r, String furnId)
 		{
 			List<Intersect> interList = new ArrayList<Intersect>();
