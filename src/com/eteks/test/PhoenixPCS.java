@@ -56,6 +56,7 @@ public class PhoenixPCS extends Plugin
 		public float VALID_INNERWALL_TOLERANCE = 0.5f;		// 5mm		
 		public float FURNITURE_PLACE_TOLERANCE = 0.0f; 		//122.0f;	// 4ft 
 
+		public float MIN_TOLERANCE = 5.0f;
 		public float SNAP_TOLERANCE = 76.2f;
 		public int MAX_SNAP_COUNT = 2;
 		
@@ -72,7 +73,7 @@ public class PhoenixPCS extends Plugin
 		public float DOOR_ELEVATION = (7.0f * CONV_FT_CM);
 
 		public boolean bShowMarkerInter = false;
-		public boolean bShowMarker = true;
+		public boolean bShowMarker = false;
 		
 		public boolean bShowClearPlacements = false;
 		public boolean bDebugMode = true;
@@ -275,8 +276,6 @@ public class PhoenixPCS extends Plugin
 		{
 			boolean bSnapped = false;
 			
-			int snapCount = 0;
-			
 			Points furnCenter = new Points(hpRef.getX(), hpRef.getY());
 			
 			float[][] fRect = hpRef.getPoints();
@@ -299,8 +298,8 @@ public class PhoenixPCS extends Plugin
 				
 				LineSegement fs = new LineSegement(startP, endP);
 				
-				putMarkers(startP, 2);
-				putMarkers(endP, 2);
+				//putMarkers(startP, 2);
+				//putMarkers(endP, 2);
 				
 				//JOptionPane.showMessageDialog(null,"!!!");
 						
@@ -317,32 +316,41 @@ public class PhoenixPCS extends Plugin
 						
 						float dist = calcDistanceParallel(fs, ls, tolr);
 						
-						if((dist > tolerance) && (dist <= SNAP_TOLERANCE))
+						//JOptionPane.showMessageDialog(null, dist);
+						
+						if((dist > WALL_TOLERANCE) && (dist <= SNAP_TOLERANCE))
 						{
 							Points snapP = calcSnapCoordinate(ls, fs, dist, tolr);
 								
 							hpRef.setX(furnCenter.x + snapP.x);
 							hpRef.setY(furnCenter.y + snapP.y);
 							
-							putMarkers(new Points(hpRef.getX(), hpRef.getY()), 6);
+							//putMarkers(new Points(hpRef.getX(), hpRef.getY()), 6);
 							
 							boolean bValid = false;
-							boolean bTouchesWall = false;
-							
-							bValid = checkInsideRoom(livingRoom, hpRef.getPoints(), FURNITURE_PLACE_TOLERANCE);
 							
 							if(f == 0)
-								bTouchesWall = checkBackFace(hpRef.getPoints(), inWSList, tolr);
-							else
-								bTouchesWall = true;
+							{
+								boolean bLiesOnWall = checkBackFace(hpRef.getPoints(), inWSList, tolr);
+								
+								if(!bLiesOnWall)
+								{
+									hpRef.setX(furnCenter.x);
+									hpRef.setY(furnCenter.y);
+								}
+							}
 							
-							if(bValid && bTouchesWall)
+							bValid = checkInsideRoom(livingRoom, hpRef.getPoints(), ROOM_TOLERANCE);
+
+							if(bValid)
 							{
 								furnCenter = new Points(hpRef.getX(), hpRef.getY());								
 								putMarkers(new Points(furnCenter.x, furnCenter.y), 1);
 								
-								bSnapped = true;
-								snapCount++;
+								if(f != 0)
+								{
+									bSnapped = true;
+								}								
 							}
 							else
 							{
@@ -352,11 +360,11 @@ public class PhoenixPCS extends Plugin
 						}
 					}
 					
-					if(snapCount >= MAX_SNAP_COUNT)
+					if(bSnapped)
 						break;				
 				}
 				
-				if(snapCount >= MAX_SNAP_COUNT)
+				if(bSnapped)
 					break;
 			}
 			
@@ -421,9 +429,9 @@ public class PhoenixPCS extends Plugin
 					
 					//bSuccess = checkInsideRoom(livingRoom, hpPlaced.getPoints(), FURNITURE_PLACE_TOLERANCE);
 					
-					bSuccess = checkInsideHome(finalWSList, hpPlaced.getPoints(), FURNITURE_PLACE_TOLERANCE);
+					bSuccess = checkInsideHome(finalWSList, hpPlaced.getPoints(), ROOM_TOLERANCE);
 					
-					putMarkers((new Points(hpPlaced.getX(), hpPlaced.getY())), 6);
+					//putMarkers((new Points(hpPlaced.getX(), hpPlaced.getY())), 6);
 					
 					//JOptionPane.showMessageDialog(null, bSuccess);
 					//getAccessbilityPoints(hpPlaced, orient, ws);
@@ -457,8 +465,8 @@ public class PhoenixPCS extends Plugin
 			Intersect inter1 = getIntersectPointOfLines(refLS, ls1);
 			Intersect inter2 = getIntersectPointOfLines(refLS, ls2);
 			
-			putMarkers(inter1.p, 3);
-			putMarkers(inter1.p, 4);
+			//putMarkers(inter1.p, 3);
+			//putMarkers(inter1.p, 4);
 			
 			LineSegement accLS1 = new LineSegement(ls1.endP, inter1.p);
 			LineSegement accLS2 = new LineSegement(ls2.endP, inter2.p);
@@ -1539,7 +1547,7 @@ public class PhoenixPCS extends Plugin
 			else
 				bLiesInside = true;
 			
-			JOptionPane.showMessageDialog(null, count + " -> " + bLiesInside);
+			JOptionPane.showMessageDialog(null, bLiesInside);
 			
 			return bLiesInside;
 		}
@@ -1567,7 +1575,7 @@ public class PhoenixPCS extends Plugin
 			else
 				bLiesInside = true;
 			
-			JOptionPane.showMessageDialog(null, count + " = h => " + bLiesInside);
+			JOptionPane.showMessageDialog(null, "h => " + bLiesInside);
 			
 			return bLiesInside;
 		}
