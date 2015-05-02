@@ -240,11 +240,10 @@ public class PhoenixPCS extends Plugin
 				// ================================================== //
 
 				// B. Placement of PCSRect  --------- //
-
 				
 				List<WallSegement> finalWSList = shortlistWallSegments(fWSList, VALID_RS_LENGTH);
 				
-				//if(bShowMarkerInter)
+				if(bShowMarkerInter)
 				{
 					for(WallSegement freeWS : finalWSList)
 					{
@@ -258,10 +257,7 @@ public class PhoenixPCS extends Plugin
 				//float w = pcsRect.getWidth();
 				//float d = pcsRect.getDepth();
 				//pcsRect.setWidth(w/2.0f);
-				//pcsRect.setDepth(d/2.0f);
-
-				placePCSRectWithSnap(finalWSList, pcsRect, innerWSList, validWSList, tolerance);
-				
+				//pcsRect.setDepth(d/2.0f);	
 				
 				// ================================================== //
 				
@@ -272,6 +268,12 @@ public class PhoenixPCS extends Plugin
 				
 				//HomePieceOfFurniture hpRef = searchMatchFurn("PCSRect_2");
 				//checkAndSnap(hpRef, innerWSList, tolerance);
+				
+				placePCSRectWithSnap(finalWSList, pcsRect, innerWSList, validWSList, tolerance);
+				
+				// ================================================== //
+				
+				// D. Place all configs of PCS Rects --------- //
 				
 			}
 			catch(Exception e)
