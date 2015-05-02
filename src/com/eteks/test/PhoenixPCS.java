@@ -242,16 +242,16 @@ public class PhoenixPCS extends Plugin
 				// B. Placement of PCSRect  --------- //
 
 				List<WallSegement> finalWSList = shortlistWallSegments(fWSList, VALID_RS_LENGTH);
-				/*
+				
 				HomePieceOfFurniture pcsRect = getFurnItem("PCSRect");
 				
-				float w = pcsRect.getWidth();
-				float d = pcsRect.getDepth();
-				pcsRect.setWidth(w/2.0f);
-				pcsRect.setDepth(d/2.0f);
+				//float w = pcsRect.getWidth();
+				//float d = pcsRect.getDepth();
+				//pcsRect.setWidth(w/2.0f);
+				//pcsRect.setDepth(d/2.0f);
 
-				placePCSRectWithSnap(finalWSList, pcsRect, innerWSList);
-				*/
+				placePCSRectWithSnap(finalWSList, pcsRect, innerWSList, validWSList, tolerance);
+				
 				// ================================================== //
 				
 				// D. Snap to the nearest wall
@@ -259,8 +259,8 @@ public class PhoenixPCS extends Plugin
 				// 12. Find distance between two parallel line segments --------- //
 				// 13. Calculate the snap co-ordinates --------- //
 				
-				HomePieceOfFurniture hpRef = searchMatchFurn("PCSRect_2");
-				checkAndSnap(hpRef, innerWSList, tolerance);
+				//HomePieceOfFurniture hpRef = searchMatchFurn("PCSRect_2");
+				//checkAndSnap(hpRef, innerWSList, tolerance);
 				
 			}
 			catch(Exception e)
@@ -329,11 +329,11 @@ public class PhoenixPCS extends Plugin
 							boolean bValid = false;
 							boolean bTouchesWall = false;
 							
-							bValid = checkInsideRoom(livingRoom, hpRef.getPoints(), false, FURNITURE_PLACE_TOLERANCE);
+							bValid = checkInsideRoom(livingRoom, hpRef.getPoints(), FURNITURE_PLACE_TOLERANCE);
 							
-							//if(f == 0)
-								//bTouchesWall = checkBackFace(hpRef.getPoints(), inWSList, tolr);
-							//else
+							if(f == 0)
+								bTouchesWall = checkBackFace(hpRef.getPoints(), inWSList, tolr);
+							else
 								bTouchesWall = true;
 							
 							if(bValid && bTouchesWall)
@@ -377,10 +377,10 @@ public class PhoenixPCS extends Plugin
 				boolean b1 = checkPointInBetween(fStartP, ls.startP, ls.endP, tolr);
 				boolean b2 = checkPointInBetween(fEndP, ls.startP, ls.endP, tolr);
 				
-				JOptionPane.showMessageDialog(null, "b1 : " + b1 + ", b2 : " + b2);
+				//JOptionPane.showMessageDialog(null, "b1 : " + b1 + ", b2 : " + b2);
 				
-				Points lsMidP = new Points(((ls.startP.x + ls.endP.x)/2),(ls.startP.y + ls.endP.y)/2);
-				putMarkers(lsMidP, 2);
+				//Points lsMidP = new Points(((ls.startP.x + ls.endP.x)/2),(ls.startP.y + ls.endP.y)/2);
+				//putMarkers(lsMidP, 2);
 				
 				if(b1 && b2)
 				{
@@ -392,7 +392,7 @@ public class PhoenixPCS extends Plugin
 			return bLiesOnWall;
 		}
 			
-		public void placePCSRectWithSnap(List<WallSegement> finalWSList, HomePieceOfFurniture pcsRect, List<WallSegement> inWSList, float tolr)
+		public void placePCSRectWithSnap(List<WallSegement> finalWSList, HomePieceOfFurniture pcsRect, List<WallSegement> inWSList, List<WallSegement> validWSList, float tolr)
 		{
 			boolean bSuccess = false;
 			
@@ -417,11 +417,15 @@ public class PhoenixPCS extends Plugin
 					HomePieceOfFurniture hpPlaced = searchMatchFurn(hpfP.getName());						
 					chkFurnOrient(hpPlaced , ws);		// returns orientation (180*)
 					
-					bSuccess = checkInsideRoom(livingRoom, hpPlaced, accessBox.bAddAccess, FURNITURE_PLACE_TOLERANCE);
 					checkAndSnap(hpPlaced, inWSList, tolr);						
 					
+					//bSuccess = checkInsideRoom(livingRoom, hpPlaced.getPoints(), FURNITURE_PLACE_TOLERANCE);
+					
+					bSuccess = checkInsideHome(finalWSList, hpPlaced.getPoints(), FURNITURE_PLACE_TOLERANCE);
+					
 					putMarkers((new Points(hpPlaced.getX(), hpPlaced.getY())), 6);
-					JOptionPane.showMessageDialog(null, bSuccess);
+					
+					//JOptionPane.showMessageDialog(null, bSuccess);
 					//getAccessbilityPoints(hpPlaced, orient, ws);
 				}
 				
@@ -1501,7 +1505,7 @@ public class PhoenixPCS extends Plugin
 			return bIntersects;
 		}
 		
-		public boolean checkInsideRoom(Room inRoom, float[][] fRect, boolean bAddAccessibility, float tolr)
+		public boolean checkInsideRoom(Room inRoom, float[][] fRect, float tolr)
 		{
 			boolean bLiesInside = false;
 			
@@ -1534,6 +1538,36 @@ public class PhoenixPCS extends Plugin
 				bLiesInside = false;
 			else
 				bLiesInside = true;
+			
+			JOptionPane.showMessageDialog(null, count + " -> " + bLiesInside);
+			
+			return bLiesInside;
+		}
+		
+		public boolean checkInsideHome(List<WallSegement> inWSList, float[][] fRect, float tolr)
+		{
+			boolean bLiesInside = false;			
+			int count = 0;
+			
+			for(int f = 0; f < fRect.length; f++)
+			{
+				Points fP = new Points(fRect[f][0], fRect[f][1]);
+				
+				for(WallSegement ws : inWSList)
+				{					
+					if(checkPointInBetween(fP, ws.startP, ws.endP, tolr))
+					{
+						count++;
+					}
+				}
+			}
+			
+			if(count < 2)
+				bLiesInside = false;
+			else
+				bLiesInside = true;
+			
+			JOptionPane.showMessageDialog(null, count + " = h => " + bLiesInside);
 			
 			return bLiesInside;
 		}
