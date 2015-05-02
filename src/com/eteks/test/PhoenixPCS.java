@@ -329,11 +329,11 @@ public class PhoenixPCS extends Plugin
 							boolean bValid = false;
 							boolean bTouchesWall = false;
 							
-							bValid = checkInsideRoom(livingRoom, hpRef, false, FURNITURE_PLACE_TOLERANCE);
+							bValid = checkInsideRoom(livingRoom, hpRef.getPoints(), false, FURNITURE_PLACE_TOLERANCE);
 							
-							if(f == 0)
-								bTouchesWall = checkBackFace(hpRef.getPoints(), inWSList, tolr);
-							else
+							//if(f == 0)
+								//bTouchesWall = checkBackFace(hpRef.getPoints(), inWSList, tolr);
+							//else
 								bTouchesWall = true;
 							
 							if(bValid && bTouchesWall)
@@ -1501,47 +1501,39 @@ public class PhoenixPCS extends Plugin
 			return bIntersects;
 		}
 		
-		public boolean checkInsideRoom(Room inRoom, HomePieceOfFurniture hpf, boolean bAddAccessibility, float tolr)
+		public boolean checkInsideRoom(Room inRoom, float[][] fRect, boolean bAddAccessibility, float tolr)
 		{
 			boolean bLiesInside = false;
 			
 			float[][] roomRect = inRoom.getPoints();
 			
-			for(int r = 0; r < roomRect.length; r++)
-			{				
-				Points startLine = new Points(roomRect[r][0], roomRect[r][1]);
-				Points endLine = null;
-
-				if(r == (roomRect.length - 1))
-					endLine = new Points(roomRect[0][0], roomRect[0][1]);
-				else
-					endLine = new Points(roomRect[r+1][0], roomRect[r+1][1]);				
-
-				LineSegement ls = new LineSegement(startLine, endLine);
+			int count = 0;
+			
+			for(int f = 0; f < fRect.length; f++)
+			{
+				Points fP = new Points(fRect[f][0], fRect[f][1]);
 				
-				// For Accessibility check
-				List<Intersect> interList = new ArrayList<Intersect>();
-				
-				if(bAddAccessibility)
-					interList = checkIntersectAccessibility(ls, hpf.getName());
-				else
-					interList = checkIntersect(ls, hpf.getName());
+				for(int r = 0; r < roomRect.length; r++)
+				{				
+					Points roomLSStart = new Points(roomRect[r][0], roomRect[r][1]);
+					Points roomLSEnd = null;
 
-				for(Intersect inter : interList)
-				{
-					if(inter != null)
+					if(r == (roomRect.length - 1))
+						roomLSEnd = new Points(roomRect[0][0], roomRect[0][1]);
+					else
+						roomLSEnd = new Points(roomRect[r+1][0], roomRect[r+1][1]);
+					
+					if(checkPointInBetween(fP, roomLSStart, roomLSEnd, tolr))
 					{
-						bLiesInside = !checkPointInBetween(inter.p, ls.startP, ls.endP, tolr);
-
-						if(!bLiesInside)
-							break;
+						count++;
 					}
-					//putMarkers(inter.p, 3);
 				}
-				
-				if(!bLiesInside)
-					break;
 			}
+			
+			if(count < 2)
+				bLiesInside = false;
+			else
+				bLiesInside = true;
 			
 			return bLiesInside;
 		}
