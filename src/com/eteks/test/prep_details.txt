@@ -20,3 +20,4 @@ Code
 A. Get all FWS in room (Living)
 B. Placement of PCSRect
 C. Snap to the nearest wall
+D. Place all configs of PCS Rects - WIP
