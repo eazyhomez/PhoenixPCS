@@ -1805,19 +1805,6 @@ public class PhoenixPCS extends Plugin
 					break;
 			}
 			
-			/*
-			if(bLiesInside)
-			{
-				boolean bIntersect = checkIntersectWitAllWalls(refFurn, false);
-			
-				JOptionPane.showMessageDialog(null, "h => " + bIntersect);
-				
-				if(bIntersect)
-					bLiesInside = false;
-			}
-			*/
-			//JOptionPane.showMessageDialog(null, "h => " + bLiesInside);
-			
 			return bLiesInside;
 		}
 		
