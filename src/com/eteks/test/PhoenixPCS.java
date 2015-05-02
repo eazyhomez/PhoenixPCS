@@ -265,7 +265,7 @@ public class PhoenixPCS extends Plugin
 				
 				// ================================================== //
 				
-				// D. Snap to the nearest wall
+				// C. Snap to the nearest wall
 				// 11. Get set of wall segments parallel to given line segment --------- //
 				// 12. Find distance between two parallel line segments --------- //
 				// 13. Calculate the snap co-ordinates --------- //
