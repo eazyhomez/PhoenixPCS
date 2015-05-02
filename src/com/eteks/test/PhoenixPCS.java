@@ -623,9 +623,11 @@ public class PhoenixPCS extends Plugin
 				if(!bIntersects)
 				{
 					HomePieceOfFurniture hpPlaced = searchMatchFurn(hpfP.getName());						
-					chkFurnOrient(hpPlaced , ws);		// returns orientation (180*)
+					chkFurnOrient(hpPlaced, ws);		// returns orientation (180*)
 					
 					checkAndSnap(hpPlaced, inWSList, tolr);
+					
+					JOptionPane.showMessageDialog(null, bSuccess);
 					
 					bSuccess = checkInsideHome(finalWSList, hpPlaced, PLACEMENT_TOLERANCE);
 					
