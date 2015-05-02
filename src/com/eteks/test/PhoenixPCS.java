@@ -56,9 +56,8 @@ public class PhoenixPCS extends Plugin
 		public float VALID_INNERWALL_TOLERANCE = 0.5f;		// 5mm		
 		public float FURNITURE_PLACE_TOLERANCE = 0.0f; 		//122.0f;	// 4ft 
 
-		public float MIN_TOLERANCE = 5.0f;
+		public float PLACEMENT_TOLERANCE = 5.0f;	// 5cm
 		public float SNAP_TOLERANCE = 76.2f;
-		public int MAX_SNAP_COUNT = 2;
 		
 		public float tolerance = 0.5f; 				// 5 mm
 
@@ -311,21 +310,21 @@ public class PhoenixPCS extends Plugin
 					
 					if(bIsParallel)
 					{
-						//Points wsMidP = new Points(((ls.startP.x + ls.endP.x)/2),(ls.startP.y + ls.endP.y)/2);
-						//putMarkers(wsMidP, 6);
+						Points wsMidP = new Points(((ls.startP.x + ls.endP.x)/2),(ls.startP.y + ls.endP.y)/2);
+						putMarkers(wsMidP, 7);
 						
 						float dist = calcDistanceParallel(fs, ls, tolr);
 						
-						//JOptionPane.showMessageDialog(null, dist);
-						
-						if((dist > WALL_TOLERANCE) && (dist <= SNAP_TOLERANCE))
+						if(dist <= SNAP_TOLERANCE)
 						{
 							Points snapP = calcSnapCoordinate(ls, fs, dist, tolr);
 								
+							JOptionPane.showMessageDialog(null, "snap : " + snapP.x + ", " + snapP.y);
+							
 							hpRef.setX(furnCenter.x + snapP.x);
 							hpRef.setY(furnCenter.y + snapP.y);
 							
-							//putMarkers(new Points(hpRef.getX(), hpRef.getY()), 6);
+							putMarkers(new Points(hpRef.getX(), hpRef.getY()), 6);
 							
 							boolean bValid = false;
 							
@@ -425,11 +424,9 @@ public class PhoenixPCS extends Plugin
 					HomePieceOfFurniture hpPlaced = searchMatchFurn(hpfP.getName());						
 					chkFurnOrient(hpPlaced , ws);		// returns orientation (180*)
 					
-					checkAndSnap(hpPlaced, inWSList, tolr);						
+					checkAndSnap(hpPlaced, inWSList, tolr);
 					
-					//bSuccess = checkInsideRoom(livingRoom, hpPlaced.getPoints(), FURNITURE_PLACE_TOLERANCE);
-					
-					bSuccess = checkInsideHome(finalWSList, hpPlaced.getPoints(), ROOM_TOLERANCE);
+					bSuccess = checkInsideHome(finalWSList, hpPlaced.getPoints(), PLACEMENT_TOLERANCE);
 					
 					//putMarkers((new Points(hpPlaced.getX(), hpPlaced.getY())), 6);
 					
@@ -556,8 +553,8 @@ public class PhoenixPCS extends Plugin
 								if(bShowMarkerInter)
 								{
 									// Marker
-									Points midWS = new Points(((ws.startP.x + ws.endP.x)/2.0f),((ws.startP.y + ws.endP.y)/2.0f));
-									putMarkers(midWS, 3);
+									//Points midWS = new Points(((ws.startP.x + ws.endP.x)/2.0f),((ws.startP.y + ws.endP.y)/2.0f));
+									//putMarkers(midWS, 3);
 								}
 							}
 							else
@@ -595,8 +592,8 @@ public class PhoenixPCS extends Plugin
 									if(bShowMarkerInter)
 									{
 										// Marker
-										Points midWS = new Points(((ws.startP.x + ws.endP.x)/2.0f),((ws.startP.y + ws.endP.y)/2.0f));
-										putMarkers(midWS, 3);
+										//Points midWS = new Points(((ws.startP.x + ws.endP.x)/2.0f),((ws.startP.y + ws.endP.y)/2.0f));
+										//putMarkers(midWS, 3);
 									}
 								}
 								else
@@ -692,8 +689,8 @@ public class PhoenixPCS extends Plugin
 								if(bShowMarkerInter)
 								{
 									// Marker
-									Points midWS = new Points(((newWS.startP.x + newWS.endP.x)/2.0f),((newWS.startP.y + newWS.endP.y)/2.0f));
-									putMarkers(midWS, 3);
+									//Points midWS = new Points(((newWS.startP.x + newWS.endP.x)/2.0f),((newWS.startP.y + newWS.endP.y)/2.0f));
+									//putMarkers(midWS, 3);
 								}
 							}
 							else
@@ -706,8 +703,8 @@ public class PhoenixPCS extends Plugin
 								if(bShowMarkerInter)
 								{
 									// Marker
-									Points midWS = new Points(((newWS.startP.x + newWS.endP.x)/2.0f),((newWS.startP.y + newWS.endP.y)/2.0f));
-									putMarkers(midWS, 3);
+									//Points midWS = new Points(((newWS.startP.x + newWS.endP.x)/2.0f),((newWS.startP.y + newWS.endP.y)/2.0f));
+									//putMarkers(midWS, 3);
 								}
 							}
 						}
@@ -725,8 +722,8 @@ public class PhoenixPCS extends Plugin
 								if(bShowMarkerInter)
 								{
 									// Marker
-									Points midWS = new Points(((newWS.startP.x + newWS.endP.x)/2.0f),((newWS.startP.y + newWS.endP.y)/2.0f));
-									putMarkers(midWS, 3);
+									//Points midWS = new Points(((newWS.startP.x + newWS.endP.x)/2.0f),((newWS.startP.y + newWS.endP.y)/2.0f));
+									//putMarkers(midWS, 3);
 								}
 							}
 							else
@@ -739,8 +736,8 @@ public class PhoenixPCS extends Plugin
 								if(bShowMarkerInter)
 								{
 									// Marker
-									Points midWS = new Points(((newWS.startP.x + newWS.endP.x)/2.0f),((newWS.startP.y + newWS.endP.y)/2.0f));
-									putMarkers(midWS, 3);
+									//Points midWS = new Points(((newWS.startP.x + newWS.endP.x)/2.0f),((newWS.startP.y + newWS.endP.y)/2.0f));
+									//putMarkers(midWS, 3);
 								}
 							}
 						}
@@ -844,7 +841,7 @@ public class PhoenixPCS extends Plugin
 									interMap.put(inter.dist, inter);
 
 									//if(bShowMarkerInter)
-									putMarkers(inter.p, 3);
+									//putMarkers(inter.p, 3);
 								}
 							}
 
@@ -1136,7 +1133,19 @@ public class PhoenixPCS extends Plugin
 			
 			List<Points> sortedPList = sortPList(retPList, wsMidP);
 			
-			Points snapCoords = new Points((sortedPList.get(0).x - centerP.x), (sortedPList.get(0).y - centerP.y));			
+			Points snapPoints = sortedPList.get(0);
+			
+			for(Points p : sortedPList)
+			{
+				if(livingRoom.containsPoint(p.x, p.y, ROOM_TOLERANCE))
+					snapPoints = p;
+				
+				putMarkers(p, 3);
+			}
+			
+			//Points snapCoords = new Points((sortedPList.get(0).x - centerP.x), (sortedPList.get(0).y - centerP.y));		
+			Points snapCoords = new Points((snapPoints.x - centerP.x), (snapPoints.y - centerP.y));	
+			
 			return snapCoords;
 		}
 		
@@ -1502,7 +1511,7 @@ public class PhoenixPCS extends Plugin
 							if(bIntersects)
 								break;
 						}
-						putMarkers(inter.p, 6);
+						//putMarkers(inter.p, 6);
 					}
 				}
 
@@ -1517,6 +1526,7 @@ public class PhoenixPCS extends Plugin
 		{
 			boolean bLiesInside = false;
 			
+			/*
 			float[][] roomRect = inRoom.getPoints();
 			
 			int count = 0;
@@ -1546,6 +1556,15 @@ public class PhoenixPCS extends Plugin
 				bLiesInside = false;
 			else
 				bLiesInside = true;
+			*/
+			
+			for(int f = 0; f < fRect.length; f++)
+			{
+				bLiesInside = inRoom.containsPoint(fRect[f][0], fRect[f][1], 1.0f);
+				
+				if(!bLiesInside)
+					break;
+			}
 			
 			JOptionPane.showMessageDialog(null, bLiesInside);
 			
@@ -1557,6 +1576,7 @@ public class PhoenixPCS extends Plugin
 			boolean bLiesInside = false;			
 			int count = 0;
 			
+			/*
 			for(int f = 0; f < fRect.length; f++)
 			{
 				Points fP = new Points(fRect[f][0], fRect[f][1]);
@@ -1574,6 +1594,15 @@ public class PhoenixPCS extends Plugin
 				bLiesInside = false;
 			else
 				bLiesInside = true;
+			*/
+			
+			for(int f = 0; f < fRect.length; f++)
+			{
+				bLiesInside = room.containsPoint(fRect[f][0], fRect[f][1], 0.5f);
+				
+				if(!bLiesInside)
+					break;
+			}
 			
 			JOptionPane.showMessageDialog(null, "h => " + bLiesInside);
 			
