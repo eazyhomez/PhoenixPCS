@@ -57,6 +57,7 @@ public class PhoenixPCS extends Plugin
 		public float FURNITURE_PLACE_TOLERANCE = 0.0f; 		//122.0f;	// 4ft 
 
 		public float SNAP_TOLERANCE = 76.2f;
+		public int MAX_SNAP_COUNT = 2;
 		
 		public float tolerance = 0.5f; 				// 5 mm
 
@@ -241,16 +242,16 @@ public class PhoenixPCS extends Plugin
 				// B. Placement of PCSRect  --------- //
 
 				List<WallSegement> finalWSList = shortlistWallSegments(fWSList, VALID_RS_LENGTH);
-				
+				/*
 				HomePieceOfFurniture pcsRect = getFurnItem("PCSRect");
 				
-				//float w = pcsRect.getWidth();
-				//float d = pcsRect.getDepth();
-				//pcsRect.setWidth(w/2.0f);
-				//pcsRect.setDepth(d/2.0f);
+				float w = pcsRect.getWidth();
+				float d = pcsRect.getDepth();
+				pcsRect.setWidth(w/2.0f);
+				pcsRect.setDepth(d/2.0f);
 
-				//placePCSRectWithSnap(finalWSList, pcsRect, innerWSList);
-				
+				placePCSRectWithSnap(finalWSList, pcsRect, innerWSList);
+				*/
 				// ================================================== //
 				
 				// D. Snap to the nearest wall
@@ -259,7 +260,7 @@ public class PhoenixPCS extends Plugin
 				// 13. Calculate the snap co-ordinates --------- //
 				
 				HomePieceOfFurniture hpRef = searchMatchFurn("PCSRect_2");
-				checkAndSnap(hpRef, innerWSList);
+				checkAndSnap(hpRef, innerWSList, tolerance);
 				
 			}
 			catch(Exception e)
@@ -270,14 +271,24 @@ public class PhoenixPCS extends Plugin
 			
 		}
 
-		public void checkAndSnap(HomePieceOfFurniture hpRef, List<WallSegement> inWSList)
+		public boolean checkAndSnap(HomePieceOfFurniture hpRef, List<WallSegement> inWSList, float tolr)
 		{
+			boolean bSnapped = false;
+			
+			int snapCount = 0;
+			
 			Points furnCenter = new Points(hpRef.getX(), hpRef.getY());
 			
 			float[][] fRect = hpRef.getPoints();
 			
+			//String furnRect = ("furn : " + fRect[0][0] + "," + fRect[0][1] + " / " + fRect[1][0] + "," + fRect[1][1] + " / " + fRect[2][0] + "," + fRect[2][1] + " / " + fRect[3][0] + "," + fRect[3][1] + "\n\n");
+			//JOptionPane.showMessageDialog(null, furnRect);
+			
 			for(int f = 0; f < fRect.length; f++)
 			{
+				if(f == 2)
+					continue;		// Forward snap not needed
+				
 				Points startP = new Points(fRect[f][0], fRect[f][1]);
 				Points endP = null;
 
@@ -288,55 +299,100 @@ public class PhoenixPCS extends Plugin
 				
 				LineSegement fs = new LineSegement(startP, endP);
 				
-				//putMarkers(startP, 2);
-				//putMarkers(endP, 2);
+				putMarkers(startP, 2);
+				putMarkers(endP, 2);
 				
 				//JOptionPane.showMessageDialog(null,"!!!");
 						
 				for(WallSegement ws : inWSList)
-				{
+				{					
 					LineSegement ls = new LineSegement(ws);
 					
-					boolean bIsParallel = isParallel(fs, ls, tolerance);
+					boolean bIsParallel = isParallel(fs, ls, tolr);
 					
 					if(bIsParallel)
 					{
-						Points wsMidP = new Points(((ls.startP.x + ls.endP.x)/2),(ls.startP.y + ls.endP.y)/2);
+						//Points wsMidP = new Points(((ls.startP.x + ls.endP.x)/2),(ls.startP.y + ls.endP.y)/2);
 						//putMarkers(wsMidP, 6);
 						
-						float dist = calcDistanceParallel(fs, ls, tolerance);
+						float dist = calcDistanceParallel(fs, ls, tolr);
 						
 						if((dist > tolerance) && (dist <= SNAP_TOLERANCE))
 						{
-							Points snapP = calcSnapCoordinate(ls, fs, dist, tolerance);
-							
+							Points snapP = calcSnapCoordinate(ls, fs, dist, tolr);
+								
 							hpRef.setX(furnCenter.x + snapP.x);
 							hpRef.setY(furnCenter.y + snapP.y);
 							
-							furnCenter = new Points(hpRef.getX(), hpRef.getY());
+							putMarkers(new Points(hpRef.getX(), hpRef.getY()), 6);
+							
+							boolean bValid = false;
+							boolean bTouchesWall = false;
+							
+							bValid = checkInsideRoom(livingRoom, hpRef, false, FURNITURE_PLACE_TOLERANCE);
+							
+							if(f == 0)
+								bTouchesWall = checkBackFace(hpRef.getPoints(), inWSList, tolr);
+							else
+								bTouchesWall = true;
+							
+							if(bValid && bTouchesWall)
+							{
+								furnCenter = new Points(hpRef.getX(), hpRef.getY());								
+								putMarkers(new Points(furnCenter.x, furnCenter.y), 1);
+								
+								bSnapped = true;
+								snapCount++;
+							}
+							else
+							{
+								hpRef.setX(furnCenter.x);
+								hpRef.setY(furnCenter.y);
+							}								
 						}
 					}
 					
+					if(snapCount >= MAX_SNAP_COUNT)
+						break;				
 				}
+				
+				if(snapCount >= MAX_SNAP_COUNT)
+					break;
 			}
+			
+			return bSnapped;
 		}
 		
-		public List<WallSegement> shortlistWallSegments(List<WallSegement> inWSList, float reqLen)
+		public boolean checkBackFace(float[][] fRect, List<WallSegement> inWSList, float tolr)
 		{
-			List<WallSegement> finalWSList = new ArrayList<WallSegement>();
-
+			boolean bLiesOnWall = false;
+			
+			Points fStartP = new Points(fRect[0][0], fRect[0][1]);
+			Points fEndP = new Points(fRect[1][0], fRect[1][1]);
+			
 			for(WallSegement ws : inWSList)
 			{
-				if(ws.len >= reqLen)
+				LineSegement ls = new LineSegement(ws);
+				
+				boolean b1 = checkPointInBetween(fStartP, ls.startP, ls.endP, tolr);
+				boolean b2 = checkPointInBetween(fEndP, ls.startP, ls.endP, tolr);
+				
+				JOptionPane.showMessageDialog(null, "b1 : " + b1 + ", b2 : " + b2);
+				
+				Points lsMidP = new Points(((ls.startP.x + ls.endP.x)/2),(ls.startP.y + ls.endP.y)/2);
+				putMarkers(lsMidP, 2);
+				
+				if(b1 && b2)
 				{
-					finalWSList.add(ws);
-				}
+					bLiesOnWall = true;
+					break;
+				}	
 			}
-
-			return finalWSList;
+			
+			return bLiesOnWall;
 		}
-
-		public void placePCSRectWithSnap(List<WallSegement> finalWSList, HomePieceOfFurniture pcsRect, List<WallSegement> inWSList)
+			
+		public void placePCSRectWithSnap(List<WallSegement> finalWSList, HomePieceOfFurniture pcsRect, List<WallSegement> inWSList, float tolr)
 		{
 			boolean bSuccess = false;
 			
@@ -359,11 +415,10 @@ public class PhoenixPCS extends Plugin
 				if(!bIntersects)
 				{
 					HomePieceOfFurniture hpPlaced = searchMatchFurn(hpfP.getName());						
-					float orient = chkFurnOrient(hpPlaced , ws);
+					chkFurnOrient(hpPlaced , ws);		// returns orientation (180*)
 					
-					checkAndSnap(hpPlaced, inWSList);
-					
-					bSuccess = checkInsideRoom(livingRoom, hpPlaced, accessBox.bAddAccess, FURNITURE_PLACE_TOLERANCE);						
+					bSuccess = checkInsideRoom(livingRoom, hpPlaced, accessBox.bAddAccess, FURNITURE_PLACE_TOLERANCE);
+					checkAndSnap(hpPlaced, inWSList, tolr);						
 					
 					putMarkers((new Points(hpPlaced.getX(), hpPlaced.getY())), 6);
 					JOptionPane.showMessageDialog(null, bSuccess);
@@ -406,6 +461,21 @@ public class PhoenixPCS extends Plugin
 			
 			//putMarkerLine(accLS1, 1);
 			//putMarkerLine(accLS2, 1);
+		}
+		
+		public List<WallSegement> shortlistWallSegments(List<WallSegement> inWSList, float reqLen)
+		{
+			List<WallSegement> finalWSList = new ArrayList<WallSegement>();
+
+			for(WallSegement ws : inWSList)
+			{
+				if(ws.len >= reqLen)
+				{
+					finalWSList.add(ws);
+				}
+			}
+
+			return finalWSList;
 		}
 		
 		public List<WallSegement> getValidInnerWallSegmentsOfRoom(List<WallSegement> innerWSList, float[][] roomRect, float tolr)
@@ -946,8 +1016,8 @@ public class PhoenixPCS extends Plugin
 			
 			Points centerP = new Points(((ls.startP.x + ls.endP.x)/2),(ls.startP.y + ls.endP.y)/2);
 			
-			//putMarkers(ws.startP, 5);
-			//putMarkers(ws.endP, 5);
+			putMarkers(ws.startP, 5);
+			putMarkers(ws.endP, 5);
 			
 			float xLimit = Math.abs(ws.endP.x - ws.startP.x);
 			float yLimit = Math.abs(ws.endP.y - ws.startP.y);
@@ -1438,9 +1508,8 @@ public class PhoenixPCS extends Plugin
 			float[][] roomRect = inRoom.getPoints();
 			
 			for(int r = 0; r < roomRect.length; r++)
-			{
+			{				
 				Points startLine = new Points(roomRect[r][0], roomRect[r][1]);
-
 				Points endLine = null;
 
 				if(r == (roomRect.length - 1))
@@ -1871,25 +1940,6 @@ public class PhoenixPCS extends Plugin
 				bRet = true;
 
 			return bRet;			
-		}
-
-		public boolean checkPointInBetween2(Points test, Points start, Points end, float tolPercent)
-		{
-			boolean bRet = false;
-
-			float distST = calcDistance(start, test);
-			float distTE = calcDistance(test, end);
-			float distSE = calcDistance(start, end);
-
-			float distSEAbs = (float)(Math.abs(distST + distTE - distSE));
-			float perc = Math.abs(distSEAbs / distSE);
-
-			if(perc <= tolPercent)
-				bRet = true;
-
-			JOptionPane.showMessageDialog(null, bRet + " -> " + perc + ", " + tolPercent);
-
-			return bRet;		
 		}
 
 		public List<Points> sortPList(List<Points> interPList, Points ref)
