@@ -56,7 +56,7 @@ public class PhoenixPCS extends Plugin
 		public float VALID_INNERWALL_TOLERANCE = 0.5f;		// 5mm		
 		public float FURNITURE_PLACE_TOLERANCE = 0.0f; 		//122.0f;	// 4ft 
 
-		public float PLACEMENT_TOLERANCE = 0.51f;	// 2cm
+		public float PLACEMENT_TOLERANCE = 2.0f;	// 2cm
 		public float SNAP_TOLERANCE = 76.2f;
 		
 		public float tolerance = 0.5f; 				// 5 mm
@@ -77,12 +77,46 @@ public class PhoenixPCS extends Plugin
 		public float PCS_RECT_D1 = 10.0f;
 		public float PCS_RECT_D2 = 11.0f;
 		public float PCS_RECT_D3 = 12.0f;
+		
+		public float ROOM_AREA_S_MIN = 0.0f;		
+		public float ROOM_AREA_S_MAX = 325.0f;
+		
+		public float ROOM_AREA_M_MIN = 326.0f;
+		public float ROOM_AREA_M_MAX = 500.0f;
+		
+		public float ROOM_AREA_L_MIN = 501.0f;
+		public float ROOM_AREA_L_MAX = 1000.0f;
 
 		public boolean bShowMarkerInter = false;
 		public boolean bShowMarker = false;
 		
 		public boolean bShowClearPlacements = false;
 		public boolean bDebugMode = true;
+		
+		
+		// ======================= PCS CONSTANTS ======================= //
+		
+		public float FOUR_SEATER_INDEX = 0.0f;
+		public int[] FOUR_SEATER_DESIGN_RANGE = {0, 1, 2};
+		
+		public float FIVE_SEATER_INDEX = 1.0f;
+		public int[] FIVE_SEATER_DESIGN_RANGE = {3, 4};
+		
+		public float SIX_SEATER_INDEX = 2.0f;
+		public int[] SIX_SEATER_DESIGN_RANGE = {2, 4, 5};
+		
+		public float SEVEN_SEATER_INDEX = 3.0f;
+		public int[] SEVEN_SEATER_DESIGN_RANGE = {6};
+		
+		public float EIGHT_SEATER_INDEX = 4.0f;
+		public int[] EIGHT_SEATER_DESIGN_RANGE = {7, 8, 9};
+		
+		public float NINE_SEATER_INDEX = 5.0f;
+		public int[] NINE_SEATER_DESIGN_RANGE = {10};
+		
+		float[][][] roomDimsArr = {{{ROOM_AREA_S_MIN, ROOM_AREA_S_MAX},{FOUR_SEATER_INDEX, FIVE_SEATER_INDEX, SIX_SEATER_INDEX}}, {{ROOM_AREA_M_MIN, ROOM_AREA_M_MAX},{FIVE_SEATER_INDEX, SIX_SEATER_INDEX, SEVEN_SEATER_INDEX}}, {{ROOM_AREA_L_MIN, ROOM_AREA_L_MAX},{SIX_SEATER_INDEX, SEVEN_SEATER_INDEX, EIGHT_SEATER_INDEX, NINE_SEATER_INDEX}}};
+		int[][] roomConfigArr = {FOUR_SEATER_DESIGN_RANGE, FIVE_SEATER_DESIGN_RANGE, SIX_SEATER_DESIGN_RANGE, SEVEN_SEATER_DESIGN_RANGE, EIGHT_SEATER_DESIGN_RANGE, NINE_SEATER_DESIGN_RANGE};
+		
 		// ======================= CLASSES ======================= //
 
 		public class Points
@@ -308,23 +342,31 @@ public class PhoenixPCS extends Plugin
 				
 				genConfigList(PCS_RECT_W, PCS_RECT_D1, PCS_RECT_D2, PCS_RECT_D3);
 				
-				for(PCSConfig pcsConf : pcsConfigList)
+				List<PCSConfig> confList = getLivingConfigs();
+				
+				int nameCounter = 1;
+				
+				for(PCSConfig pcsConf : confList)
 				{		
-					HomePieceOfFurniture pcsRect = getFurnItem("PCSRect");
+					HomePieceOfFurniture pcsRect = getFurnItem("PCSRect").clone();
+					pcsRect.setName("PCSRect_" + nameCounter);
 					pcsRect.setWidth(pcsConf.w);
 					pcsRect.setDepth(pcsConf.d);
 					
 					//JOptionPane.showMessageDialog(null, "w : " + pcsConf.w + ", d: " + pcsConf.d);
 					
 					placePCSRectWithSnap(finalWSList, pcsRect, innerWSList, validWSList, tolerance);
+					
+					nameCounter++;
 				}
 				
 				// ===================================================== //	
 				
 				long endTime = System.currentTimeMillis(); //System.nanoTime();
 				
-				JOptionPane.showMessageDialog(null, "Time : " + (endTime - startTime) + " ms \n\nNo. of Designs generated : " + validDesignList.size());
+				//JOptionPane.showMessageDialog(null, "Time : " + (endTime - startTime) + " ms \n\nNo. of Designs generated : " + validDesignList.size());
 			
+				JOptionPane.showMessageDialog(null, "Time : " + (endTime - startTime) + " ms");
 			}
 			catch(Exception e)
 			{
@@ -333,9 +375,42 @@ public class PhoenixPCS extends Plugin
 			}			
 		}
 		
-		public void getRoomConfig()
+		public List<PCSConfig> getLivingConfigs()
 		{
+			List<PCSConfig> confList = new ArrayList<PCSConfig>();
+			
 			float roomSize = room.getArea() * ROOM_CONV_SQCM_SQFT;
+			
+			String dbgStr = "roomSize : " + roomSize + " sq. ft. \n\n-------- Configs ---------\n";
+			
+			for(int x = 0 ; x < roomDimsArr.length; x++)
+			{
+				if((roomDimsArr[x][0][0] <= roomSize) && (roomSize <= roomDimsArr[x][0][1]))
+				{
+					//JOptionPane.showMessageDialog(null, roomDimsArr[x][1].length);
+							
+					for(int y = 0 ; y < roomDimsArr[x][1].length; y++)
+					{
+						int indx = new Float(roomDimsArr[x][1][y]).intValue();
+						
+						//JOptionPane.showMessageDialog(null, "indx : " + indx);
+						
+						int[] confIndx = roomConfigArr[indx];
+						
+						for(int c = 0; c < confIndx.length; c++)
+						{
+							confList.add(pcsConfigList.get(confIndx[c]));
+							dbgStr += confIndx[c] + ", ";
+						}
+						
+						dbgStr += "\n";
+					}
+				}
+			}
+						
+			//JOptionPane.showMessageDialog(null, dbgStr);
+			
+			return confList;
 		}
 		
 		public void genConfigList(float x, float y1, float y2, float y3)
@@ -362,8 +437,6 @@ public class PhoenixPCS extends Plugin
 			pcsConf = new PCSConfig((y1 + (0.5f*x))*CONV_FT_CM, (5*x)*CONV_FT_CM);
 			pcsConfigList.add(pcsConf);
 			
-			/*
-
 			// Config 6 : 10,11,12,13
 			pcsConf = new PCSConfig((y2 + (0.5f*x))*CONV_FT_CM, (4*x)*CONV_FT_CM);
 			pcsConfigList.add(pcsConf);
@@ -387,8 +460,6 @@ public class PhoenixPCS extends Plugin
 			// Config 11 : 28,29,30,31,32,33
 			pcsConf = new PCSConfig((y3 + (0.5f*x))*CONV_FT_CM, (5*x)*CONV_FT_CM);
 			pcsConfigList.add(pcsConf);
-			
-			*/
 		}
 
 		public boolean checkAndSnap(HomePieceOfFurniture hpRef, List<WallSegement> inWSList, float tolr)
@@ -556,7 +627,7 @@ public class PhoenixPCS extends Plugin
 					
 					checkAndSnap(hpPlaced, inWSList, tolr);
 					
-					bSuccess = checkInsideHome(finalWSList, hpPlaced.getPoints(), PLACEMENT_TOLERANCE);
+					bSuccess = checkInsideHome(finalWSList, hpPlaced, PLACEMENT_TOLERANCE);
 					
 					//putMarkers((new Points(hpPlaced.getX(), hpPlaced.getY())), 6);
 					
@@ -1720,10 +1791,12 @@ public class PhoenixPCS extends Plugin
 			return bLiesInside;
 		}
 		
-		public boolean checkInsideHome(List<WallSegement> inWSList, float[][] fRect, float tolr)
+		public boolean checkInsideHome(List<WallSegement> inWSList, HomePieceOfFurniture refFurn, float tolr)
 		{
 			boolean bLiesInside = false;			
 
+			float[][] fRect = refFurn.getPoints();
+					
 			for(int f = 0; f < fRect.length; f++)
 			{
 				bLiesInside = room.containsPoint(fRect[f][0], fRect[f][1], tolr);
@@ -1732,6 +1805,17 @@ public class PhoenixPCS extends Plugin
 					break;
 			}
 			
+			/*
+			if(bLiesInside)
+			{
+				boolean bIntersect = checkIntersectWitAllWalls(refFurn, false);
+			
+				JOptionPane.showMessageDialog(null, "h => " + bIntersect);
+				
+				if(bIntersect)
+					bLiesInside = false;
+			}
+			*/
 			//JOptionPane.showMessageDialog(null, "h => " + bLiesInside);
 			
 			return bLiesInside;
