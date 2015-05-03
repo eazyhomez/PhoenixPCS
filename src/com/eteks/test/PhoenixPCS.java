@@ -128,7 +128,7 @@ public class PhoenixPCS extends Plugin
 		int[][] pcsConfigArr = {FOUR_SEATER_DESIGN_RANGE, FIVE_SEATER_DESIGN_RANGE, SIX_SEATER_DESIGN_RANGE, SEVEN_SEATER_DESIGN_RANGE, EIGHT_SEATER_DESIGN_RANGE, NINE_SEATER_DESIGN_RANGE};
 		int[][] pcsSeatingArr = {FOUR_SEATER_SEATING_RANGE, FIVE_SEATER_SEATING_RANGE, SIX_SEATER_SEATING_RANGE, SEVEN_SEATER_SEATING_RANGE, EIGHT_SEATER_SEATING_RANGE, NINE_SEATER_SEATING_RANGE};
 		
-		String[] seatingTypeArr = {"1_seater_sofa", "2_seater_sofa", "3_seater_sofa", "5_seater_RL_sofa", "5_seater_LL_sofa", "settee", "center_table", "media_cabinet", "corner_table", "area_rug"};
+		String[] seatingTypeArr = {"1_seater_sofa", "2_seater_sofa", "3_seater_sofa", "5_seater_RL_sofa", "5_seater_LL_sofa", "6_seater_RL_sofa", "6_seater_LL_sofa" , "media_cabinet", "settee", "center_table", "corner_table", "area_rug"};
 		
 		// ======================= CLASSES ======================= //
 
@@ -580,6 +580,8 @@ public class PhoenixPCS extends Plugin
 		{
 			pcsSeatingConfigList = new ArrayList<float[][]>();
 			
+			// -------------------------------- 4 Seater -------------------------------- //
+			
 			// Config 1
 			float[][] seatingConf1 = {	{0.0f, (x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
 										{1.0f, ((2*x) + 0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
@@ -608,6 +610,8 @@ public class PhoenixPCS extends Plugin
 										{7.0f, ((x) + 2.75f)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf4);
+			
+			// -------------------------------- 5 Seater -------------------------------- //
 			
 			// Config 5
 			float[][] seatingConf5 = {	{0.0f, (x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
@@ -642,8 +646,195 @@ public class PhoenixPCS extends Plugin
 										{7.0f, (2*x)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
 				
 			pcsSeatingConfigList.add(seatingConf9);
+			
+			// -------------------------------- 6 Seater -------------------------------- //
+			
+			// Config 10
+			float[][] seatingConf10 = {	{2.0f, (3*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{2.0f, (7*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
+										{7.0f, (2*x)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf10);
+			
+			// Config 11
+			float[][] seatingConf11 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
+										{2.0f, (5*x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
+										{7.0f, (2*x)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf11);
+			
+			// Config 12
+			float[][] seatingConf12 = {	{5.0f, (2*x)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
+										{7.0f, (2*x)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf12);
+			
+			// Config 13
+			float[][] seatingConf13 = {	{6.0f, (2*x)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
+										{7.0f, (2*x)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf13);
+			
+			// Config 14
+			float[][] seatingConf14 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
+										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{0.0f, (9*x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},	
+										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf14);
+			
+			// Config 15
+			float[][] seatingConf15 = {	{0.0f, (x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
+										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{1.0f, (9*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},	
+										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf15);
+			
+			// Config 16
+			float[][] seatingConf16 = {	{4.0f, (2*x)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
+										{0.0f, (9*x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},	
+										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf16);
+			
+			// Config 17
+			float[][] seatingConf17 = {	{0.0f, (x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
+										{4.0f, (3*x)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
+										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf17);
+			
+			// Config 18
+			float[][] seatingConf18 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 90.0f},
+										{2.0f, ((3*x) + 5.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 90.0f},
+										{7.0f, (x + 2.75f)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf18);
+			
+			// -------------------------------- 7 Seater -------------------------------- //
+			
+			// Config 19
+			float[][] seatingConf19 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
+										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{1.0f, (9*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},	
+										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf19);
+			
+			// Config 20
+			float[][] seatingConf20 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
+										{3.0f, (5*x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
+										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf20);
+			
+			// Config 21
+			float[][] seatingConf21 = {	{4.0f, (5*x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
+										{1.0f, (9*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},	
+										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf21);
+			
+			// -------------------------------- 8 Seater -------------------------------- //
+			
+			// Config 22
+			float[][] seatingConf22 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
+										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{1.0f, (9*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},	
+										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf22);
+			
+			// Config 23
+			float[][] seatingConf23 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
+										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{2.0f, (9*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},	
+										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf23);
+			
+			// Config 24
+			float[][] seatingConf24 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
+										{4.0f, (3*x)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
+										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf24);
+			
+			// Config 25
+			float[][] seatingConf25 = {	{5.0f, (2*x)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
+										{2.0f, (9*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},	
+										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf25);
+			
+			// Config 26
+			float[][] seatingConf26 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
+										{1.0f, ((2*x) + 1.0f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},	
+										{2.0f, ((7*x*0.5f) + 2.0f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
+										{7.0f, ((4*x) + 2.0f)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			// Config 27
+			float[][] seatingConf27 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 90.0f},
+										{2.0f, ((7*x*0.5f) + 2.0f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 90.0f},
+										{8.0f, ((2*x) + 1.0f)*CONV_FT_CM, (7*x*0.5f)*CONV_FT_CM, 0.0f},	
+										{7.0f, ((4*x) + 2.0f)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf27);
+			
+			// -------------------------------- 9 Seater -------------------------------- //
+			
+			// Config 28
+			float[][] seatingConf28 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
+										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},	
+										{1.0f, (9*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
+										{8.0f, (5*x*0.5f)*CONV_FT_CM, (7*x*0.5f)*CONV_FT_CM, 0.0f},
+										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf28);
+			
+			// Config 29
+			float[][] seatingConf29 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
+										{3.0f, (5*x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
+										{8.0f, (5*x*0.5f)*CONV_FT_CM, (7*x*0.5f)*CONV_FT_CM, 0.0f},
+										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf29);
+			
+			// Config 30
+			float[][] seatingConf30 = {	{4.0f, (5*x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
+										{1.0f, (9*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
+										{8.0f, (5*x*0.5f)*CONV_FT_CM, (7*x*0.5f)*CONV_FT_CM, 0.0f},
+										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf30);
+			
+			// Config 31
+			float[][] seatingConf31 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
+										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{2.0f, (9*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
+										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf31);
+			
+			// Config 32
+			float[][] seatingConf32 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
+										{5.0f, (3*x)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
+										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf32);
+			
+			// Config 33
+			float[][] seatingConf33 = {	{6.0f, (2*x)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
+										{2.0f, (9*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
+										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf33);
+			
 		}
 
+		//String[] seatingTypeArr = {"1_seater_sofa", "2_seater_sofa", "3_seater_sofa", "5_seater_RL_sofa", "5_seater_LL_sofa", "6_seater_RL_sofa", "6_seater_LL_sofa" , "media_cabinet", "settee", "center_table", "corner_table", "area_rug"};
+		
 		public boolean checkAndSnap(HomePieceOfFurniture hpRef, List<WallSegement> inWSList, float tolr)
 		{
 			boolean bSnapped = false;
