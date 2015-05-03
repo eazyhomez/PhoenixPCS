@@ -252,7 +252,7 @@ public class PhoenixPCS extends Plugin
 			float d;
 			float w;
 			
-			public PCSConfig(float width , float depth)
+			public PCSConfig(float depth , float width)
 			{
 				d = depth;
 				w = width;
@@ -395,7 +395,7 @@ public class PhoenixPCS extends Plugin
 				genConfigList(PCS_RECT_W, PCS_RECT_D1, PCS_RECT_D2, PCS_RECT_D3);
 				genSeatingConfigList(PCS_RECT_W, PCS_RECT_D1, PCS_RECT_D2, PCS_RECT_D3);
 				
-				PCSConfig pcsConf = pcsConfigList.get(0);
+				PCSConfig pcsConf = pcsConfigList.get(2);
 				
 				HomePieceOfFurniture pcsRect = getFurnItem("PCSRect").clone();
 				pcsRect.setName("PCSRect_1_1");
@@ -410,7 +410,7 @@ public class PhoenixPCS extends Plugin
 				int[] seatingIndx = pcsSeatingArr[0];
 			
 				int[] testSeatingIndx = new int[1];
-				testSeatingIndx[0] = seatingIndx[0];
+				testSeatingIndx[0] = seatingIndx[3];
 				
 				placeRealFurn(pcsRect, testSeatingIndx);
 				
@@ -445,7 +445,7 @@ public class PhoenixPCS extends Plugin
 			{
 				float[][] seatingConf = pcsSeatingConfigList.get(seatingIndx[s]);
 				
-				for(int f = 0; f < (seatingConf.length - 1); f++)
+				for(int f = 0; f < seatingConf.length; f++)
 				{
 					int furnType = new Float(seatingConf[f][0]).intValue();
 					String furnName = seatingTypeArr[furnType];
@@ -454,12 +454,17 @@ public class PhoenixPCS extends Plugin
 					float furnY = refOrigin.y + seatingConf[f][2];
 					float furnAng = ((float) (Math.PI * seatingConf[f][3])) / 180.0f;
 						
-					JOptionPane.showMessageDialog(null, furnName + " -> " + furnX + ", " + furnY + " : " + furnAng);
+					//JOptionPane.showMessageDialog(null, furnName + " -> " + furnX + ", " + furnY + " : " + furnAng);
 					
 					HomePieceOfFurniture hpf = getFurnItem(furnName).clone();
 					hpf.setName(furnName + "_" + s + "_" + f);
 					hpf.setX(furnX);
-					hpf.setY(furnY);
+					
+					if(furnName.equalsIgnoreCase("media_cabinet"))
+						hpf.setY(furnY - (0.5f*hpf.getDepth()));
+					else
+						hpf.setY(furnY);
+						
 					hpf.setAngle(furnAng);
 					
 					coordList.add(new Points(furnX, furnY));
@@ -591,7 +596,7 @@ public class PhoenixPCS extends Plugin
 			pcsSeatingConfigList.add(seatingConf2);
 			
 			// Config 3
-			float[][] seatingConf3 = {	{1.0f, (2*x)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+			float[][] seatingConf3 = {	{1.0f, (x)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
 										{1.0f, ((5*x*0.5f) + 0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
 										{7.0f, ((3*x*0.5f) + 0.25f)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
 				
@@ -600,7 +605,7 @@ public class PhoenixPCS extends Plugin
 			// Config 4
 			float[][] seatingConf4 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
 										{1.0f, ((3*x*0.5f) + 5.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},	
-										{7.0f, ((x*0.5f) + 2.75f)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+										{7.0f, ((x) + 2.75f)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf4);
 			
