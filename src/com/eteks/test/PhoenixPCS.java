@@ -93,6 +93,8 @@ public class PhoenixPCS extends Plugin
 		
 		public float ROOM_AREA_L_MIN = 501.0f;
 		public float ROOM_AREA_L_MAX = 1000.0f;
+		
+		public float ACCESS_CHECK_SIZE = 4.0f * CONV_FT_CM;
 
 		public boolean bShowMarkerInter = false;
 		public boolean bShowMarker = false;
@@ -266,15 +268,15 @@ public class PhoenixPCS extends Plugin
 		
 		public class Design
 		{
-			Points p;
-			float orient;
-			String name;
+			HomeFurnitureGroup pcsGrp;
+			int confIndx;
+			int seatingIndx;
 			
-			public Design(Points inP , float inOrient, String inName)
+			public Design(HomeFurnitureGroup fGrp, int cIndx , int sIndx)
 			{
-				p = inP;
-				orient = inOrient;
-				name = inName;
+				pcsGrp = fGrp;
+				confIndx = cIndx;
+				seatingIndx = sIndx;
 			}
 		}
 		
@@ -447,8 +449,7 @@ public class PhoenixPCS extends Plugin
 				
 				long endTime = System.currentTimeMillis(); //System.nanoTime();
 				
-				//JOptionPane.showMessageDialog(null, "Time : " + (endTime - startTime) + " ms \n\nNo. of Designs generated : " + validDesignList.size());
-			
+				//JOptionPane.showMessageDialog(null, "Time : " + (endTime - startTime) + " ms \n\nNo. of Designs generated : " + validDesignList.size());		
 				JOptionPane.showMessageDialog(null, "Time : " + (endTime - startTime) + " ms");
 			}
 			catch(Exception e)
@@ -505,28 +506,52 @@ public class PhoenixPCS extends Plugin
 			
 			float corrX = pcsRect.getX() - furnGrp.getX();
 			furnGrp.setX(furnGrp.getX() + corrX);
-			
-			HomePieceOfFurniture refhp = pcsRect.clone();
-			refhp.setName(pcsRect.getName() + "_" + seatingIndx);
-			home.addPieceOfFurniture(refhp);
-			
+
 			for(HomePieceOfFurniture hp : furnGrp.getFurniture())
 			{
 				home.addPieceOfFurniture(hp);
 			}
 			
-			PlacementInfo plInfo = new PlacementInfo(coordList, orientList, nameList);
-			pcsPlaceInfoList.add(plInfo);
+			//PlacementInfo plInfo = new PlacementInfo(coordList, orientList, nameList);
+			//pcsPlaceInfoList.add(plInfo);
 			
-			JOptionPane.showMessageDialog(null, (p + 1) + " -> " + (seatingIndx + 1));
+			home.deletePieceOfFurniture(pcsRect);
 			
-			/*
-			for(HomePieceOfFurniture hp : furnGrp.getFurniture())
+			List<Points> accPList = getAccessbilityPoints(pcsRect, (ACCESS_CHECK_SIZE / 2), tolerance);
+			
+			if(accPList.size() > 1)
 			{
-				home.deletePieceOfFurniture(hp);
+				Points accP1 = accPList.get(0);
+				Points accP2 = accPList.get(1);
+				
+				float d = calcDistance(accP1, accP2);
+				float angle = (float) Math.atan(Math.abs((accP2.y - accP1.y)/(accP2.x - accP1.x)));
+				
+				HomePieceOfFurniture accBox = getFurnItem("accBox").clone();
+				accBox.setX((accP1.x + accP2.x)/2);
+				accBox.setY((accP1.y + accP2.y)/2);
+				accBox.setWidth(d);
+				accBox.setDepth(ACCESS_CHECK_SIZE);
+				accBox.setAngle(angle);
+				home.addPieceOfFurniture(accBox);
+				
+				PhoenixPathway pathway = new PhoenixPathway();
+				boolean bSuccess = pathway.execute(home, getUserPreferences(), accBox);
+				
+				if(bSuccess)
+				{
+					home.deletePieceOfFurniture(accBox);
+					
+					Design des = new Design(furnGrp, seatingIndx, p);
+					validDesignList.add(des);
+				}
+				
+				JOptionPane.showMessageDialog(null, bSuccess);
 			}
-			*/
-			home.deletePieceOfFurniture(refhp);
+			else
+				JOptionPane.showMessageDialog(null, "Accessibility points not found !!!");
+			
+			//JOptionPane.showMessageDialog(null, (p + 1) + " -> " + (seatingIndx + 1));
 		}
 		
 		public void getLivingConfigs()
@@ -566,7 +591,7 @@ public class PhoenixPCS extends Plugin
 				}
 			}
 						
-			JOptionPane.showMessageDialog(null, dbgStr);
+			//JOptionPane.showMessageDialog(null, dbgStr);
 		}
 				
 		public void genConfigList(float x, float y1, float y2, float y3)
@@ -905,8 +930,6 @@ public class PhoenixPCS extends Plugin
 				
 				//putMarkers(startP, 2);
 				//putMarkers(endP, 2);
-				
-				//JOptionPane.showMessageDialog(null,"!!!");
 						
 				for(WallSegement ws : inWSList)
 				{					
@@ -957,9 +980,6 @@ public class PhoenixPCS extends Plugin
 									
 									Points p = new Points(furnCenter.x, furnCenter.y);
 									//putMarkers(p, 1);
-									
-									Design des = new Design(p, hpRef.getAngle(), hpRef.getName());
-									validDesignList.add(des);
 									
 									if(f != 0)
 									{
@@ -1042,72 +1062,59 @@ public class PhoenixPCS extends Plugin
 					
 					checkAndSnap(hpPlaced, inWSList, tolr);
 					
-					JOptionPane.showMessageDialog(null, bSuccess);
+					//JOptionPane.showMessageDialog(null, bSuccess);
 					
 					bSuccess = checkInsideHome(finalWSList, hpPlaced, PLACEMENT_TOLERANCE);
-					
-					//putMarkers((new Points(hpPlaced.getX(), hpPlaced.getY())), 6);
-					
-					//JOptionPane.showMessageDialog(null, bSuccess);
-					//getAccessbilityPoints(hpPlaced, orient, ws);
-					
+
 					if(bSuccess)
 					{					
-						for(int s = 0 ; s < 1 /*configSeatingArr[p].length*/; s++)
+						for(int s = 0 ; s < 1/*configSeatingArr[p].length*/; s++)
 						{
 							placeRealFurn(hpPlaced, configSeatingArr[p][s], p);					
 						}
-						
-						break;		//debug
-					}
-					
+					}					
 				}
 				
 				if(!bSuccess)
-				{
 					home.deletePieceOfFurniture(hpfP);
-					
-					for(int d = 0; d < validDesignList.size(); d++)
-					{
-						Design des = validDesignList.get(d);
-						
-						if(des.name.equalsIgnoreCase(hpfP.getName()))
-							validDesignList.remove(d);
-					}
-				}
+				
 				counter++;
 			}
 		}
 		
-		public void getAccessbilityPoints(HomePieceOfFurniture hp, float orient, WallSegement ws)
+		public List<Points> getAccessbilityPoints(HomePieceOfFurniture hp, float accDist, float tolr)
 		{
-			List<Points> accCoordList = new ArrayList<Points>();
+			List<Points> accPList = new ArrayList<Points>();
 			
 			float[][] fRect = hp.getPoints();
 			
-			JOptionPane.showMessageDialog(null, ("furn : " + fRect[0][0] + "," + fRect[0][1] + " / " + fRect[1][0] + "," + fRect[1][1] + " / " + fRect[2][0] + "," + fRect[2][1] + " / " + fRect[3][0] + "," + fRect[3][1]));
+			Points startP1 = new Points(fRect[2][0], fRect[2][1]);
+			Points endP1 = new Points(fRect[1][0], fRect[1][1]);
 			
-			LineSegement ls1 = new LineSegement((new Points(fRect[2][0], fRect[2][1])), (new Points(fRect[1][0], fRect[1][1])));
-			LineSegement ls2 = new LineSegement((new Points(fRect[3][0], fRect[3][1])), (new Points(fRect[0][0], fRect[0][1])));
+			Points startP2 = new Points(fRect[3][0], fRect[3][1]);
+			Points endP2 = new Points(fRect[0][0], fRect[0][1]);
 			
-			if(orient == 180.0f)
-			{
-				ls1 = new LineSegement((new Points(fRect[1][0], fRect[1][1])), (new Points(fRect[2][0], fRect[2][1])));
-				ls2 = new LineSegement((new Points(fRect[0][0], fRect[0][1])), (new Points(fRect[3][0], fRect[3][1])));
+			List<Points> accPList1 = getIntersectionCircleLine(startP1, accDist, startP1, endP1);
+			
+			for(Points p : accPList1)
+			{				
+				if(checkPointOnSameSide(p, endP1, startP1, startP2))
+					accPList.add(p);
+				
+				putMarkers(p, 3);
 			}
 			
-			LineSegement refLS = new LineSegement(ws);
-			Intersect inter1 = getIntersectPointOfLines(refLS, ls1);
-			Intersect inter2 = getIntersectPointOfLines(refLS, ls2);
+			List<Points> accPList2 = getIntersectionCircleLine(startP2, accDist, startP2, endP2);
 			
-			//putMarkers(inter1.p, 3);
-			//putMarkers(inter1.p, 4);
+			for(Points p : accPList2)
+			{				
+				if(checkPointOnSameSide(p, endP2, startP1, startP2))
+					accPList.add(p);
+				
+				putMarkers(p, 3);
+			}
 			
-			LineSegement accLS1 = new LineSegement(ls1.endP, inter1.p);
-			LineSegement accLS2 = new LineSegement(ls2.endP, inter2.p);
-			
-			//putMarkerLine(accLS1, 1);
-			//putMarkerLine(accLS2, 1);
+			return accPList;
 		}
 		
 		public List<WallSegement> shortlistWallSegments(List<WallSegement> inWSList, float reqLen)
@@ -1658,7 +1665,23 @@ public class PhoenixPCS extends Plugin
 		}
 
 		// ======================= UTIL FUNCTIONS ======================= //
-
+		
+		public boolean checkPointOnSameSide(Points a, Points b, Points pS1, Points pS2)
+		{
+			boolean bRet = false;
+			
+			// ((y1−y2)(ax−x1)+(x2−x1)(ay−y1))((y1−y2)(bx−x1)+(x2−x1)(by−y1)) < 0
+			
+			float res = ( ((pS1.y - pS2.y)*(a.x - pS1.x)) + ((pS2.x - pS1.x)*(a.y - pS1.y)) )*( ((pS1.y - pS2.y)*(b.x - pS1.x)) + ((pS2.x - pS1.x)*(b.y - pS1.y)) );
+			
+			if(res < 0)
+				bRet = false;
+			else
+				bRet = true;
+			
+			return bRet;
+		}
+		
 		public List<Points> calcSnapCoordinate(LineSegement ws, LineSegement ls, float dist, float tolr) 
 		{
 			List<Points> retPList = new ArrayList<Points>();
@@ -1894,7 +1917,6 @@ public class PhoenixPCS extends Plugin
 			return matchFurn;
 		}
 		
-
 		public Points calcFurnMids(Points p1, Points p2, float d, Room inRoom)
 		{
 			Points retPoints = new Points();
