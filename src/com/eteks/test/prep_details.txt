@@ -14,6 +14,7 @@ Prep:
 11. Get set of wall segments parallel to given line segment
 12. Find distance between two parallel line segments
 13. Calculate the snap co-ordinates
+14. Calculate the co-ordinates of real furnitures
 
 Code
 ----
@@ -21,3 +22,4 @@ A. Get all FWS in room (Living)
 B. Placement of PCSRect
 C. Snap to the nearest wall
 D. Place all configs of PCS Rects
+E. Placement of real furnitures

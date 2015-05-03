@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 import com.eteks.sweethome3d.model.CatalogPieceOfFurniture;
 import com.eteks.sweethome3d.model.FurnitureCategory;
 import com.eteks.sweethome3d.model.Home;
+import com.eteks.sweethome3d.model.HomeFurnitureGroup;
 import com.eteks.sweethome3d.model.HomePieceOfFurniture;
 import com.eteks.sweethome3d.model.Room;
 import com.eteks.sweethome3d.model.Wall;
@@ -45,7 +46,10 @@ public class PhoenixPCS extends Plugin
 		public HomePieceOfFurniture[] markBoxes = new HomePieceOfFurniture[MARKBOX_COUNT];		
 
 		public List<PCSConfig> pcsConfigList = new ArrayList<PCSConfig>();
-
+		public List<float[][]> pcsSeatingConfigList = new ArrayList<float[][]>();
+		
+		public List<PlacementInfo> pcsPlaceInfoList = new ArrayList<PlacementInfo>();
+		
 		public List<Design> validDesignList = new ArrayList<Design>();
 		
 		public float FURN_TOLERANCE = 0.51f;
@@ -98,24 +102,33 @@ public class PhoenixPCS extends Plugin
 		
 		public float FOUR_SEATER_INDEX = 0.0f;
 		public int[] FOUR_SEATER_DESIGN_RANGE = {0, 1, 2};
+		public int[] FOUR_SEATER_SEATING_RANGE = {0, 1, 2, 3};
 		
 		public float FIVE_SEATER_INDEX = 1.0f;
 		public int[] FIVE_SEATER_DESIGN_RANGE = {3, 4};
+		public int[] FIVE_SEATER_SEATING_RANGE = {4, 5, 6, 7, 8};
 		
 		public float SIX_SEATER_INDEX = 2.0f;
 		public int[] SIX_SEATER_DESIGN_RANGE = {2, 4, 5};
+		public int[] SIX_SEATER_SEATING_RANGE = {9, 10, 11, 12, 13, 14, 15, 16, 17};
 		
 		public float SEVEN_SEATER_INDEX = 3.0f;
 		public int[] SEVEN_SEATER_DESIGN_RANGE = {6};
+		public int[] SEVEN_SEATER_SEATING_RANGE = {18, 19, 20};
 		
 		public float EIGHT_SEATER_INDEX = 4.0f;
 		public int[] EIGHT_SEATER_DESIGN_RANGE = {7, 8, 9};
+		public int[] EIGHT_SEATER_SEATING_RANGE = {21, 22, 23, 24, 25, 26};
 		
 		public float NINE_SEATER_INDEX = 5.0f;
 		public int[] NINE_SEATER_DESIGN_RANGE = {10};
+		public int[] NINE_SEATER_SEATING_RANGE = {27, 28, 29, 30, 31, 32};
 		
-		float[][][] roomDimsArr = {{{ROOM_AREA_S_MIN, ROOM_AREA_S_MAX},{FOUR_SEATER_INDEX, FIVE_SEATER_INDEX, SIX_SEATER_INDEX}}, {{ROOM_AREA_M_MIN, ROOM_AREA_M_MAX},{FIVE_SEATER_INDEX, SIX_SEATER_INDEX, SEVEN_SEATER_INDEX}}, {{ROOM_AREA_L_MIN, ROOM_AREA_L_MAX},{SIX_SEATER_INDEX, SEVEN_SEATER_INDEX, EIGHT_SEATER_INDEX, NINE_SEATER_INDEX}}};
-		int[][] roomConfigArr = {FOUR_SEATER_DESIGN_RANGE, FIVE_SEATER_DESIGN_RANGE, SIX_SEATER_DESIGN_RANGE, SEVEN_SEATER_DESIGN_RANGE, EIGHT_SEATER_DESIGN_RANGE, NINE_SEATER_DESIGN_RANGE};
+		float[][][] pcsDimsArr = {{{ROOM_AREA_S_MIN, ROOM_AREA_S_MAX},{FOUR_SEATER_INDEX, FIVE_SEATER_INDEX, SIX_SEATER_INDEX}}, {{ROOM_AREA_M_MIN, ROOM_AREA_M_MAX},{FIVE_SEATER_INDEX, SIX_SEATER_INDEX, SEVEN_SEATER_INDEX}}, {{ROOM_AREA_L_MIN, ROOM_AREA_L_MAX},{SIX_SEATER_INDEX, SEVEN_SEATER_INDEX, EIGHT_SEATER_INDEX, NINE_SEATER_INDEX}}};
+		int[][] pcsConfigArr = {FOUR_SEATER_DESIGN_RANGE, FIVE_SEATER_DESIGN_RANGE, SIX_SEATER_DESIGN_RANGE, SEVEN_SEATER_DESIGN_RANGE, EIGHT_SEATER_DESIGN_RANGE, NINE_SEATER_DESIGN_RANGE};
+		int[][] pcsSeatingArr = {FOUR_SEATER_SEATING_RANGE, FIVE_SEATER_SEATING_RANGE, SIX_SEATER_SEATING_RANGE, SEVEN_SEATER_SEATING_RANGE, EIGHT_SEATER_SEATING_RANGE, NINE_SEATER_SEATING_RANGE};
+		
+		String[] seatingTypeArr = {"1_seater_sofa", "2_seater_sofa", "3_seater_sofa", "5_seater_RL_sofa", "5_seater_LL_sofa", "settee", "center_table", "media_cabinet", "corner_table", "area_rug"};
 		
 		// ======================= CLASSES ======================= //
 
@@ -239,7 +252,7 @@ public class PhoenixPCS extends Plugin
 			float d;
 			float w;
 			
-			public PCSConfig(float depth , float width)
+			public PCSConfig(float width , float depth)
 			{
 				d = depth;
 				w = width;
@@ -257,6 +270,20 @@ public class PhoenixPCS extends Plugin
 				p = inP;
 				orient = inOrient;
 				name = inName;
+			}
+		}
+		
+		public class PlacementInfo
+		{
+			List<Points> fCoordList;
+			List<Float> fOrientList;
+			List<String> fNameList;
+			
+			public PlacementInfo(List<Points> coordList , List<Float> orientList, List<String> nameList)
+			{
+				fCoordList = coordList;
+				fOrientList = orientList;
+				fNameList = nameList;
 			}
 		}
 		
@@ -339,7 +366,7 @@ public class PhoenixPCS extends Plugin
 				// ================================================== //
 				
 				// D. Place all configs of PCS Rects --------- //
-				
+				/*
 				genConfigList(PCS_RECT_W, PCS_RECT_D1, PCS_RECT_D2, PCS_RECT_D3);
 				
 				List<PCSConfig> confList = getLivingConfigs();
@@ -359,6 +386,33 @@ public class PhoenixPCS extends Plugin
 					
 					nameCounter++;
 				}
+				*/
+				// ================================================== //
+				
+				// E. Placement of real furnitures --------- //
+				// 14. Calculate the co-ordinates of real furnitures --------- //
+				
+				genConfigList(PCS_RECT_W, PCS_RECT_D1, PCS_RECT_D2, PCS_RECT_D3);
+				genSeatingConfigList(PCS_RECT_W, PCS_RECT_D1, PCS_RECT_D2, PCS_RECT_D3);
+				
+				PCSConfig pcsConf = pcsConfigList.get(0);
+				
+				HomePieceOfFurniture pcsRect = getFurnItem("PCSRect").clone();
+				pcsRect.setName("PCSRect_1_1");
+				
+				pcsRect.setWidth(pcsConf.w);
+				pcsRect.setDepth(pcsConf.d);
+				
+				pcsRect.setX(500.0f);
+				pcsRect.setY(1000.0f);
+				home.addPieceOfFurniture(pcsRect);
+				
+				int[] seatingIndx = pcsSeatingArr[0];
+			
+				int[] testSeatingIndx = new int[1];
+				testSeatingIndx[0] = seatingIndx[0];
+				
+				placeRealFurn(pcsRect, testSeatingIndx);
 				
 				// ===================================================== //	
 				
@@ -375,6 +429,61 @@ public class PhoenixPCS extends Plugin
 			}			
 		}
 		
+		public void placeRealFurn(HomePieceOfFurniture pcsRect, int[] seatingIndx)
+		{
+			List<Points> coordList = new ArrayList<Points>();
+			List<Float> orientList = new ArrayList<Float>();
+			List<String> nameList = new ArrayList<String>();
+			
+			List<HomePieceOfFurniture> furnList = new ArrayList<HomePieceOfFurniture>();
+			
+			float[][] pcsRectP = pcsRect.getPoints();
+			
+			Points refOrigin = new Points(pcsRectP[0][0], pcsRectP[0][1]);
+			
+			for(int s = 0; s < seatingIndx.length; s++)
+			{
+				float[][] seatingConf = pcsSeatingConfigList.get(seatingIndx[s]);
+				
+				for(int f = 0; f < (seatingConf.length - 1); f++)
+				{
+					int furnType = new Float(seatingConf[f][0]).intValue();
+					String furnName = seatingTypeArr[furnType];
+					
+					float furnX = refOrigin.x + seatingConf[f][1];
+					float furnY = refOrigin.y + seatingConf[f][2];
+					float furnAng = ((float) (Math.PI * seatingConf[f][3])) / 180.0f;
+						
+					JOptionPane.showMessageDialog(null, furnName + " -> " + furnX + ", " + furnY + " : " + furnAng);
+					
+					HomePieceOfFurniture hpf = getFurnItem(furnName).clone();
+					hpf.setName(furnName + "_" + s + "_" + f);
+					hpf.setX(furnX);
+					hpf.setY(furnY);
+					hpf.setAngle(furnAng);
+					
+					coordList.add(new Points(furnX, furnY));
+					orientList.add(furnAng);
+					nameList.add(furnName + "_" + s + "_" + f);
+					
+					furnList.add(hpf);
+				}
+			}
+			
+			HomeFurnitureGroup furnGrp = new HomeFurnitureGroup(furnList, (pcsRect.getName() + "_Group"));
+			
+			float corrX = pcsRect.getX() - furnGrp.getX();
+			furnGrp.setX(furnGrp.getX() + corrX);
+			
+			for(HomePieceOfFurniture hp : furnGrp.getFurniture())
+			{
+				home.addPieceOfFurniture(hp);
+			}
+			
+			PlacementInfo plInfo = new PlacementInfo(coordList, orientList, nameList);
+			pcsPlaceInfoList.add(plInfo);
+		}
+		
 		public List<PCSConfig> getLivingConfigs()
 		{
 			List<PCSConfig> confList = new ArrayList<PCSConfig>();
@@ -383,19 +492,19 @@ public class PhoenixPCS extends Plugin
 			
 			String dbgStr = "roomSize : " + roomSize + " sq. ft. \n\n-------- Configs ---------\n";
 			
-			for(int x = 0 ; x < roomDimsArr.length; x++)
+			for(int x = 0 ; x < pcsDimsArr.length; x++)
 			{
-				if((roomDimsArr[x][0][0] <= roomSize) && (roomSize <= roomDimsArr[x][0][1]))
+				if((pcsDimsArr[x][0][0] <= roomSize) && (roomSize <= pcsDimsArr[x][0][1]))
 				{
 					//JOptionPane.showMessageDialog(null, roomDimsArr[x][1].length);
 							
-					for(int y = 0 ; y < roomDimsArr[x][1].length; y++)
+					for(int y = 0 ; y < pcsDimsArr[x][1].length; y++)
 					{
-						int indx = new Float(roomDimsArr[x][1][y]).intValue();
+						int indx = new Float(pcsDimsArr[x][1][y]).intValue();
 						
 						//JOptionPane.showMessageDialog(null, "indx : " + indx);
 						
-						int[] confIndx = roomConfigArr[indx];
+						int[] confIndx = pcsConfigArr[indx];
 						
 						for(int c = 0; c < confIndx.length; c++)
 						{
@@ -460,6 +569,74 @@ public class PhoenixPCS extends Plugin
 			// Config 11 : 28,29,30,31,32,33
 			pcsConf = new PCSConfig((y3 + (0.5f*x))*CONV_FT_CM, (5*x)*CONV_FT_CM);
 			pcsConfigList.add(pcsConf);
+		}
+		
+		public void genSeatingConfigList(float x, float y1, float y2, float y3)
+		{
+			pcsSeatingConfigList = new ArrayList<float[][]>();
+			
+			// Config 1
+			float[][] seatingConf1 = {	{0.0f, (x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
+										{1.0f, ((2*x) + 0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{0.0f, ((7*x*0.5f) + 1.0f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},	
+										{7.0f, ((2*x) + 0.5f)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf1);
+			
+			// Config 2
+			float[][] seatingConf2 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
+										{1.0f, ((2*x) + 0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{7.0f, ((3*x*0.5f) + 0.25f)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf2);
+			
+			// Config 3
+			float[][] seatingConf3 = {	{1.0f, (2*x)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{1.0f, ((5*x*0.5f) + 0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
+										{7.0f, ((3*x*0.5f) + 0.25f)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+				
+			pcsSeatingConfigList.add(seatingConf3);
+			
+			// Config 4
+			float[][] seatingConf4 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
+										{1.0f, ((3*x*0.5f) + 5.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},	
+										{7.0f, ((x*0.5f) + 2.75f)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf4);
+			
+			// Config 5
+			float[][] seatingConf5 = {	{0.0f, (x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
+										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{0.0f, (9*x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},	
+										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf5);
+			
+			// Config 6
+			float[][] seatingConf6 = {	{2.0f, (3*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{1.0f, (7*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
+										{7.0f, (2*x)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf6);
+			
+			// Config 7
+			float[][] seatingConf7 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
+										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{7.0f, (2*x)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+			
+			pcsSeatingConfigList.add(seatingConf7);
+			
+			// Config 8
+			float[][] seatingConf8 = {	{3.0f, (2*x)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
+										{7.0f, (2*x)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+				
+			pcsSeatingConfigList.add(seatingConf8);
+			
+			// Config 9
+			float[][] seatingConf9 = {	{4.0f, (2*x)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
+										{7.0f, (2*x)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 0.0f}	};
+				
+			pcsSeatingConfigList.add(seatingConf9);
 		}
 
 		public boolean checkAndSnap(HomePieceOfFurniture hpRef, List<WallSegement> inWSList, float tolr)
@@ -1468,6 +1645,7 @@ public class PhoenixPCS extends Plugin
 
 			return matchFurn;
 		}
+		
 
 		public Points calcFurnMids(Points p1, Points p2, float d, Room inRoom)
 		{
