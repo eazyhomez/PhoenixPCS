@@ -204,7 +204,7 @@ public class PhoenixPathway
 		}
 		catch(Exception e)
 		{
-			JOptionPane.showMessageDialog(null," -x-x-x- EXCEPTION : " + e.getMessage()); 
+			//JOptionPane.showMessageDialog(null," -x-x-x- EXCEPTION : " + e.getMessage()); 
 			e.printStackTrace();
 		}
 		
@@ -223,11 +223,14 @@ public class PhoenixPathway
 			
 			int[] indx = ls.parentIndex;
 			
-			if((indx[0] == 0) && (indx[1] == 0) && (indx[2] == 0))
-				break;
-			
-			if(indx[0] > supMasterNewSegList.size())
-				continue;
+			if(indx.length > 0)
+			{
+				if((indx[0] == 0) && (indx[1] == 0) && (indx[2] == 0))
+					break;
+				
+				if(indx[0] > supMasterNewSegList.size())
+					continue;
+			}
 			
 			ls = supMasterNewSegList.get(indx[0]).get(indx[1]).get(indx[2]);
 		}
