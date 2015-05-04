@@ -27,4 +27,4 @@ F. Pathway
 
 Demo
 -----
-1 config working
+All config orientation + sets

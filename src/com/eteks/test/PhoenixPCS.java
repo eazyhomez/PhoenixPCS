@@ -106,36 +106,27 @@ public class PhoenixPCS extends Plugin
 		// ======================= PCS CONSTANTS ======================= //
 		
 		public float FOUR_SEATER_INDEX = 0.0f;
-		public int[] FOUR_SEATER_DESIGN_RANGE = {0, 1, 2};
-		public int[] FOUR_SEATER_SEATING_RANGE = {0, 1, 2, 3};
+		public int[][] FOUR_SEATER_DESIGN_RANGE = {{0,0}, {1,1}, {1,2}, {2,3}};
 		
 		public float FIVE_SEATER_INDEX = 1.0f;
-		public int[] FIVE_SEATER_DESIGN_RANGE = {3, 4};
-		public int[] FIVE_SEATER_SEATING_RANGE = {4, 5, 6, 7, 8};
+		public int[][] FIVE_SEATER_DESIGN_RANGE = {{3,5}, {3,6}, {3,7}, {3,8}, {4,4}};
 		
 		public float SIX_SEATER_INDEX = 2.0f;
-		public int[] SIX_SEATER_DESIGN_RANGE = {2, 4, 5};
-		public int[] SIX_SEATER_SEATING_RANGE = {9, 10, 11, 12, 13, 14, 15, 16, 17};
+		public int[][] SIX_SEATER_DESIGN_RANGE = {{2,17}, {4,13}, {4,14}, {4,15}, {4,16}, {5,9}, {5,10}, {5,11}, {5,12}};
 		
 		public float SEVEN_SEATER_INDEX = 3.0f;
-		public int[] SEVEN_SEATER_DESIGN_RANGE = {6};
-		public int[] SEVEN_SEATER_SEATING_RANGE = {18, 19, 20};
+		public int[][] SEVEN_SEATER_DESIGN_RANGE = {{6,18}, {6,19}, {6,20}};
 		
 		public float EIGHT_SEATER_INDEX = 4.0f;
-		public int[] EIGHT_SEATER_DESIGN_RANGE = {7, 8, 9};
-		public int[] EIGHT_SEATER_SEATING_RANGE = {21, 22, 23, 24, 25, 26};
+		public int[][] EIGHT_SEATER_DESIGN_RANGE = {{7,21}, {7,22}, {7,23}, {7,24}, {8,25}, {9,26}};
 		
 		public float NINE_SEATER_INDEX = 5.0f;
-		public int[] NINE_SEATER_DESIGN_RANGE = {10};
-		public int[] NINE_SEATER_SEATING_RANGE = {27, 28, 29, 30, 31, 32};
+		public int[][] NINE_SEATER_DESIGN_RANGE = {{10,27}, {10,28}, {10,29}, {10,30}, {10,31}, {10,32}};
 		
 		float[][][] pcsDimsArr = {{{ROOM_AREA_S_MIN, ROOM_AREA_S_MAX},{FOUR_SEATER_INDEX, FIVE_SEATER_INDEX, SIX_SEATER_INDEX}}, {{ROOM_AREA_M_MIN, ROOM_AREA_M_MAX},{FIVE_SEATER_INDEX, SIX_SEATER_INDEX, SEVEN_SEATER_INDEX}}, {{ROOM_AREA_L_MIN, ROOM_AREA_L_MAX},{SIX_SEATER_INDEX, SEVEN_SEATER_INDEX, EIGHT_SEATER_INDEX, NINE_SEATER_INDEX}}};
-		int[][] pcsConfigArr = {FOUR_SEATER_DESIGN_RANGE, FIVE_SEATER_DESIGN_RANGE, SIX_SEATER_DESIGN_RANGE, SEVEN_SEATER_DESIGN_RANGE, EIGHT_SEATER_DESIGN_RANGE, NINE_SEATER_DESIGN_RANGE};
-		int[][] pcsSeatingArr = {FOUR_SEATER_SEATING_RANGE, FIVE_SEATER_SEATING_RANGE, SIX_SEATER_SEATING_RANGE, SEVEN_SEATER_SEATING_RANGE, EIGHT_SEATER_SEATING_RANGE, NINE_SEATER_SEATING_RANGE};
-		
-		String[] seatingTypeArr = {"1_seater_sofa", "2_seater_sofa", "3_seater_sofa", "5_seater_RL_sofa", "5_seater_LL_sofa", "6_seater_RL_sofa", "6_seater_LL_sofa" , "media_cabinet", "settee", "center_table", "corner_table", "area_rug"};
+		int[][][] pcsConfigArr = {FOUR_SEATER_DESIGN_RANGE, FIVE_SEATER_DESIGN_RANGE, SIX_SEATER_DESIGN_RANGE, SEVEN_SEATER_DESIGN_RANGE, EIGHT_SEATER_DESIGN_RANGE, NINE_SEATER_DESIGN_RANGE};
 
-		int[][] configSeatingArr = {{0,0}, {1,1}, {1,2}, {2,3}, {2,17}, {3,5}, {3,6}, {3,7}, {3,8}, {4,4}, {4,13}, {4,14}, {4,15}, {4,16}, {5,9}, {5,10}, {5,11}, {5,12}, {6,18}, {6,19}, {6,20}, {7,21}, {7,22}, {7,23}, {7,24}, {8,25}, {9,26}, {10,27}, {10,28}, {10,29}, {10,30}, {10,31}, {10,32}};
+		String[] seatingTypeArr = {"1_seater_sofa", "2_seater_sofa", "3_seater_sofa", "5_seater_RL_sofa", "5_seater_LL_sofa", "6_seater_RL_sofa", "6_seater_LL_sofa" , "media_cabinet", "settee", "center_table", "corner_table", "area_rug"};
 		
 		// ======================= CLASSES ======================= //		
 		
@@ -397,7 +388,7 @@ public class PhoenixPCS extends Plugin
 				// ================================================== //
 				
 				// 14. Calculate the co-ordinates of real furnitures --------- //
-				
+				/*
 				genConfigList(PCS_RECT_W, PCS_RECT_D1, PCS_RECT_D2, PCS_RECT_D3);
 				genSeatingConfigList(PCS_RECT_W, PCS_RECT_D1, PCS_RECT_D2, PCS_RECT_D3);
 				
@@ -428,12 +419,12 @@ public class PhoenixPCS extends Plugin
 					
 					//JOptionPane.showMessageDialog(null, "");					
 				}
-			
+				*/
 				
 				// ================================================== //
 				
 				// E. Placement of real furnitures --------- //
-				/*
+				
 				genConfigList(PCS_RECT_W, PCS_RECT_D1, PCS_RECT_D2, PCS_RECT_D3);
 				genSeatingConfigList(PCS_RECT_W, PCS_RECT_D1, PCS_RECT_D2, PCS_RECT_D3);
 				
@@ -452,13 +443,11 @@ public class PhoenixPCS extends Plugin
 					pcsRect.setWidth(pcsConfigList.get(pcsConfIndx).w);
 					pcsRect.setDepth(pcsConfigList.get(pcsConfIndx).d);
 					
-					JOptionPane.showMessageDialog(null, p + " -> " + pcsConfIndx + ", " + pcsSeatingIndx);
-					
 					placePCSRectWithSnap(finalWSList, pcsRect, innerWSList, validWSList, tolerance, pcsSeatingIndx);
 					
 					nameCounter++;
 				}				
-				*/
+				
 				long endTime = System.currentTimeMillis(); //System.nanoTime();
 				
 				//JOptionPane.showMessageDialog(null, "Time : " + (endTime - startTime) + " ms \n\nNo. of Designs generated : " + validDesignList.size());		
