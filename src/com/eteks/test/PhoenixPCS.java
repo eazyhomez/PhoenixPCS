@@ -398,64 +398,71 @@ public class PhoenixPCS extends Plugin
 				
 				// 14. Calculate the co-ordinates of real furnitures --------- //
 				
-				/*
 				genConfigList(PCS_RECT_W, PCS_RECT_D1, PCS_RECT_D2, PCS_RECT_D3);
 				genSeatingConfigList(PCS_RECT_W, PCS_RECT_D1, PCS_RECT_D2, PCS_RECT_D3);
 				
-				for(int p = 0 ; p < pcsConfigList.size(); p++)
+				//for(int p = 0 ; p < pcsConfigList.size(); p++)
 				{
-					PCSConfig pcsConf = pcsConfigList.get(p);
+					//PCSConfig pcsConf = pcsConfigList.get(p);
 					
-					HomePieceOfFurniture pcsRect = getFurnItem("PCSRect").clone();
-					pcsRect.setName("PCSRect_1_1");
+					HomePieceOfFurniture pcsRect1 = searchMatchFurn("PCSRect_1_1");
 					
-					pcsRect.setWidth(pcsConf.w);
-					pcsRect.setDepth(pcsConf.d);
+					HomePieceOfFurniture pcsRect2 = searchMatchFurn("PCSRect_1_2");
 					
-					pcsRect.setX(500.0f);
-					pcsRect.setY(1000.0f);
+					HomePieceOfFurniture pcsRect3 = searchMatchFurn("PCSRect_1_5");
 					
-					for(int s = 0 ; s < configSeatingArr[p].length; s++)
+					//pcsRect.setName("PCSRect_1_1");
+					
+					//pcsRect.setWidth(pcsConf.w);
+					//pcsRect.setDepth(pcsConf.d);
+					
+					//pcsRect.setX(500.0f);
+					//pcsRect.setY(1000.0f);
+					
+					for(int s = 0 ; s < configSeatingArr.length; s++)
 					{
-						placeRealFurn(pcsRect, configSeatingArr[p][s], p);					
+						placeRealFurn(pcsRect1, configSeatingArr[s][1]);
+						placeRealFurn(pcsRect2, configSeatingArr[s][1]);	
+						placeRealFurn(pcsRect3, configSeatingArr[s][1]);	
 					}
 					
 					//JOptionPane.showMessageDialog(null, "");					
 				}
-				*/
+			
 				
 				// ================================================== //
 				
 				// E. Placement of real furnitures --------- //
-				
+				/*
 				genConfigList(PCS_RECT_W, PCS_RECT_D1, PCS_RECT_D2, PCS_RECT_D3);
 				genSeatingConfigList(PCS_RECT_W, PCS_RECT_D1, PCS_RECT_D2, PCS_RECT_D3);
 				
-				getLivingConfigs();
+				//getLivingConfigs();
 				
 				int nameCounter = 1;
 				
 				// Limit the loop
-				for(int p = 0 ; p < 1/*configSeatingArr.length*/; p++)
+				for(int p = 3 ; p < configSeatingArr.length; p++)
 				{					
 					int pcsConfIndx = configSeatingArr[p][0];
+					int pcsSeatingIndx = configSeatingArr[p][1];
 					
 					HomePieceOfFurniture pcsRect = getFurnItem("PCSRect").clone();
 					pcsRect.setName("PCSRect_" + nameCounter);
 					pcsRect.setWidth(pcsConfigList.get(pcsConfIndx).w);
 					pcsRect.setDepth(pcsConfigList.get(pcsConfIndx).d);
 					
-					//JOptionPane.showMessageDialog(null, "w : " + pcsConf.w + ", d: " + pcsConf.d);
+					JOptionPane.showMessageDialog(null, p + " -> " + pcsConfIndx + ", " + pcsSeatingIndx);
 					
-					placePCSRectWithSnap(finalWSList, pcsRect, innerWSList, validWSList, tolerance, p);
+					placePCSRectWithSnap(finalWSList, pcsRect, innerWSList, validWSList, tolerance, pcsSeatingIndx);
 					
 					nameCounter++;
 				}				
-				
+				*/
 				long endTime = System.currentTimeMillis(); //System.nanoTime();
 				
 				//JOptionPane.showMessageDialog(null, "Time : " + (endTime - startTime) + " ms \n\nNo. of Designs generated : " + validDesignList.size());		
-				JOptionPane.showMessageDialog(null, "Time : " + (endTime - startTime) + " ms");
+				//JOptionPane.showMessageDialog(null, "Time : " + (endTime - startTime) + " ms");
 			}
 			catch(Exception e)
 			{
@@ -463,91 +470,24 @@ public class PhoenixPCS extends Plugin
 				e.printStackTrace();
 			}			
 		}
-
-		public void placeRealFurnTest(HomePieceOfFurniture pcsRect, int seatingIndx)
-		{
-			List<Points> coordList = new ArrayList<Points>();
-			List<Float> orientList = new ArrayList<Float>();
-			List<String> nameList = new ArrayList<String>();
-			
-			List<HomePieceOfFurniture> furnList = new ArrayList<HomePieceOfFurniture>();
-			
-			float[][] pcsRectP = pcsRect.getPoints();
-			
-			Points refOrigin = new Points(pcsRectP[0][0], pcsRectP[0][1]);
-			
-			float[][] seatingConf = pcsSeatingConfigList.get(seatingIndx);
-			
-			for(int f = 0; f < seatingConf.length; f++)
-			{
-				int furnType = new Float(seatingConf[f][0]).intValue();
-				String furnName = seatingTypeArr[furnType];
-				
-				float furnX = refOrigin.x + seatingConf[f][1];
-				float furnY = refOrigin.y + seatingConf[f][2];
-				float furnAng = ((float) (Math.PI * seatingConf[f][3])) / 180.0f;
-					
-				//JOptionPane.showMessageDialog(null, furnName + " -> " + furnX + ", " + furnY + " : " + furnAng);
-				
-				HomePieceOfFurniture hpf = getFurnItem(furnName).clone();
-				hpf.setName(furnName + "_" + seatingIndx + "_" + f);
-				hpf.setX(furnX);
-				
-				if(furnName.equalsIgnoreCase("media_cabinet"))
-					hpf.setY(furnY - (0.5f*hpf.getDepth()));
-				else
-					hpf.setY(furnY);
-					
-				hpf.setAngle(furnAng);
-				
-				coordList.add(new Points(furnX, furnY));
-				orientList.add(furnAng);
-				nameList.add(furnName + "_" + seatingIndx + "_" + f);
-				
-				furnList.add(hpf);
-			}
-			
-			HomeFurnitureGroup furnGrp = new HomeFurnitureGroup(furnList, (pcsRect.getName() + "_Group"));
-			
-			float corrX = pcsRect.getX() - furnGrp.getX();
-			furnGrp.setX(furnGrp.getX() + corrX);
-			
-			HomePieceOfFurniture refhp = pcsRect.clone();
-			refhp.setName(pcsRect.getName() + "_" + seatingIndx);
-			home.addPieceOfFurniture(refhp);
-			
-			for(HomePieceOfFurniture hp : furnGrp.getFurniture())
-			{
-				home.addPieceOfFurniture(hp);
-			}
-			
-			//PlacementInfo plInfo = new PlacementInfo(coordList, orientList, nameList);
-			//pcsPlaceInfoList.add(plInfo);
-			
-			JOptionPane.showMessageDialog(null, " -> " + (seatingIndx + 1));
-			
-			for(HomePieceOfFurniture hp : furnGrp.getFurniture())
-			{
-				home.deletePieceOfFurniture(hp);
-			}
-			
-			home.deletePieceOfFurniture(refhp);
-		}
 		
-		public void placeRealFurn(HomePieceOfFurniture pcsRect, int seatingIndx, int p)
-		{
-			List<Points> coordList = new ArrayList<Points>();
-			List<Float> orientList = new ArrayList<Float>();
-			List<String> nameList = new ArrayList<String>();
-			
+		public void placeRealFurn(HomePieceOfFurniture pcsRect, int seatingIndx)
+		{			
 			List<HomePieceOfFurniture> furnList = new ArrayList<HomePieceOfFurniture>();
 			
 			float[][] pcsRectP = pcsRect.getPoints();
 			
 			Points refOrigin = new Points(pcsRectP[0][0], pcsRectP[0][1]);			
 			putMarkers(refOrigin, 1);
-					
-			//JOptionPane.showMessageDialog(null, (180.0f * pcsRect.getAngle() / (float) Math.PI));
+			
+			Points refBase1 = new Points(pcsRectP[2][0], pcsRectP[2][1]);
+			Points refBase2 = new Points(pcsRectP[3][0], pcsRectP[3][1]);
+			LineSegement base = new LineSegement(refBase1, refBase2);
+			
+			putMarkers(refBase1, 3);
+			putMarkers(refBase2, 4);
+			
+			float pcsAngle = pcsRect.getAngle();//calcWallAngles(base);
 					
 			float[][] seatingConf = pcsSeatingConfigList.get(seatingIndx);
 			
@@ -558,7 +498,7 @@ public class PhoenixPCS extends Plugin
 				
 				float furnX = refOrigin.x + seatingConf[f][1];
 				float furnY = refOrigin.y + seatingConf[f][2];
-				float furnAng = ((float) (Math.PI * seatingConf[f][3])) / 180.0f;
+				float furnAng = (((float) (Math.PI * seatingConf[f][3])) / 180.0f);
 					
 				//JOptionPane.showMessageDialog(null, furnName + " -> " + furnX + ", " + furnY + " : " + furnAng);
 				
@@ -573,29 +513,26 @@ public class PhoenixPCS extends Plugin
 					
 				hpf.setAngle(furnAng);
 				
-				coordList.add(new Points(furnX, furnY));
-				orientList.add(furnAng);
-				nameList.add(furnName + "_" + seatingIndx + "_" + f);
-				
 				furnList.add(hpf);
 			}
 			
 			HomeFurnitureGroup furnGrp = new HomeFurnitureGroup(furnList, (pcsRect.getName() + "_Group"));
-			
-			//float corrX = pcsRect.getX() - furnGrp.getX();
-			//furnGrp.setX(furnGrp.getX() + corrX);
+	
+			float grpAng = furnGrp.getAngle();
 			
 			furnGrp.setX(pcsRect.getX());
-			furnGrp.setY(pcsRect.getY());			
-			furnGrp.setAngle(pcsRect.getAngle());
-
+			furnGrp.setY(pcsRect.getY());
+			furnGrp.setAngle(pcsAngle + grpAng);
+			
+			//float grpAng2 = furnGrp.getAngle();
+			//String dbg = (180.0f * grpAng / (float) Math.PI) + "\n";
+			//dbg += (180.0f * pcsAngle / (float) Math.PI) + " -> " + (180.0f * grpAng2 / (float) Math.PI);
+			//JOptionPane.showMessageDialog(null, dbg);
+			
 			for(HomePieceOfFurniture hp : furnGrp.getFurniture())
 			{
 				home.addPieceOfFurniture(hp);
 			}
-			
-			//PlacementInfo plInfo = new PlacementInfo(coordList, orientList, nameList);
-			//pcsPlaceInfoList.add(plInfo);
 			
 			//home.deletePieceOfFurniture(pcsRect);
 			
@@ -606,8 +543,8 @@ public class PhoenixPCS extends Plugin
 				Points accP1 = accPList.get(0);
 				Points accP2 = accPList.get(1);
 				
-				putMarkers(accP1, 3);
-				putMarkers(accP2, 3);
+				//putMarkers(accP1, 3);
+				//putMarkers(accP2, 3);
 				
 				float d = calcDistance(accP1, accP2);
 				float angle = (float) Math.atan(Math.abs((accP2.y - accP1.y)/(accP2.x - accP1.x)));
@@ -627,11 +564,20 @@ public class PhoenixPCS extends Plugin
 				{
 					home.deletePieceOfFurniture(accBox);
 					
+					JOptionPane.showMessageDialog(null, "PCS Design generated !!!");
+							
+					home.deletePieceOfFurniture(pcsRect);
+					
+					furnGrp.setAngle(0.0f);
+					for(HomePieceOfFurniture hp : furnGrp.getFurniture())
+					{
+						home.deletePieceOfFurniture(hp);
+					}
+					
 					//Design des = new Design(furnGrp, seatingIndx, p);
 					//validDesignList.add(des);
-				}
-				
-				JOptionPane.showMessageDialog(null, bSuccess);
+				}				
+				//JOptionPane.showMessageDialog(null, bSuccess);
 			}
 			else
 				JOptionPane.showMessageDialog(null, "Accessibility points not found !!!");
@@ -1120,7 +1066,7 @@ public class PhoenixPCS extends Plugin
 			return bLiesOnWall;
 		}
 			
-		public void placePCSRectWithSnap(List<WallSegement> finalWSList, HomePieceOfFurniture pcsRect, List<WallSegement> inWSList, List<WallSegement> validWSList, float tolr, int p)
+		public void placePCSRectWithSnap(List<WallSegement> finalWSList, HomePieceOfFurniture pcsRect, List<WallSegement> inWSList, List<WallSegement> validWSList, float tolr, int pcsSeatingIndx)
 		{
 			boolean bSuccess = false;
 			
@@ -1152,9 +1098,8 @@ public class PhoenixPCS extends Plugin
 					bSuccess = checkInsideHome(finalWSList, hpPlaced, PLACEMENT_TOLERANCE);
 
 					if(bSuccess)
-					{
-						int pcsSeatingIndx = configSeatingArr[p][1];						
-						placeRealFurn(hpPlaced, pcsSeatingIndx, p);
+					{					
+						placeRealFurn(hpPlaced, pcsSeatingIndx);
 					}					
 				}
 				
@@ -2071,6 +2016,8 @@ public class PhoenixPCS extends Plugin
 
 				furn.setAngle(ang + (float)Math.PI);
 				rotation = 180.0f;
+				
+				JOptionPane.showMessageDialog(null, "rotated 180");
 			}
 			
 			return rotation;

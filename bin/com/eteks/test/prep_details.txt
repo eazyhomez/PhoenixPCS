@@ -22,5 +22,9 @@ A. Get all FWS in room (Living)
 B. Placement of PCSRect
 C. Snap to the nearest wall
 D. Place all configs of PCS Rects
-E. Placement of real furnitures - Configs - WIP
-E. Pathway - WIP 2
+E. Placement of real furnitures
+F. Pathway
+
+Demo
+-----
+1 config working
