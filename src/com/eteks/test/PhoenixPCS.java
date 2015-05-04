@@ -103,7 +103,8 @@ public class PhoenixPCS extends Plugin
 		public boolean bDebugMode = true;
 		
 		public int validDesignCount = 0;
-		
+
+		public String[] dbgArr = new String[5];
 		
 		// ======================= PCS CONSTANTS ======================= //
 		
@@ -351,6 +352,12 @@ public class PhoenixPCS extends Plugin
 						int pcsConfIndx = pcsConfArr[x][0];
 						int pcsSeatingIndx = pcsConfArr[x][1];
 						
+						dbgArr[0] = pcsConfArr.length + "," ;
+						dbgArr[1] = pcsConfIndx + "," ;
+						dbgArr[2] = pcsSeatingIndx + "," ;
+						dbgArr[3] = pcsConfigList.size() + "," ;
+						dbgArr[4] = pcsSeatingConfigList.size() + "" ;
+						
 						//JOptionPane.showMessageDialog(null, pcsConfIndx + "," + pcsSeatingIndx);
 								
 						HomePieceOfFurniture pcsRect = getFurnItem("PCSRect").clone();
@@ -371,7 +378,7 @@ public class PhoenixPCS extends Plugin
 			}
 			catch(Exception e)
 			{
-				JOptionPane.showMessageDialog(null," -x-x-x- EXCEPTION : " + e.getMessage()); 
+				JOptionPane.showMessageDialog(null," -x-xxx-x- EXCEPTION : " + e.getMessage() + " : " + dbgArr[0]+dbgArr[1]+dbgArr[2]+dbgArr[3]+dbgArr[4]); 
 				//e.printStackTrace();
 			}			
 		}
@@ -379,7 +386,9 @@ public class PhoenixPCS extends Plugin
 		public void placeRealFurn(HomePieceOfFurniture pcsRect, int seatingIndx)
 		{			
 			List<HomePieceOfFurniture> furnList = new ArrayList<HomePieceOfFurniture>();
-			HomePieceOfFurniture accBox = getFurnItem("accBox").clone();
+			
+			//HomePieceOfFurniture accBox = getFurnItem("accBox").clone();
+			HomePieceOfFurniture accBox = getFurnItem("box_invisible").clone();
 			
 			float[][] pcsRectP = pcsRect.getPoints();
 			
@@ -516,7 +525,6 @@ public class PhoenixPCS extends Plugin
 				JOptionPane.showMessageDialog(null, " x-x-x EXCEPTION while saving design !!!");		
 			}
 		}
-		
 		
 		public List<int[][]> getLivingConfigs()
 		{	

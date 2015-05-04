@@ -57,7 +57,7 @@ public class PhoenixPathway
 	public HomePieceOfFurniture[] markBoxes = new HomePieceOfFurniture[MARKBOX_COUNT];
 	
 	public boolean bShowMarker = false;
-	public boolean bShowPathway = true;
+	public boolean bShowPathway = false;
 	
 	public UserPreferences userPref;
 	
@@ -148,10 +148,21 @@ public class PhoenixPathway
 			{
 				loopCount++;
 				
+				if(loopCount > 10)
+				{
+					if(masterNewSegList != null)
+						JOptionPane.showMessageDialog(null, loopCount + " : " + masterNewSegList.size());
+					else
+						JOptionPane.showMessageDialog(null, loopCount + " --- ");
+				}
+				
 				List<List<LineSegement>> nxtMasterNewSegList = new ArrayList<List<LineSegement>>();
 				
 				listIndx = -1;
 				
+				if((masterNewSegList == null) || (masterNewSegList.size() < 1))
+					bStop = true;
+					
 				for(List<LineSegement> lsList : masterNewSegList)
 				{	
 					listIndx++;
@@ -204,7 +215,7 @@ public class PhoenixPathway
 		}
 		catch(Exception e)
 		{
-			//JOptionPane.showMessageDialog(null," -x-x-x- EXCEPTION : " + e.getMessage()); 
+			//JOptionPane.showMessageDialog(null," -x-x-x- EXCEPTION (Pathway): " + e.getMessage()); 
 			e.printStackTrace();
 		}
 		
@@ -221,18 +232,24 @@ public class PhoenixPathway
 			if(bShowMarker || bShowPathway)
 				putMarkers(ls.parent, 4);				
 			
-			int[] indx = ls.parentIndex;
-			
-			if(indx.length > 0)
+			int[] indx = ls.parentIndex;			
+
+			if(indx.length > 2)
 			{
 				if((indx[0] == 0) && (indx[1] == 0) && (indx[2] == 0))
 					break;
+			}
 				
+			if(indx.length > 0)
+			{
 				if(indx[0] > supMasterNewSegList.size())
-					continue;
+					continue;				
 			}
 			
-			ls = supMasterNewSegList.get(indx[0]).get(indx[1]).get(indx[2]);
+			if(indx.length > 2)
+			{
+				ls = supMasterNewSegList.get(indx[0]).get(indx[1]).get(indx[2]);
+			}
 		}
 	}
 	
@@ -263,6 +280,8 @@ public class PhoenixPathway
 				}
 			}
 		}
+		else
+			bStop = true;
 		
 		return newArcSegList;
 	}
@@ -288,8 +307,8 @@ public class PhoenixPathway
 			Points arcP1 = arcP.get(0);
 			Points arcP2 = arcP.get(1);
 			
-			//putMarkers(arcP1, 0);
-			//putMarkers(arcP2, 0);
+			putMarkers(arcP1, 5);
+			putMarkers(arcP2, 5);
 			
 			List<LineSegement> arcSegList = generateFreeArcSegs(centerP, arcP1, arcP2, rad);
 			
@@ -301,6 +320,8 @@ public class PhoenixPathway
 				}
 			}
 		}
+		else
+			bStop = true;
 		
 		return newArcSegList;
 	}
