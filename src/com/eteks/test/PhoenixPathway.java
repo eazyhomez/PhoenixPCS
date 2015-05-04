@@ -307,8 +307,8 @@ public class PhoenixPathway
 			Points arcP1 = arcP.get(0);
 			Points arcP2 = arcP.get(1);
 			
-			putMarkers(arcP1, 5);
-			putMarkers(arcP2, 5);
+			//putMarkers(arcP1, 5);
+			//putMarkers(arcP2, 5);
 			
 			List<LineSegement> arcSegList = generateFreeArcSegs(centerP, arcP1, arcP2, rad);
 			

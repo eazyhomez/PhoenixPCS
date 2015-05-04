@@ -371,14 +371,18 @@ public class PhoenixPCS extends Plugin
 					}					
 				}				
 				
-				long endTime = System.currentTimeMillis(); //System.nanoTime();
-				
+				long endTime = System.currentTimeMillis(); //System.nanoTime();				
 				JOptionPane.showMessageDialog(null, "No. of Designs generated : " + validDesignCount);		
 				
 			}
 			catch(Exception e)
 			{
-				JOptionPane.showMessageDialog(null," -x-xxx-x- EXCEPTION : " + e.getMessage() + " : " + dbgArr[0]+dbgArr[1]+dbgArr[2]+dbgArr[3]+dbgArr[4]); 
+				cleanupExp();
+				cleanupMarkers();
+				
+				JOptionPane.showMessageDialog(null, "No. of Designs generated : " + validDesignCount);	
+				
+				//JOptionPane.showMessageDialog(null," -x-xxx-x- EXCEPTION : " + e.getMessage() + " : " + dbgArr[0]+dbgArr[1]+dbgArr[2]+dbgArr[3]+dbgArr[4]); 
 				//e.printStackTrace();
 			}			
 		}
@@ -1672,6 +1676,15 @@ public class PhoenixPCS extends Plugin
 					home.deletePieceOfFurniture(hpf);
 			}
 		}		
+		
+		public void cleanupExp()
+		{
+			for(HomePieceOfFurniture hpf : home.getFurniture())
+			{
+				if(hpf.getName().startsWith("PCSRect"))
+					home.deletePieceOfFurniture(hpf);
+			}
+		}
 		
 		public boolean checkPointOnSameSide(Points a, Points b, Points pS1, Points pS2)
 		{
