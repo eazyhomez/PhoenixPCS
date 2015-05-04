@@ -544,8 +544,11 @@ public class PhoenixPCS extends Plugin
 			
 			float[][] pcsRectP = pcsRect.getPoints();
 			
-			Points refOrigin = new Points(pcsRectP[0][0], pcsRectP[0][1]);
-			
+			Points refOrigin = new Points(pcsRectP[0][0], pcsRectP[0][1]);			
+			putMarkers(refOrigin, 1);
+					
+			//JOptionPane.showMessageDialog(null, (180.0f * pcsRect.getAngle() / (float) Math.PI));
+					
 			float[][] seatingConf = pcsSeatingConfigList.get(seatingIndx);
 			
 			for(int f = 0; f < seatingConf.length; f++)
@@ -579,8 +582,12 @@ public class PhoenixPCS extends Plugin
 			
 			HomeFurnitureGroup furnGrp = new HomeFurnitureGroup(furnList, (pcsRect.getName() + "_Group"));
 			
-			float corrX = pcsRect.getX() - furnGrp.getX();
-			furnGrp.setX(furnGrp.getX() + corrX);
+			//float corrX = pcsRect.getX() - furnGrp.getX();
+			//furnGrp.setX(furnGrp.getX() + corrX);
+			
+			furnGrp.setX(pcsRect.getX());
+			furnGrp.setY(pcsRect.getY());			
+			furnGrp.setAngle(pcsRect.getAngle());
 
 			for(HomePieceOfFurniture hp : furnGrp.getFurniture())
 			{
@@ -590,43 +597,41 @@ public class PhoenixPCS extends Plugin
 			//PlacementInfo plInfo = new PlacementInfo(coordList, orientList, nameList);
 			//pcsPlaceInfoList.add(plInfo);
 			
-			home.deletePieceOfFurniture(pcsRect);
+			//home.deletePieceOfFurniture(pcsRect);
 			
 			List<Points> accPList = getAccessbilityPoints(pcsRect, (ACCESS_CHECK_SIZE / 2), tolerance);
 			
 			if(accPList.size() > 1)
 			{			
-				//if(bRun)
+				Points accP1 = accPList.get(0);
+				Points accP2 = accPList.get(1);
+				
+				putMarkers(accP1, 3);
+				putMarkers(accP2, 3);
+				
+				float d = calcDistance(accP1, accP2);
+				float angle = (float) Math.atan(Math.abs((accP2.y - accP1.y)/(accP2.x - accP1.x)));
+				
+				HomePieceOfFurniture accBox = getFurnItem("accBox").clone();
+				accBox.setX((accP1.x + accP2.x)/2);
+				accBox.setY((accP1.y + accP2.y)/2);
+				accBox.setWidth(d);
+				accBox.setDepth(ACCESS_CHECK_SIZE);
+				accBox.setAngle(angle);
+				home.addPieceOfFurniture(accBox);
+				
+				PhoenixPathway pathway = new PhoenixPathway();
+				boolean bSuccess = true; //pathway.execute(home, getUserPreferences(), accBox);
+				
+				if(bSuccess)
 				{
-					//bRun = false;
+					home.deletePieceOfFurniture(accBox);
 					
-					Points accP1 = accPList.get(0);
-					Points accP2 = accPList.get(1);
-					
-					float d = calcDistance(accP1, accP2);
-					float angle = (float) Math.atan(Math.abs((accP2.y - accP1.y)/(accP2.x - accP1.x)));
-					
-					HomePieceOfFurniture accBox = getFurnItem("accBox").clone();
-					accBox.setX((accP1.x + accP2.x)/2);
-					accBox.setY((accP1.y + accP2.y)/2);
-					accBox.setWidth(d);
-					accBox.setDepth(ACCESS_CHECK_SIZE);
-					accBox.setAngle(angle);
-					home.addPieceOfFurniture(accBox);
-					
-					PhoenixPathway pathway = new PhoenixPathway();
-					boolean bSuccess = pathway.execute(home, getUserPreferences(), accBox);
-					
-					if(bSuccess)
-					{
-						home.deletePieceOfFurniture(accBox);
-						
-						Design des = new Design(furnGrp, seatingIndx, p);
-						validDesignList.add(des);
-					}
-					
-					JOptionPane.showMessageDialog(null, bSuccess);
+					//Design des = new Design(furnGrp, seatingIndx, p);
+					//validDesignList.add(des);
 				}
+				
+				JOptionPane.showMessageDialog(null, bSuccess);
 			}
 			else
 				JOptionPane.showMessageDialog(null, "Accessibility points not found !!!");
@@ -671,7 +676,7 @@ public class PhoenixPCS extends Plugin
 				}
 			}
 						
-			JOptionPane.showMessageDialog(null, dbgStr);
+			//JOptionPane.showMessageDialog(null, dbgStr);
 		}
 				
 		public void genConfigList(float x, float y1, float y2, float y3)
@@ -1148,13 +1153,8 @@ public class PhoenixPCS extends Plugin
 
 					if(bSuccess)
 					{
-						int pcsSeatingIndx = configSeatingArr[p][1];
-						
-						if(bRun)
-						{
-							bRun = false;
-							placeRealFurn(hpPlaced, pcsSeatingIndx, p);
-						}
+						int pcsSeatingIndx = configSeatingArr[p][1];						
+						placeRealFurn(hpPlaced, pcsSeatingIndx, p);
 					}					
 				}
 				
@@ -1184,7 +1184,8 @@ public class PhoenixPCS extends Plugin
 				if(checkPointOnSameSide(p, endP1, startP1, startP2))
 					accPList.add(p);
 				
-				putMarkers(p, 3);
+				if(bShowMarkerInter)
+					putMarkers(p, 5);
 			}
 			
 			List<Points> accPList2 = getIntersectionCircleLine(startP2, accDist, startP2, endP2);
@@ -1194,7 +1195,8 @@ public class PhoenixPCS extends Plugin
 				if(checkPointOnSameSide(p, endP2, startP1, startP2))
 					accPList.add(p);
 				
-				putMarkers(p, 3);
+				if(bShowMarkerInter)
+					putMarkers(p, 5);
 			}
 			
 			return accPList;
