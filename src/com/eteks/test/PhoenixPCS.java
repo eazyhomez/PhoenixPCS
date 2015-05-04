@@ -366,7 +366,7 @@ public class PhoenixPCS extends Plugin
 				
 				long endTime = System.currentTimeMillis(); //System.nanoTime();
 				
-				JOptionPane.showMessageDialog(null, "Time : " + (endTime - startTime) + " ms \n\nNo. of Designs generated : " + validDesignCount);		
+				JOptionPane.showMessageDialog(null, "No. of Designs generated : " + validDesignCount);		
 				
 			}
 			catch(Exception e)
