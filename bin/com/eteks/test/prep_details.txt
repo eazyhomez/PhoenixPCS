@@ -23,4 +23,4 @@ B. Placement of PCSRect
 C. Snap to the nearest wall
 D. Place all configs of PCS Rects
 E. Placement of real furnitures - Configs - WIP
-E. Pathway - WIP
+E. Pathway - WIP 2

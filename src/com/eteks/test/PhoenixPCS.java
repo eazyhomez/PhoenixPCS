@@ -102,7 +102,7 @@ public class PhoenixPCS extends Plugin
 		public boolean bShowClearPlacements = false;
 		public boolean bDebugMode = true;
 		
-		
+		public boolean bRun = true;
 		// ======================= PCS CONSTANTS ======================= //
 		
 		public float FOUR_SEATER_INDEX = 0.0f;
@@ -398,14 +398,13 @@ public class PhoenixPCS extends Plugin
 				
 				// 14. Calculate the co-ordinates of real furnitures --------- //
 				
+				/*
 				genConfigList(PCS_RECT_W, PCS_RECT_D1, PCS_RECT_D2, PCS_RECT_D3);
 				genSeatingConfigList(PCS_RECT_W, PCS_RECT_D1, PCS_RECT_D2, PCS_RECT_D3);
 				
-				getLivingConfigs();
-				
-				for(int p = 0 ; p < configSeatingArr.length; p++)
+				for(int p = 0 ; p < pcsConfigList.size(); p++)
 				{
-					PCSConfig pcsConf = pcsConfigList.get(configSeatingArr[p][0]);
+					PCSConfig pcsConf = pcsConfigList.get(p);
 					
 					HomePieceOfFurniture pcsRect = getFurnItem("PCSRect").clone();
 					pcsRect.setName("PCSRect_1_1");
@@ -416,15 +415,19 @@ public class PhoenixPCS extends Plugin
 					pcsRect.setX(500.0f);
 					pcsRect.setY(1000.0f);
 					
-					placeRealFurnTest(pcsRect, configSeatingArr[p][1] , configSeatingArr[p][0]);
+					for(int s = 0 ; s < configSeatingArr[p].length; s++)
+					{
+						placeRealFurn(pcsRect, configSeatingArr[p][s], p);					
+					}
 					
 					//JOptionPane.showMessageDialog(null, "");					
 				}
+				*/
 				
 				// ================================================== //
 				
 				// E. Placement of real furnitures --------- //
-				/*
+				
 				genConfigList(PCS_RECT_W, PCS_RECT_D1, PCS_RECT_D2, PCS_RECT_D3);
 				genSeatingConfigList(PCS_RECT_W, PCS_RECT_D1, PCS_RECT_D2, PCS_RECT_D3);
 				
@@ -433,12 +436,14 @@ public class PhoenixPCS extends Plugin
 				int nameCounter = 1;
 				
 				// Limit the loop
-				for(int p = 0 ; p < pcsConfigList.size(); p++)
-				{		
+				for(int p = 0 ; p < 1/*configSeatingArr.length*/; p++)
+				{					
+					int pcsConfIndx = configSeatingArr[p][0];
+					
 					HomePieceOfFurniture pcsRect = getFurnItem("PCSRect").clone();
 					pcsRect.setName("PCSRect_" + nameCounter);
-					pcsRect.setWidth(pcsConfigList.get(p).w);
-					pcsRect.setDepth(pcsConfigList.get(p).d);
+					pcsRect.setWidth(pcsConfigList.get(pcsConfIndx).w);
+					pcsRect.setDepth(pcsConfigList.get(pcsConfIndx).d);
 					
 					//JOptionPane.showMessageDialog(null, "w : " + pcsConf.w + ", d: " + pcsConf.d);
 					
@@ -446,7 +451,7 @@ public class PhoenixPCS extends Plugin
 					
 					nameCounter++;
 				}				
-				*/
+				
 				long endTime = System.currentTimeMillis(); //System.nanoTime();
 				
 				//JOptionPane.showMessageDialog(null, "Time : " + (endTime - startTime) + " ms \n\nNo. of Designs generated : " + validDesignList.size());		
@@ -459,55 +464,7 @@ public class PhoenixPCS extends Plugin
 			}			
 		}
 
-		public void runConfigs(HomePieceOfFurniture pcsRect)
-		{
-			placeRealFurnTest(pcsRect, 0 , 0);
-			
-			placeRealFurnTest(pcsRect, 1 , 1);
-			placeRealFurnTest(pcsRect, 1 , 2);
-			
-			placeRealFurnTest(pcsRect, 2 , 3);
-			placeRealFurnTest(pcsRect, 2 , 17);
-			
-			placeRealFurnTest(pcsRect, 3 , 5);
-			placeRealFurnTest(pcsRect, 3 , 6);
-			placeRealFurnTest(pcsRect, 3 , 7);
-			placeRealFurnTest(pcsRect, 3 , 8);
-			
-			placeRealFurnTest(pcsRect, 4 , 4);
-			placeRealFurnTest(pcsRect, 4 , 13);
-			placeRealFurnTest(pcsRect, 4 , 14);
-			placeRealFurnTest(pcsRect, 4 , 15);
-			placeRealFurnTest(pcsRect, 4 , 16);
-			
-			placeRealFurnTest(pcsRect, 5 , 9);
-			placeRealFurnTest(pcsRect, 5 , 10);
-			placeRealFurnTest(pcsRect, 5 , 11);
-			placeRealFurnTest(pcsRect, 5 , 12);
-			
-			placeRealFurnTest(pcsRect, 6 , 18);
-			placeRealFurnTest(pcsRect, 6 , 19);
-			placeRealFurnTest(pcsRect, 6 , 20);
-			
-			placeRealFurnTest(pcsRect, 7 , 21);
-			placeRealFurnTest(pcsRect, 7 , 22);
-			placeRealFurnTest(pcsRect, 7 , 23);
-			placeRealFurnTest(pcsRect, 7 , 24);
-			
-			placeRealFurnTest(pcsRect, 8 , 25);
-			
-			placeRealFurnTest(pcsRect, 9 , 26);
-			
-			placeRealFurnTest(pcsRect, 7 , 27);
-			placeRealFurnTest(pcsRect, 7 , 28);
-			placeRealFurnTest(pcsRect, 7 , 29);
-			placeRealFurnTest(pcsRect, 7 , 30);
-			placeRealFurnTest(pcsRect, 7 , 31);
-			placeRealFurnTest(pcsRect, 7 , 32);			
-					
-		}
-		
-		public void placeRealFurnTest(HomePieceOfFurniture pcsRect, int seatingIndx, int p1)
+		public void placeRealFurnTest(HomePieceOfFurniture pcsRect, int seatingIndx)
 		{
 			List<Points> coordList = new ArrayList<Points>();
 			List<Float> orientList = new ArrayList<Float>();
@@ -638,33 +595,38 @@ public class PhoenixPCS extends Plugin
 			List<Points> accPList = getAccessbilityPoints(pcsRect, (ACCESS_CHECK_SIZE / 2), tolerance);
 			
 			if(accPList.size() > 1)
-			{
-				Points accP1 = accPList.get(0);
-				Points accP2 = accPList.get(1);
-				
-				float d = calcDistance(accP1, accP2);
-				float angle = (float) Math.atan(Math.abs((accP2.y - accP1.y)/(accP2.x - accP1.x)));
-				
-				HomePieceOfFurniture accBox = getFurnItem("accBox").clone();
-				accBox.setX((accP1.x + accP2.x)/2);
-				accBox.setY((accP1.y + accP2.y)/2);
-				accBox.setWidth(d);
-				accBox.setDepth(ACCESS_CHECK_SIZE);
-				accBox.setAngle(angle);
-				home.addPieceOfFurniture(accBox);
-				
-				PhoenixPathway pathway = new PhoenixPathway();
-				boolean bSuccess = pathway.execute(home, getUserPreferences(), accBox);
-				
-				if(bSuccess)
+			{			
+				//if(bRun)
 				{
-					home.deletePieceOfFurniture(accBox);
+					//bRun = false;
 					
-					Design des = new Design(furnGrp, seatingIndx, p);
-					validDesignList.add(des);
+					Points accP1 = accPList.get(0);
+					Points accP2 = accPList.get(1);
+					
+					float d = calcDistance(accP1, accP2);
+					float angle = (float) Math.atan(Math.abs((accP2.y - accP1.y)/(accP2.x - accP1.x)));
+					
+					HomePieceOfFurniture accBox = getFurnItem("accBox").clone();
+					accBox.setX((accP1.x + accP2.x)/2);
+					accBox.setY((accP1.y + accP2.y)/2);
+					accBox.setWidth(d);
+					accBox.setDepth(ACCESS_CHECK_SIZE);
+					accBox.setAngle(angle);
+					home.addPieceOfFurniture(accBox);
+					
+					PhoenixPathway pathway = new PhoenixPathway();
+					boolean bSuccess = pathway.execute(home, getUserPreferences(), accBox);
+					
+					if(bSuccess)
+					{
+						home.deletePieceOfFurniture(accBox);
+						
+						Design des = new Design(furnGrp, seatingIndx, p);
+						validDesignList.add(des);
+					}
+					
+					JOptionPane.showMessageDialog(null, bSuccess);
 				}
-				
-				JOptionPane.showMessageDialog(null, bSuccess);
 			}
 			else
 				JOptionPane.showMessageDialog(null, "Accessibility points not found !!!");
@@ -690,7 +652,7 @@ public class PhoenixPCS extends Plugin
 						
 						for(int c = 0; c < confIndx.length; c++)
 						{
-							currPCSConfigList.add(pcsConfigList.get(confIndx[c]));
+							//currPCSConfigList.add(pcsConfigList.get(confIndx[c]));
 							dbgStr += confIndx[c] + ", ";
 						}
 						
@@ -700,7 +662,7 @@ public class PhoenixPCS extends Plugin
 						
 						for(int c = 0; c < seatingIndx.length; c++)
 						{
-							currPCSSeatingConfigList.add(pcsSeatingConfigList.get(seatingIndx[c]));
+							//currPCSSeatingConfigList.add(pcsSeatingConfigList.get(seatingIndx[c]));
 							dbgStr += seatingIndx[c] + ", ";
 						}
 						
@@ -1186,7 +1148,13 @@ public class PhoenixPCS extends Plugin
 
 					if(bSuccess)
 					{
-						runConfigs(hpPlaced);
+						int pcsSeatingIndx = configSeatingArr[p][1];
+						
+						if(bRun)
+						{
+							bRun = false;
+							placeRealFurn(hpPlaced, pcsSeatingIndx, p);
+						}
 					}					
 				}
 				
