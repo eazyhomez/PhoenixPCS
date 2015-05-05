@@ -12,12 +12,15 @@ import javax.swing.JOptionPane;
 
 import com.eteks.sweethome3d.io.HomeFileRecorder;
 import com.eteks.sweethome3d.model.CatalogPieceOfFurniture;
+import com.eteks.sweethome3d.model.CatalogTexture;
 import com.eteks.sweethome3d.model.FurnitureCategory;
 import com.eteks.sweethome3d.model.Home;
 import com.eteks.sweethome3d.model.HomeFurnitureGroup;
 import com.eteks.sweethome3d.model.HomePieceOfFurniture;
 import com.eteks.sweethome3d.model.HomeRecorder;
+import com.eteks.sweethome3d.model.HomeTexture;
 import com.eteks.sweethome3d.model.Room;
+import com.eteks.sweethome3d.model.TexturesCategory;
 import com.eteks.sweethome3d.model.Wall;
 import com.eteks.sweethome3d.plugin.Plugin;
 import com.eteks.sweethome3d.plugin.PluginAction;
@@ -134,10 +137,10 @@ public class PhoenixPCS extends Plugin
 		public String[] configLabelArr = {"4 Seater", "5 Seater", "6 Seater", "7 Seater", "8 Seater", "9 Seater"};
 		
 		public String[] seatingTypeArr = {"1_seater_sofa", "2_seater_sofa", "3_seater_sofa", "5_seater_RL_sofa", "5_seater_LL_sofa", "6_seater_RL_sofa", "6_seater_LL_sofa" , "media_cabinet", "settee", "center_table", "corner_table", "area_rug"};
-		
-		public float[][] seatingDimsArr = {{(2.5f*CONV_FT_CM), (2.5f*CONV_FT_CM)}, {(2.5f*CONV_FT_CM), (2f*2.5f*CONV_FT_CM)}, {(2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(2f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(2f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(3.0f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(3.0f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(2f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(1f*2.5f*CONV_FT_CM), (5f*2.5f*CONV_FT_CM)}, {(3.0f*2.5f*CONV_FT_CM), (5f*2.5f*CONV_FT_CM)}, {(2f*2.5f*CONV_FT_CM), (2f*2.5f*CONV_FT_CM)}, {(3.0f*2.5f*CONV_FT_CM), (5.0f*2.5f*CONV_FT_CM)}};
+		public float[][] seatingDimsArr = {{(2.5f*CONV_FT_CM), (2.5f*CONV_FT_CM)}, {(2.5f*CONV_FT_CM), (2f*2.5f*CONV_FT_CM)}, {(2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(2f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(2f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(3.0f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(3.0f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(2f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(1f*2.5f*CONV_FT_CM), (5f*2.5f*CONV_FT_CM)}, {(3.0f*2.5f*CONV_FT_CM), (5f*2.5f*CONV_FT_CM)}, {(2f*2.5f*CONV_FT_CM), (2f*2.5f*CONV_FT_CM)}, {(4.0f*2.5f*CONV_FT_CM), (6.0f*2.5f*CONV_FT_CM)}};
 		
 		public String[][] catNamesArr = {{"sofa"}, {"sofa"}, {"sofa", "couch"}, {"sofa", "couch"}, {"sofa", "couch"}, {"sofa", "couch"}, {"sofa", "couch"}, {"mediacabinet"}, {"chair"}, {"glass table", "coffee table"}, {"round table", "glass table"}, {"rug", "carpet"}};
+		public String catTextArr = "Gray waves wallpaper"; 
 		
 		public List<List<HomePieceOfFurniture>> catFurnList = new ArrayList<List<HomePieceOfFurniture>>();
 		
@@ -328,6 +331,8 @@ public class PhoenixPCS extends Plugin
 				
 				// ==================== Catalog ========================= //
 				
+				// 15. Placement of real furnitures from catalog ------------//
+				
 				for(int s = 0; s < seatingTypeArr.length; s++)
 				{						
 					float d = seatingDimsArr[s][0];
@@ -342,7 +347,7 @@ public class PhoenixPCS extends Plugin
 					}
 					
 					//JOptionPane.showMessageDialog(null, seatingTypeArr[s] + " : " + furnList.size());
-					catFurnList.add(furnList);
+					catFurnList.add(s, furnList);
 				}
 				
 				HomePieceOfFurniture f1 = searchMatchFurn("2@3_seater_sofa_17_0");
@@ -570,7 +575,12 @@ public class PhoenixPCS extends Plugin
 				if(catFurnList.get(indx).size() > prefIndx)
 					realFurn = catFurnList.get(indx).get(prefIndx).clone();
 				else
-					realFurn = catFurnList.get(indx).get(0).clone();
+					realFurn = catFurnList.get(indx).get(0).clone();				
+				
+				if(indx == 7)	// media cabinet
+				{
+					populateWallFurnTest(hp, catTextArr, 0);
+				}
 				
 				realFurn.setName(hp.getName());
 				realFurn.setX(hp.getX());
@@ -580,6 +590,67 @@ public class PhoenixPCS extends Plugin
 				home.deletePieceOfFurniture(hp);
 				home.addPieceOfFurniture(realFurn);
 			}
+		}
+		
+		public void populateWallFurnTest(HomePieceOfFurniture hp, String textName, int prefIndx)
+		{							
+			float[][] fRect = hp.getPoints();
+			
+			Points fStartP = new Points(fRect[2][0], fRect[2][1]);
+			Points fEndP = new Points(fRect[3][0], fRect[3][1]);
+			
+			Wall bckWall = getBackWall(fStartP, fEndP, WALL_TOLERANCE);
+			
+			
+			JOptionPane.showMessageDialog(null, "populateWallFurnTest");
+			JOptionPane.showMessageDialog(null, bckWall);
+			
+			Points wallSP = new Points(bckWall.getXStart(), bckWall.getYStart());
+			//Points wallEP = new Points(bckWall.getXEnd(), bckWall.getYEnd());	
+			
+			float dist1 = calcDistance(wallSP, fStartP);
+			float dist2 = calcDistance(wallSP, fEndP);
+
+			
+			List<HomeTexture> htList = searchMatchTexture(textName);
+			
+			if(dist1 < dist2)
+			{
+				if(htList.size() > prefIndx)
+					bckWall.setRightSideTexture(htList.get(prefIndx));	// apply on right side
+				else if(htList.size() > 0)
+					bckWall.setRightSideTexture(htList.get(0));
+				
+				//JOptionPane.showMessageDialog(null, bckWall + " - R");
+			}
+			else
+			{
+				if(htList.size() > prefIndx)
+					bckWall.setLeftSideTexture(htList.get(prefIndx)); // apply on left side
+				else if(htList.size() > 0)
+					bckWall.setLeftSideTexture(htList.get(0));
+				
+				//JOptionPane.showMessageDialog(null, bckWall + " - L");
+			}
+		}
+		
+		public Wall getBackWall(Points fStartP, Points fEndP, float tolr)
+		{
+			Wall backWall = null;
+			
+			Points midP = new Points(((fStartP.x + fEndP.x)/2), ((fStartP.y + fEndP.y)/2));
+			
+			for(Wall w : home.getWalls())
+			{
+				if(w.containsPoint(midP.x, midP.y, tolr))
+				{
+					backWall = w;
+					break;
+				}
+			}
+			
+			JOptionPane.showMessageDialog(null, backWall);
+			return backWall;
 		}
 		
 		public void populateFurn(HomeFurnitureGroup furnGrp, List<Integer> indxList)
@@ -2024,6 +2095,36 @@ public class PhoenixPCS extends Plugin
 			catch(Exception e){e.printStackTrace();}
 
 			return matchFurn;
+		}
+		
+		public List<HomeTexture> searchMatchTexture(String textName)
+		{			
+			List<HomeTexture> txtList = new ArrayList<HomeTexture>();
+			List<TexturesCategory> fCatg = getUserPreferences().getTexturesCatalog().getCategories();
+			
+			try 
+			{
+				for(int c = 0; c < fCatg.size(); c++ )
+				{
+					List<CatalogTexture> catTxtList = fCatg.get(c).getTextures();
+					
+					for(int p = 0; p < catTxtList.size(); p++ )
+					{						
+						CatalogTexture catT = catTxtList.get(p);
+						
+						//JOptionPane.showMessageDialog(null, catT);
+						
+						if(catT.getName().equalsIgnoreCase(textName))
+						{							
+							JOptionPane.showMessageDialog(null, catT.getName());	
+							txtList.add(new HomeTexture(catT));							
+						}
+					}
+				}				
+			}
+			catch(Exception e){JOptionPane.showMessageDialog(null, e.getMessage()); e.printStackTrace();}
+			
+			return txtList;
 		}
 		
 		public List<HomePieceOfFurniture> searchCatalog(String furnName, float width, float depth)
