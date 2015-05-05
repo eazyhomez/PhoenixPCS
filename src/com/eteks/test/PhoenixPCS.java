@@ -2,6 +2,7 @@ package com.eteks.test;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NavigableMap;
 import java.util.Set;
@@ -72,6 +73,7 @@ public class PhoenixPCS extends Plugin
 
 		public float INFINITY = 10000.0f; 
 
+		public float CONV_IN_M = 100.0f;
 		public float CONV_IN_CM = 2.54f;
 		public float CONV_FT_CM = (12.0f * CONV_IN_CM);
 
@@ -132,6 +134,12 @@ public class PhoenixPCS extends Plugin
 		public String[] configLabelArr = {"4 Seater", "5 Seater", "6 Seater", "7 Seater", "8 Seater", "9 Seater"};
 		
 		public String[] seatingTypeArr = {"1_seater_sofa", "2_seater_sofa", "3_seater_sofa", "5_seater_RL_sofa", "5_seater_LL_sofa", "6_seater_RL_sofa", "6_seater_LL_sofa" , "media_cabinet", "settee", "center_table", "corner_table", "area_rug"};
+		
+		public float[][] seatingDimsArr = {{(2.5f*CONV_FT_CM), (2.5f*CONV_FT_CM)}, {(2.5f*CONV_FT_CM), (2f*2.5f*CONV_FT_CM)}, {(2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(2f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(2f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(3.0f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(3.0f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(2f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(1f*2.5f*CONV_FT_CM), (5f*2.5f*CONV_FT_CM)}, {(3.0f*2.5f*CONV_FT_CM), (5f*2.5f*CONV_FT_CM)}, {(2f*2.5f*CONV_FT_CM), (2f*2.5f*CONV_FT_CM)}, {(3.0f*2.5f*CONV_FT_CM), (5.0f*2.5f*CONV_FT_CM)}};
+		
+		public String[][] catNamesArr = {{"sofa"}, {"sofa"}, {"sofa", "couch"}, {"sofa", "couch"}, {"sofa", "couch"}, {"sofa", "couch"}, {"sofa", "couch"}, {"mediacabinet"}, {"chair"}, {"glass table", "coffee table"}, {"round table", "glass table"}, {"rug", "carpet"}};
+		
+		public List<List<HomePieceOfFurniture>> catFurnList = new ArrayList<List<HomePieceOfFurniture>>();
 		
 		// ======================= CLASSES ======================= //		
 		
@@ -318,8 +326,41 @@ public class PhoenixPCS extends Plugin
 				
 				long startTime = System.currentTimeMillis(); //System.nanoTime();
 				
-				// ==================== Demo ========================= //
+				// ==================== Catalog ========================= //
 				
+				for(int s = 0; s < seatingTypeArr.length; s++)
+				{						
+					float d = seatingDimsArr[s][0];
+					float w = seatingDimsArr[s][1];
+					
+					List<HomePieceOfFurniture> furnList = new ArrayList<HomePieceOfFurniture>();
+					
+					for(String fName : catNamesArr[s])
+					{
+						List<HomePieceOfFurniture> fList =  searchCatalog(fName, w, d);
+						furnList.addAll(fList);
+					}
+					
+					//JOptionPane.showMessageDialog(null, seatingTypeArr[s] + " : " + furnList.size());
+					catFurnList.add(furnList);
+				}
+				
+				HomePieceOfFurniture f1 = searchMatchFurn("2@3_seater_sofa_17_0");
+				HomePieceOfFurniture f2 = searchMatchFurn("2@3_seater_sofa_17_1");
+				HomePieceOfFurniture f3 = searchMatchFurn("7@media_cabinet_17_2");
+				
+				HomePieceOfFurniture f4 = searchMatchFurn("9@center_table_17_3");
+				HomePieceOfFurniture f5 = searchMatchFurn("11@area_rug_17_4");
+
+				populateFurnTest(f5,5);
+				populateFurnTest(f4,4);
+				populateFurnTest(f3,1);
+				populateFurnTest(f2,4);
+				populateFurnTest(f1,4);
+
+				
+				// ==================== Demo ========================= //
+				/*
 				getLivingRoom();
 				float[][] livinRect = livingRoom.getPoints();
 				
@@ -373,14 +414,16 @@ public class PhoenixPCS extends Plugin
 				
 				long endTime = System.currentTimeMillis(); //System.nanoTime();				
 				JOptionPane.showMessageDialog(null, "No. of Designs generated : " + validDesignCount);		
-				
+				*/
 			}
 			catch(Exception e)
 			{
 				cleanupExp();
 				cleanupMarkers();
 				
-				JOptionPane.showMessageDialog(null, "No. of Designs generated : " + validDesignCount);	
+				JOptionPane.showMessageDialog(null," -x-xxx-x- EXCEPTION : " + e.getMessage());
+						
+				//JOptionPane.showMessageDialog(null, "No. of Designs generated : " + validDesignCount);	
 				
 				//JOptionPane.showMessageDialog(null," -x-xxx-x- EXCEPTION : " + e.getMessage() + " : " + dbgArr[0]+dbgArr[1]+dbgArr[2]+dbgArr[3]+dbgArr[4]); 
 				//e.printStackTrace();
@@ -390,6 +433,7 @@ public class PhoenixPCS extends Plugin
 		public void placeRealFurn(HomePieceOfFurniture pcsRect, int seatingIndx)
 		{			
 			List<HomePieceOfFurniture> furnList = new ArrayList<HomePieceOfFurniture>();
+			List<Integer> refIndxList = new ArrayList<Integer>();
 			
 			//HomePieceOfFurniture accBox = getFurnItem("accBox").clone();
 			HomePieceOfFurniture accBox = getFurnItem("box_invisible").clone();
@@ -406,6 +450,8 @@ public class PhoenixPCS extends Plugin
 			for(int f = 0; f < seatingConf.length; f++)
 			{
 				int furnType = new Float(seatingConf[f][0]).intValue();
+				refIndxList.add(furnType);
+				
 				String furnName = seatingTypeArr[furnType];
 				
 				float furnX = refOrigin.x + seatingConf[f][1];
@@ -423,8 +469,7 @@ public class PhoenixPCS extends Plugin
 				else
 					hpf.setY(furnY);
 					
-				hpf.setAngle(furnAng);
-				
+				hpf.setAngle(furnAng);				
 				furnList.add(hpf);
 			}
 			
@@ -446,7 +491,7 @@ public class PhoenixPCS extends Plugin
 				home.addPieceOfFurniture(hp);
 			}
 			
-			home.deletePieceOfFurniture(pcsRect);	
+			//home.deletePieceOfFurniture(pcsRect);	
 			
 			List<Points> accPList = getAccessbilityPoints(pcsRect, (ACCESS_CHECK_SIZE / 2), tolerance);
 			
@@ -488,10 +533,8 @@ public class PhoenixPCS extends Plugin
 					cleanupMarkers();				
 					furnGrp.setAngle(0.0f);
 					
-					for(HomePieceOfFurniture hp : furnGrp.getFurniture())
-					{
-						home.deletePieceOfFurniture(hp);
-					}
+					//populateFurn(furnGrp, refIndxList);
+					
 				}
 				catch(Exception e)
 				{
@@ -512,6 +555,50 @@ public class PhoenixPCS extends Plugin
 			}
 			else
 				JOptionPane.showMessageDialog(null, "Accessibility points not found !!!");
+		}
+		
+		public void populateFurnTest(HomePieceOfFurniture hp, int prefIndx)
+		{
+			String[] nameStr = hp.getName().split("@");
+			
+			if(nameStr.length > 0)
+			{
+				int indx = Integer.parseInt(nameStr[0]);
+				
+				HomePieceOfFurniture realFurn = null;
+				
+				if(catFurnList.get(indx).size() > prefIndx)
+					realFurn = catFurnList.get(indx).get(prefIndx).clone();
+				else
+					realFurn = catFurnList.get(indx).get(0).clone();
+				
+				realFurn.setName(hp.getName());
+				realFurn.setX(hp.getX());
+				realFurn.setY(hp.getY());
+				realFurn.setAngle(hp.getAngle());	
+				
+				home.deletePieceOfFurniture(hp);
+				home.addPieceOfFurniture(realFurn);
+			}
+		}
+		
+		public void populateFurn(HomeFurnitureGroup furnGrp, List<Integer> indxList)
+		{
+			for(int x = 0; x < furnGrp.getFurniture().size(); x++)
+			{
+				int indx = indxList.get(x);
+				
+				HomePieceOfFurniture furn = furnGrp.getFurniture().get(x);				
+				HomePieceOfFurniture realFurn = catFurnList.get(indx).get(0);
+				
+				realFurn.setName(furn.getName());
+				realFurn.setX(furn.getX());
+				realFurn.setY(furn.getY());
+				realFurn.setAngle(furn.getAngle());	
+				
+				home.deletePieceOfFurniture(furn);
+				home.addPieceOfFurniture(realFurn);
+			}
 		}
 		
 		public void saveDesign(Home h, String name)
@@ -572,7 +659,7 @@ public class PhoenixPCS extends Plugin
 			
 			//dbgStr += activePCSConfList.toString() + "\n";
 						
-			JOptionPane.showMessageDialog(null, dbgStr);
+			//JOptionPane.showMessageDialog(null, dbgStr);
 			
 			return activePCSConfList;
 		}
@@ -1919,6 +2006,8 @@ public class PhoenixPCS extends Plugin
 		{
 			HomePieceOfFurniture matchFurn = null;
 
+			//JOptionPane.showMessageDialog(null, furnName);
+			
 			try 
 			{				
 				List<HomePieceOfFurniture> catPOF = home.getFurniture();
@@ -1935,6 +2024,55 @@ public class PhoenixPCS extends Plugin
 			catch(Exception e){e.printStackTrace();}
 
 			return matchFurn;
+		}
+		
+		public List<HomePieceOfFurniture> searchCatalog(String furnName, float width, float depth)
+		{
+			List<HomePieceOfFurniture> furnList = new ArrayList<HomePieceOfFurniture>();
+			List<String> typeArr = Arrays.asList(seatingTypeArr);
+			
+			String dbgStr = "";
+			
+			float w = width * CONV_IN_M;
+			float d = depth * CONV_IN_M;
+			
+			HomePieceOfFurniture matchFurn = null;
+			List<FurnitureCategory> fCatg = getUserPreferences().getFurnitureCatalog().getCategories();		
+
+			try 
+			{
+				for(int c = 0; c < fCatg.size(); c++ )
+				{
+					List<CatalogPieceOfFurniture> catPOFList = fCatg.get(c).getFurniture();
+
+					for(int p = 0; p < catPOFList.size(); p++ )
+					{
+						CatalogPieceOfFurniture catF = catPOFList.get(p);
+						
+						if(catF.getName().toLowerCase().indexOf(furnName) > -1)
+						{
+							if(typeArr.contains(catF.getName()))
+								continue; 
+							
+							matchFurn = new HomePieceOfFurniture(catF);
+							
+							float cW = matchFurn.getWidth();
+							float cD = matchFurn.getDepth();
+							
+							if((cW <= w) && (cD <= d))
+							{
+								furnList.add(matchFurn);
+								dbgStr += catF.getName() + " -> w : " + cW + " cm, d : " + cD + " cm \n"; 
+							}
+							
+						}
+					}	
+				}				
+			}
+			catch(Exception e){e.printStackTrace();}
+
+			//JOptionPane.showMessageDialog(null, dbgStr);
+			return furnList;
 		}
 		
 		public Points calcFurnMids(Points p1, Points p2, float d, Room inRoom)

@@ -15,6 +15,7 @@ Prep:
 12. Find distance between two parallel line segments
 13. Calculate the snap co-ordinates
 14. Calculate the co-ordinates of real furnitures
+15. Placement of real furnitures from catalog
 
 Code
 ----
@@ -29,4 +30,4 @@ Demo
 -----
 1. All PCS configs
 2. Save valid designs in different SH3D files
-3.
+3. Final
