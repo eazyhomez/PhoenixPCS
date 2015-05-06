@@ -35,3 +35,4 @@ Demo
 Issues
 ------
 1. All placements are not snapping to walls - Fixed
+2. Orientation inverted in config - Fixed

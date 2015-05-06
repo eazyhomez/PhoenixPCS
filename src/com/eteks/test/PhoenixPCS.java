@@ -906,7 +906,7 @@ public class PhoenixPCS extends Plugin
 			
 			// Seating Config 10
 			float[][] seatingConf10 = {	{2.0f, (3*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
-										{2.0f, (7*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 270.0f},
+										{2.0f, (7*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
 										{7.0f, (2*x)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 180.0f},
 										{9.0f, (3*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 0.0f},
 										{11.0f, (3*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 0.0f}	};
@@ -1048,7 +1048,7 @@ public class PhoenixPCS extends Plugin
 			
 			// Seating Config 25
 			float[][] seatingConf25 = {	{4.0f, (2*x)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
-										{2.0f, (9*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 270.0f},	
+										{2.0f, (9*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},	
 										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 180.0f},
 										{9.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 0.0f},
 										{11.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 0.0f}	};
