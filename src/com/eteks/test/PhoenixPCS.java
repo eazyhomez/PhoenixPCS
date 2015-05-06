@@ -420,9 +420,9 @@ public class PhoenixPCS extends Plugin
 				cleanupExp();
 				cleanupMarkers();
 				
-				//JOptionPane.showMessageDialog(null," -x-xxx-x- EXCEPTION : " + e.getMessage());
+				JOptionPane.showMessageDialog(null," -x-xxx-x- EXCEPTION : " + e.getMessage());
 						
-				JOptionPane.showMessageDialog(null, "No. of Designs generated : " + validDesignCount);	
+				//JOptionPane.showMessageDialog(null, "No. of Designs generated : " + validDesignCount);	
 				
 				//JOptionPane.showMessageDialog(null," -x-xxx-x- EXCEPTION : " + e.getMessage() + " : " + dbgArr[0]+dbgArr[1]+dbgArr[2]+dbgArr[3]+dbgArr[4]); 
 				//e.printStackTrace();
@@ -1199,7 +1199,7 @@ public class PhoenixPCS extends Plugin
 								
 								boolean bValid = false;
 								
-								if(f == 0)
+								/*if(f == 0)
 								{
 									boolean bLiesOnWall = checkBackFace(hpRef.getPoints(), inWSList, tolr);
 									
@@ -1208,9 +1208,19 @@ public class PhoenixPCS extends Plugin
 										hpRef.setX(furnCenter.x);
 										hpRef.setY(furnCenter.y);
 									}
-								}
+								}*/
 								
-								bValid = checkInsideRoom(livingRoom, hpRef.getPoints(), PLACEMENT_TOLERANCE);
+								boolean bLiesOnWall = checkFace(hpRef.getPoints(), f, inWSList, tolr);
+								
+								JOptionPane.showMessageDialog(null, "bLiesOnWall : " + bLiesOnWall + ", " + f);
+										
+								if(!bLiesOnWall)
+								{
+									hpRef.setX(furnCenter.x);
+									hpRef.setY(furnCenter.y);
+								}
+								else
+									bValid = checkInsideRoom(livingRoom, hpRef.getPoints(), PLACEMENT_TOLERANCE);
 										
 								if(bValid)
 								{
@@ -1272,9 +1282,16 @@ public class PhoenixPCS extends Plugin
 			return bLiesOnWall;
 		}
 		
-		public boolean checkFace(Points fStartP, Points fEndP, List<WallSegement> inWSList, float tolr)
+		public boolean checkFace(float[][] fRect, int indx, List<WallSegement> inWSList, float tolr)
 		{
 			boolean bLiesOnWall = false;
+			
+			Points fStartP = new Points(fRect[indx][0], fRect[indx][1]);
+			
+			Points fEndP = new Points(fRect[0][0], fRect[0][1]);
+			
+			if((indx+1) < fRect.length)
+				fEndP = new Points(fRect[indx+1][0], fRect[indx+1][1]);
 			
 			for(WallSegement ws : inWSList)
 			{
@@ -1287,7 +1304,22 @@ public class PhoenixPCS extends Plugin
 				{
 					bLiesOnWall = true;
 					break;
+				}
+				
+				//if(!b1)
+				{
+					//float lenF = calcDistance(fStartP, fEndP);
+					//float lenW = calcDistance(ls.startP, ls.endP);
 				}	
+				
+				b1 = checkPointInBetween(ls.startP, fStartP, fEndP, tolr);				
+				b2 = checkPointInBetween(ls.endP, fStartP, fEndP, tolr);
+				
+				if(b1 && b2)
+				{
+					bLiesOnWall = true;
+					break;
+				}
 			}
 			
 			return bLiesOnWall;
@@ -1324,7 +1356,8 @@ public class PhoenixPCS extends Plugin
 					
 					if(bSuccess)
 					{	
-						placeRealFurn(hpPlaced, pcsSeatingIndx);
+						JOptionPane.showMessageDialog(null, bSuccess);
+						//placeRealFurn(hpPlaced, pcsSeatingIndx);
 					}				
 				}
 				

@@ -30,4 +30,8 @@ Demo
 -----
 1. All PCS configs
 2. Save valid designs in different SH3D files
-3. Final
+3. Final - w/o corner table
+
+Issues
+------
+1. All placements are not snapping to walls - Fixed
