@@ -146,7 +146,7 @@ public class PhoenixPCS extends Plugin
 		public int[] seatingPref = {0,0,0,0,0,0,0,0,0,3,4,0};
 		
 		//public String[][] catNamesArr = {{"sofa"}, {"sofa", "sofa 2"}, {"sofa 3", "large couch"}, {"sofa", "couch"}, {"sofa", "couch"}, {"sofa", "couch"}, {"sofa", "couch"}, {"mediacabinet"}, {"chair"}, {"glass table", "coffee table"}, {"round table", "glass table"}, {"rug", "carpet"}};
-		public String[][] catNamesArr = {{"1_sofa"}, {"2_sofa"}, {"3_sofa"}, {"2_C_1_R_sofa"}, {"2_C_1_L_sofa"}, {"3_C_1_R_sofa"}, {"3_C_1_L_sofa"}, {"media_cabinet"}, {"chair"}, {"glass table", "coffee table"}, {"round table", "glass table"}, {"area_rug"}};
+		public String[][] catNamesArr = {{"1_sofa"}, {"2_sofa"}, {"3_sofa"}, {"3_C_3_R_sofa"}, {"3_C_3_L_sofa"}, {"3_C_3_R_sofa"}, {"3_C_3_L_sofa"}, {"media_cabinet"}, {"chair"}, {"glass table", "coffee table"}, {"round table", "glass table"}, {"area_rug"}};
 		
 		public String catTextArr = "Gray waves wallpaper"; 
 		
@@ -399,7 +399,7 @@ public class PhoenixPCS extends Plugin
 						//dbgArr[3] = pcsConfigList.size() + "," ;
 						//dbgArr[4] = pcsSeatingConfigList.size() + "" ;
 						
-						JOptionPane.showMessageDialog(null, pcsConfIndx + "," + pcsSeatingIndx);
+						//JOptionPane.showMessageDialog(null, pcsConfIndx + "," + pcsSeatingIndx);
 								
 						HomePieceOfFurniture pcsRect = getFurnItem("PCSRect").clone();
 						pcsRect.setName("PCSRect_" + nameCounter);
@@ -442,9 +442,10 @@ public class PhoenixPCS extends Plugin
 				{
 					List<HomePieceOfFurniture> fList =  searchCatalog(fName, w, d);
 					furnList.addAll(fList);
+					
+					//JOptionPane.showMessageDialog(null, fName + " : " + fList.size() + " >>>> " + w + ", " + d);
 				}
 				
-				//JOptionPane.showMessageDialog(null, seatingTypeArr[s] + " : " + furnList.size());
 				catFurnList.add(s, furnList);
 			}			
 		}		
@@ -625,15 +626,19 @@ public class PhoenixPCS extends Plugin
 					realFurn.setName(hp.getName());
 					realFurn.setX(hp.getX());
 					realFurn.setY(hp.getY());
-					realFurn.setWidth(hp.getWidth());
-					realFurn.setDepth(hp.getDepth());
+					
+					if(!hp.getName().contains("media_cabinet"))
+					{
+						realFurn.setWidth(hp.getWidth());
+						realFurn.setDepth(hp.getDepth());
+					}
+
 					realFurn.setAngle(hp.getAngle());	
 					
 					home.deletePieceOfFurniture(hp);
 					home.addPieceOfFurniture(realFurn);
 					hpList.add(realFurn);
 				}
-
 			}
 			return hpList;
 		}
@@ -754,7 +759,7 @@ public class PhoenixPCS extends Plugin
 			
 			//dbgStr += activePCSConfList.toString() + "\n";
 						
-			//JOptionPane.showMessageDialog(null, dbgStr);
+			JOptionPane.showMessageDialog(null, dbgStr);
 			
 			return activePCSConfList;
 		}
@@ -2257,10 +2262,12 @@ public class PhoenixPCS extends Plugin
 					{
 						CatalogPieceOfFurniture catF = catPOFList.get(p);
 						
-						if(catF.getName().toLowerCase().indexOf(furnName) > -1)
+						if(catF.getName().toLowerCase().contains(furnName.toLowerCase()))
 						{
 							if(typeArr.contains(catF.getName()))
 								continue; 
+							
+							//JOptionPane.showMessageDialog(null,catF.getName() + " -> w : " + w + " cm, d : " + d + " cm \n");
 							
 							matchFurn = new HomePieceOfFurniture(catF);
 							
