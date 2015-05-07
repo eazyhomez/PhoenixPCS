@@ -154,7 +154,7 @@ public class PhoenixPCS extends Plugin
 		public int[] seatingPref = {0,0,0,0,0,0,0,0,0,3,4,0};
 		
 		//public String[][] catNamesArr = {{"sofa"}, {"sofa", "sofa 2"}, {"sofa 3", "large couch"}, {"sofa", "couch"}, {"sofa", "couch"}, {"sofa", "couch"}, {"sofa", "couch"}, {"mediacabinet"}, {"chair"}, {"glass table", "coffee table"}, {"round table", "glass table"}, {"rug", "carpet"}};
-		public String[][] catNamesArr = {{"1_sofa"}, {"2_sofa"}, {"3_sofa"}, {"3_C_3_R_sofa"}, {"3_C_3_L_sofa"}, {"3_C_3_R_sofa"}, {"3_C_3_L_sofa"}, {"media_cabinet"}, {"chair"}, {"glass table", "coffee table"}, {"round table", "glass table"}, {"area_rug"}};
+		public String[][] catNamesArr = {{"1_sofa"}, {"2_sofa"}, {"3_sofa"}, {"3_C_3_R_sofa"}, {"3_C_3_L_sofa"}, {"3_C_3_R_sofa"}, {"3_C_3_L_sofa"}, {"media_cabinet"}, {"chair"}, {"glass table", "coffee table"}, {"corner_table"}, {"area_rug"}};
 		
 		public String catTextArr = "Gray waves wallpaper";
 		
@@ -387,9 +387,7 @@ public class PhoenixPCS extends Plugin
 				*/
 				
 				// 5. Increase the length of PCS rect to expand it till the back wall if free  ------- //
-				
-				
-				
+								
 				// ==================== Demo ========================= //
 				
 				getLivingRoom();
@@ -406,7 +404,7 @@ public class PhoenixPCS extends Plugin
 				validDesignCount = 0;
 				int nameCounter = 1;
 				
-				for(int c = 0 ; c < 1/*activePCSConfList.size()*/; c++)
+				for(int c = 0; c < activePCSConfList.size(); c++)
 				{		
 					int[][] pcsConfArr = activePCSConfList.get(c);
 					
@@ -459,8 +457,8 @@ public class PhoenixPCS extends Plugin
 				Points p1 = new Points(hpfRect[1][0], hpfRect[1][1]);
 				Points p2 = new Points(hpfRect[2][0], hpfRect[2][1]);
 				
-				Points midPX = new Points(((p0.x + p1.x)/2), ((p0.y + p1.y)/2));
-				Points midPY = new Points(((p1.x + p2.x)/2), ((p1.y + p2.y)/2));
+				Points midPX = new Points(((p0.x + p1.x)/2.0f), ((p0.y + p1.y)/2.0f));
+				Points midPY = new Points(((p1.x + p2.x)/2.0f), ((p1.y + p2.y)/2.0f));
 				
 				hpf.setX(midPX.x);
 				hpf.setY(midPY.y);
@@ -592,7 +590,7 @@ public class PhoenixPCS extends Plugin
 					if(bSuccess)
 					{
 						home.deletePieceOfFurniture(accBox);
-						//JOptionPane.showMessageDialog(null, "PCS Design generated !!!");
+						JOptionPane.showMessageDialog(null, "PCS Design generated !!!");
 						
 						String name = pcsRect.getName();
 						home.deletePieceOfFurniture(pcsRect);
@@ -677,7 +675,7 @@ public class PhoenixPCS extends Plugin
 
 						realFurn.setDepth(hp.getDepth());
 					}
-					else
+					else if(indx != 10)
 					{
 						realFurn.setWidth(hp.getWidth());
 						realFurn.setDepth(hp.getDepth());
@@ -749,7 +747,7 @@ public class PhoenixPCS extends Plugin
 					bckWall.setLeftSideTexture(htList.get(0));
 			}
 			
-			JOptionPane.showMessageDialog(null, "b1 : " + b1 + ", b2 : " + b2);
+			//JOptionPane.showMessageDialog(null, "b1 : " + b1 + ", b2 : " + b2);
 		}
 
 		public void saveDesign(Home h, String name)
@@ -820,47 +818,47 @@ public class PhoenixPCS extends Plugin
 			pcsConfigList = new ArrayList<PCSConfig>();
 			
 			// Config 1 : 1 - 10 ft
-			PCSConfig pcsConf = new PCSConfig((y1 + x)*CONV_FT_CM, ((4*x) + 1)*CONV_FT_CM);
+			PCSConfig pcsConf = new PCSConfig((y1 + x)*CONV_FT_CM, ((4*x) + 1.0f)*CONV_FT_CM);
 			pcsConfigList.add(pcsConf);
 			
 			// Config 2 : 2,3 - 12.5 ft
-			pcsConf = new PCSConfig((y1 + x)*CONV_FT_CM, ((3*x) + 0.5f)*CONV_FT_CM);
+			pcsConf = new PCSConfig((y1 + x)*CONV_FT_CM, ((3.0f*x) + 0.5f)*CONV_FT_CM);
 			pcsConfigList.add(pcsConf);
 			
 			// Config 3 : 4,18 - 12.5 ft
-			pcsConf = new PCSConfig((y1 + x)*CONV_FT_CM, ((2*x) + 5.5f)*CONV_FT_CM);
+			pcsConf = new PCSConfig((y1 + x)*CONV_FT_CM, ((2.0f*x) + 5.5f)*CONV_FT_CM);
 			pcsConfigList.add(pcsConf);
 			
 			// Config 4 : 6,7,8,9 - 12.5 ft
-			pcsConf = new PCSConfig((y1 + x)*CONV_FT_CM, (4*x)*CONV_FT_CM);
+			pcsConf = new PCSConfig((y1 + x)*CONV_FT_CM, (4.0f*x)*CONV_FT_CM);
 			pcsConfigList.add(pcsConf);
 			
 			// Config 5 : 5,14,15,16,17 - 12.5 ft
-			pcsConf = new PCSConfig((y1 + x)*CONV_FT_CM, (5*x)*CONV_FT_CM);
+			pcsConf = new PCSConfig((y1 + x)*CONV_FT_CM, (5.0f*x)*CONV_FT_CM);
 			pcsConfigList.add(pcsConf);
 			
 			// Config 6 : 10,11,12,13 - 14.5 ft
-			pcsConf = new PCSConfig((y3 + x)*CONV_FT_CM, (4*x)*CONV_FT_CM);
+			pcsConf = new PCSConfig((y3 + x)*CONV_FT_CM, (4.0f*x)*CONV_FT_CM);
 			pcsConfigList.add(pcsConf);
 			
 			// Config 7 : 19,20,21 - 12.5 ft
-			pcsConf = new PCSConfig((y1 + x)*CONV_FT_CM, (5*x)*CONV_FT_CM);
+			pcsConf = new PCSConfig((y1 + x)*CONV_FT_CM, (5.0f*x)*CONV_FT_CM);
 			pcsConfigList.add(pcsConf);
 			
 			// Config 8 : 22,23,24,25 - 14.5 ft
-			pcsConf = new PCSConfig((y3 + x)*CONV_FT_CM, (5*x)*CONV_FT_CM);
+			pcsConf = new PCSConfig((y3 + x)*CONV_FT_CM, (5.0f*x)*CONV_FT_CM);
 			pcsConfigList.add(pcsConf);
 			
 			// Config 9 : 26 - 14.5 ft
-			pcsConf = new PCSConfig((y3 + x)*CONV_FT_CM, ((4*x) + 2.0f)*CONV_FT_CM);
+			pcsConf = new PCSConfig((y3 + x)*CONV_FT_CM, ((4.0f*x) + 2.0f)*CONV_FT_CM);
 			pcsConfigList.add(pcsConf);
 			
 			// Config 10 : 27 - 14.5 ft
-			pcsConf = new PCSConfig((y3 + x)*CONV_FT_CM, ((4*x) + 2.0f)*CONV_FT_CM);
+			pcsConf = new PCSConfig((y3 + x)*CONV_FT_CM, ((4.0f*x) + 2.0f)*CONV_FT_CM);
 			pcsConfigList.add(pcsConf);
 			
 			// Config 11 : 28,29,30,31,32,33 - 14.5 ft
-			pcsConf = new PCSConfig((y3 + x)*CONV_FT_CM, (5*x + 1.0f)*CONV_FT_CM);
+			pcsConf = new PCSConfig((y3 + x)*CONV_FT_CM, (5.0f*x + 1.0f)*CONV_FT_CM);
 			pcsConfigList.add(pcsConf);
 		}
 		
@@ -871,36 +869,40 @@ public class PhoenixPCS extends Plugin
 			// -------------------------------- 4 Seater -------------------------------- //
 			
 			// Seating Config 1
-			float[][] seatingConf1 = {	{0.0f, (x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 270.0f},
-										{1.0f, ((2*x) + 0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
-										{0.0f, ((7*x*0.5f) + 1.0f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 90.0f},	
-										{7.0f, ((2*x) + 0.5f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, ((2*x) + 0.5f)*CONV_FT_CM, ((y1*0.5f) + (x*0.25f) + 1)*CONV_FT_CM, 90.0f},
-										{11.0f, ((2*x) + 0.5f)*CONV_FT_CM, ((y1*0.5f) + (x*0.25f) + 1)*CONV_FT_CM, 90.0f} };
+			float[][] seatingConf1 = {	{0.0f, (x*0.5f)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 270.0f},
+										{1.0f, ((2.0f*x) + 0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{0.0f, ((7.0f*x*0.5f) + 1.0f)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 90.0f},	
+										{7.0f, ((2.0f*x) + 0.5f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, ((2.0f*x) + 0.5f)*CONV_FT_CM, ((y1*0.5f) + (x*0.25f) + 1.0f)*CONV_FT_CM, 90.0f},
+										{10.0f, (x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{10.0f, ((7.0f*x*0.5f) + 1.0f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, ((2.0f*x) + 0.5f)*CONV_FT_CM, ((y1*0.5f) + (x*0.25f) + 1.0f)*CONV_FT_CM, 90.0f} };
 			
 			pcsSeatingConfigList.add(seatingConf1);
 			
 			// Seating Config 2
-			float[][] seatingConf2 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 270.0f},
-										{1.0f, ((2*x) + 0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
-										{7.0f, ((3*x*0.5f) + 0.25f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, ((2*x) + 0.5f)*CONV_FT_CM, ((y1*0.5f) + (x*0.25f) + 1)*CONV_FT_CM, 90.0f},
-										{11.0f, ((2*x) + 0.5f)*CONV_FT_CM, ((y1*0.5f) + (x*0.25f) + 1)*CONV_FT_CM, 90.0f} };
+			float[][] seatingConf2 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 270.0f},
+										{1.0f, ((2.0f*x) + 0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{7.0f, ((3.0f*x*0.5f) + 0.25f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, ((2.0f*x) + 0.5f)*CONV_FT_CM, ((y1*0.5f) + (x*0.25f) + 1.0f)*CONV_FT_CM, 90.0f},
+										{10.0f, (x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, ((2.0f*x) + 0.5f)*CONV_FT_CM, ((y1*0.5f) + (x*0.25f) + 1.0f)*CONV_FT_CM, 90.0f} };
 			
 			pcsSeatingConfigList.add(seatingConf2);
 			
 			// Seating Config 3
 			float[][] seatingConf3 = {	{1.0f, (x)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
-										{1.0f, ((5*x*0.5f) + 0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
-										{7.0f, ((3*x*0.5f) + 0.25f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
+										{1.0f, ((5.0f*x*0.5f) + 0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 90.0f},
+										{7.0f, ((3.0f*x*0.5f) + 0.25f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
 										{9.0f, (x)*CONV_FT_CM, ((y1*0.5f) + (x*0.25f) + 1)*CONV_FT_CM, 90.0f},
-										{11.0f, (x)*CONV_FT_CM, ((y1*0.5f) + (x*0.25f) + 1)*CONV_FT_CM, 90.0f} };
+										{10.0f, ((5.0f*x*0.5f) + 0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (x)*CONV_FT_CM, ((y1*0.5f) + (x*0.25f) + 1.0f)*CONV_FT_CM, 90.0f} };
 				
 			pcsSeatingConfigList.add(seatingConf3);
 			
 			// Seating Config 4
 			float[][] seatingConf4 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (x)*CONV_FT_CM, 270.0f},
-										{1.0f, ((3*x*0.5f) + 5.5f)*CONV_FT_CM, (x)*CONV_FT_CM, 90.0f},	
+										{1.0f, ((3.0f*x*0.5f) + 5.5f)*CONV_FT_CM, (x)*CONV_FT_CM, 90.0f},	
 										{7.0f, ((x) + 2.75f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
 										{9.0f, ((x) + 2.75f)*CONV_FT_CM, (x)*CONV_FT_CM, 90.0f},
 										{11.0f, ((x) + 2.75f)*CONV_FT_CM, (x)*CONV_FT_CM, 90.0f}	};
@@ -910,280 +912,311 @@ public class PhoenixPCS extends Plugin
 			// -------------------------------- 5 Seater -------------------------------- //
 			
 			// Seating Config 5
-			float[][] seatingConf5 = {	{0.0f, (x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 270.0f},
-										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
-										{0.0f, (9*x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 90.0f},	
-										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, ((2*x) + 0.5f)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, ((2*x) + 0.5f)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf5 = {	{0.0f, (x*0.5f)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 270.0f},
+										{2.0f, (5.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{0.0f, (9.0f*x*0.5f)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 90.0f},	
+										{7.0f, (5.0f*x*0.5f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, ((2.0f*x) + 0.5f)*CONV_FT_CM, 0.0f},
+										{10.0f, (x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{10.0f, (9.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, ((2.0f*x) + 0.5f)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf5);
 			
 			// Seating Config 6
-			float[][] seatingConf6 = {	{2.0f, (3*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
-										{1.0f, (7*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
-										{7.0f, (2*x)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (3*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (3*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf6 = {	{2.0f, (3.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{1.0f, (7.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 90.0f},
+										{7.0f, (2.0f*x)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (3.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{10.0f, (7.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (3.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf6);
 			
 			// Seating Config 7
-			float[][] seatingConf7 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 270.0f},
-										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
-										{7.0f, (2*x)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf7 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 270.0f},
+										{2.0f, (5.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{7.0f, (2.0f*x)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf7);
 			
 			// Seating Config 8
-			float[][] seatingConf8 = {	{3.0f, (2*x)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
-										{7.0f, (2*x)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (3*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (3*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf8 = {	{3.0f, (2.0f*x)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 0.0f},
+										{7.0f, (2.0f*x)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (3.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{11.0f, (3.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f}	};
 				
 			pcsSeatingConfigList.add(seatingConf8);
 			
 			// Seating Config 9
-			float[][] seatingConf9 = {	{4.0f, (2*x)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
-										{7.0f, (2*x)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf9 = {	{4.0f, (2.0f*x)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 0.0f},
+										{7.0f, (2.0f*x)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f}	};
 				
 			pcsSeatingConfigList.add(seatingConf9);
 			
 			// -------------------------------- 6 Seater -------------------------------- //
 			
 			// Seating Config 10
-			float[][] seatingConf10 = {	{2.0f, (3*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
-										{2.0f, (7*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
-										{7.0f, (2*x)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (3*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
-										{11.0f, (3*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f}	};
+			float[][] seatingConf10 = {	{2.0f, (3.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{2.0f, (7.0f*x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 90.0f},
+										{7.0f, (2.0f*x)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (3.0f*x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 90.0f},
+										{10.0f, (7.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (3.0f*x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 90.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf10);
 			
 			// Seating Config 11
-			float[][] seatingConf11 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 270.0f},
-										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
-										{7.0f, (2*x)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f}	};
+			float[][] seatingConf11 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 270.0f},
+										{2.0f, (5.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{7.0f, (2.0f*x)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 90.0f},
+										{10.0f, (x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 90.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf11);
 			
 			// Seating Config 12
-			float[][] seatingConf12 = {	{5.0f, (2*x)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{7.0f, (2*x)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (3*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
-										{11.0f, (3*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f}	};
+			float[][] seatingConf12 = {	{5.0f, (2.0f*x)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{7.0f, (2.0f*x)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (3.0f*x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 90.0f},
+										{11.0f, (3.0f*x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 90.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf12);
 			
 			// Seating Config 13
-			float[][] seatingConf13 = {	{6.0f, (2*x)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{7.0f, (2*x)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f}	};
+			float[][] seatingConf13 = {	{6.0f, (2.0f*x)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{7.0f, (2.0f*x)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 90.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 90.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf13);
 			
 			// Seating Config 14
-			float[][] seatingConf14 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 270.0f},
-										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
-										{0.0f, (9*x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 90.0f},	
-										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf14 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 270.0f},
+										{2.0f, (5.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{0.0f, (9.0f*x*0.5f)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 90.0f},	
+										{7.0f, (5.0f*x*0.5f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{10.0f, (x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{10.0f, (9.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf14);
 			
 			// Seating Config 15
-			float[][] seatingConf15 = {	{0.0f, (x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 270.0f},
-										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
-										{1.0f, (9*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},	
-										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf15 = {	{0.0f, (x*0.5f)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 270.0f},
+										{2.0f, (5.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{1.0f, (9.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 90.0f},	
+										{7.0f, (5.0f*x*0.5f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{10.0f, (x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{10.0f, (9.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf15);
 			
 			// Seating Config 16
-			float[][] seatingConf16 = {	{4.0f, (2*x)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
-										{0.0f, (9*x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 90.0f},	
-										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf16 = {	{4.0f, (2.0f*x)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 0.0f},
+										{0.0f, (9.0f*x*0.5f)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 90.0f},	
+										{7.0f, (5.0f*x*0.5f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{10.0f, (9.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf16);
 			
 			// Seating Config 17
-			float[][] seatingConf17 = {	{0.0f, (x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 270.0f},
-										{3.0f, (3*x)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
-										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf17 = {	{0.0f, (x*0.5f)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 270.0f},
+										{3.0f, (3.0f*x)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 0.0f},
+										{7.0f, (5.0f*x*0.5f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{10.0f, (x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf17);
 			
 			// Seating Config 18
-			float[][] seatingConf18 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 270.0f},
-										{2.0f, ((3*x*0.5f) + 5.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 90.0f},
+			float[][] seatingConf18 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 270.0f},
+										{2.0f, ((3.0f*x*0.5f) + 5.5f)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 90.0f},
 										{7.0f, (x + 2.75f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (x + 2.75f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 90.0f},
-										{11.0f, (x + 2.75f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 90.0f}	};
+										{9.0f, (x + 2.75f)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 90.0f},
+										{11.0f, (x + 2.75f)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 90.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf18);
 			
 			// -------------------------------- 7 Seater -------------------------------- //
 			
 			// Seating Config 19
-			float[][] seatingConf19 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 270.0f},
-										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
-										{1.0f, (9*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},	
-										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf19 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 270.0f},
+										{2.0f, (5.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{1.0f, (9.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 90.0f},	
+										{7.0f, (5.0f*x*0.5f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{10.0f, (x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{10.0f, (9.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf19);
 			
 			// Seating Config 20
-			float[][] seatingConf20 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 270.0f},
-										{3.0f, (3*x)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
-										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf20 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 270.0f},
+										{3.0f, (3.0f*x)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 0.0f},
+										{7.0f, (5.0f*x*0.5f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{10.0f, (x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf20);
 			
 			// Seating Config 21
-			float[][] seatingConf21 = {	{4.0f, (2*x)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
-										{1.0f, (9*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},	
-										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf21 = {	{4.0f, (2.0f*x)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 0.0f},
+										{1.0f, (9.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 90.0f},	
+										{7.0f, (5.0f*x*0.5f)*CONV_FT_CM, (y1 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{10.0f, (9.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf21);
 			
 			// -------------------------------- 8 Seater -------------------------------- //
 			
 			// Seating Config 22
-			float[][] seatingConf22 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 270.0f},
-										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
-										{1.0f, (9*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},	
-										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf22 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 270.0f},
+										{2.0f, (5.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{1.0f, (9.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 90.0f},	
+										{7.0f, (5.0f*x*0.5f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{10.0f, (x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{10.0f, (9.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf22);
 			
 			// Seating Config 23
-			float[][] seatingConf23 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 270.0f},
-										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
-										{2.0f, (9*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},	
-										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf23 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 270.0f},
+										{2.0f, (5.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{2.0f, (9.0f*x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 90.0f},	
+										{7.0f, (5.0f*x*0.5f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{10.0f, (x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{10.0f, (9.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf23);
 			
 			// Seating Config 24
-			float[][] seatingConf24 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 270.0f},
-										{3.0f, (3*x)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
-										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf24 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 270.0f},
+										{3.0f, (3.0f*x)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 0.0f},
+										{7.0f, (5.0f*x*0.5f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{10.0f, (x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf24);
 			
 			// Seating Config 25
-			float[][] seatingConf25 = {	{4.0f, (2*x)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
-										{2.0f, (9*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},	
-										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf25 = {	{4.0f, (2.0f*x)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 0.0f},
+										{2.0f, (9.0f*x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 90.0f},	
+										{7.0f, (5.0f*x*0.5f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{10.0f, (9.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf25);
 			
 			// Seating Config 26
-			float[][] seatingConf26 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 270.0f},
-										{1.0f, ((2*x) + 1.0f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},	
-										{2.0f, ((7*x*0.5f) + 2.0f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
-										{7.0f, ((2*x) + 1.0f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, ((2*x) + 1.0f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
-										{11.0f, ((2*x) + 1.0f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f}	};
+			float[][] seatingConf26 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 270.0f},
+										{1.0f, ((2.0f*x) + 1.0f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},	
+										{2.0f, ((7.0f*x*0.5f) + 2.0f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 90.0f},
+										{7.0f, ((2.0f*x) + 1.0f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, ((2.0f*x) + 1.0f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 90.0f},
+										{10.0f, (x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{10.0f, ((7.0f*x*0.5f) + 2.0f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, ((2.0f*x) + 1.0f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 90.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf26);
 			
 			// Seating Config 27
-			float[][] seatingConf27 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 270.0f},
-										{2.0f, ((7*x*0.5f) + 2.0f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 90.0f},
-										{8.0f, ((2*x) + 1.0f)*CONV_FT_CM, (7*x*0.5f)*CONV_FT_CM, 180.0f},	
-										{7.0f, ((2*x) + 1.0f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, ((2*x) + 1.0f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 90.0f},
-										{11.0f, ((2*x) + 1.0f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 90.0f}	};
+			float[][] seatingConf27 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 270.0f},
+										{2.0f, ((7.0f*x*0.5f) + 2.0f)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 90.0f},
+										{8.0f, ((2.0f*x) + 1.0f)*CONV_FT_CM, (7.0f*x*0.5f)*CONV_FT_CM, 180.0f},	
+										{7.0f, ((2.0f*x) + 1.0f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, ((2.0f*x) + 1.0f)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 90.0f},
+										{11.0f, ((2.0f*x) + 1.0f)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 90.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf27);
 			
 			// -------------------------------- 9 Seater -------------------------------- //
 			
 			// Seating Config 28
-			float[][] seatingConf28 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 270.0f},
-										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},	
-										{1.0f, (9*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
-										{8.0f, (5*x*0.5f)*CONV_FT_CM, (7*x*0.5f)*CONV_FT_CM, 180.0f},
-										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf28 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 270.0f},
+										{2.0f, (5.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},	
+										{1.0f, (9.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 90.0f},
+										{8.0f, (5.0f*x*0.5f)*CONV_FT_CM, (7.0f*x*0.5f)*CONV_FT_CM, 180.0f},
+										{7.0f, (5.0f*x*0.5f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{10.0f, (x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{10.0f, (9.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf28);
 			
 			// Seating Config 29
-			float[][] seatingConf29 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 270.0f},
-										{3.0f, (3*x)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
-										{8.0f, (5*x*0.5f)*CONV_FT_CM, (7*x*0.5f)*CONV_FT_CM, 180.0f},
-										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf29 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 270.0f},
+										{3.0f, (3.0f*x)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 0.0f},
+										{8.0f, (5.0f*x*0.5f)*CONV_FT_CM, (7.0f*x*0.5f)*CONV_FT_CM, 180.0f},
+										{7.0f, (5.0f*x*0.5f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{10.0f, (x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf29);
 			
 			// Seating Config 30
-			float[][] seatingConf30 = {	{4.0f, (2*x)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
-										{1.0f, (9*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
-										{8.0f, (5*x*0.5f)*CONV_FT_CM, (7*x*0.5f)*CONV_FT_CM, 180.0f},
-										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf30 = {	{4.0f, (2.0f*x)*CONV_FT_CM, (3.0f*x*0.5f)*CONV_FT_CM, 0.0f},
+										{1.0f, (9.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 90.0f},
+										{8.0f, (5.0f*x*0.5f)*CONV_FT_CM, (7.0f*x*0.5f)*CONV_FT_CM, 180.0f},
+										{7.0f, (5.0f*x*0.5f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{10.0f, (9.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf30);
 			
 			// Seating Config 31
-			float[][] seatingConf31 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 270.0f},
-										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
-										{2.0f, (9*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
-										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f}	};
+			float[][] seatingConf31 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 270.0f},
+										{2.0f, (5.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{2.0f, (9.0f*x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 90.0f},
+										{7.0f, (5.0f*x*0.5f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 90.0f},
+										{10.0f, (x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{10.0f, (9.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 90.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf31);
 			
 			// Seating Config 32
-			float[][] seatingConf32 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 270.0f},
-										{5.0f, (3*x)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf32 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 270.0f},
+										{5.0f, (3.0f*x)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{7.0f, (5.0f*x*0.5f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 0.0f},
+										{10.0f, (x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf32);
 			
 			// Seating Config 33
-			float[][] seatingConf33 = {	{6.0f, (2*x)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{2.0f, (9*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
-										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 0.0f}	};
+			float[][] seatingConf33 = {	{6.0f, (2.0f*x)*CONV_FT_CM, (2.0f*x)*CONV_FT_CM, 0.0f},
+										{2.0f, (9.0f*x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 90.0f},
+										{7.0f, (5.0f*x*0.5f)*CONV_FT_CM, (y3 + x)*CONV_FT_CM, 180.0f},
+										{9.0f, (5.0f*x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 0.0f},
+										{10.0f, (9.0f*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (5.0f*x*0.5f)*CONV_FT_CM, (5.0f*x*0.5f)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf33);
 			
@@ -2366,7 +2399,7 @@ public class PhoenixPCS extends Plugin
 			List<HomePieceOfFurniture> furnList = new ArrayList<HomePieceOfFurniture>();
 			List<String> typeArr = Arrays.asList(seatingTypeArr);
 			
-			String dbgStr = "";
+			//String dbgStr = "";
 			
 			float w = width * CONV_IN_M;
 			float d = depth * CONV_IN_M;
@@ -2411,7 +2444,7 @@ public class PhoenixPCS extends Plugin
 								if((cW <= w) && (cD <= d))
 								{
 									furnList.add(matchFurn);
-									dbgStr += catF.getName() + " -> w : " + cW + " cm, d : " + cD + " cm \n"; 
+									//dbgStr += catF.getName() + " -> w : " + cW + " cm, d : " + cD + " cm \n"; 
 								}
 							}
 							
