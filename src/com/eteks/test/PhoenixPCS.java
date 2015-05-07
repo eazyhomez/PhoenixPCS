@@ -378,10 +378,10 @@ public class PhoenixPCS extends Plugin
 				//testConf(hpfTest, testArr);
 				
 				testArr = EIGHT_SEATER_DESIGN_RANGE;
-				testConf(hpfTest, testArr);
+				//testConf(hpfTest, testArr);
 				
 				testArr = NINE_SEATER_DESIGN_RANGE;
-				testConf(hpfTest, testArr);
+				//testConf(hpfTest, testArr);
 				
 				
 				// ==================== Demo ========================= //
