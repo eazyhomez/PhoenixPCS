@@ -366,16 +366,16 @@ public class PhoenixPCS extends Plugin
 				HomePieceOfFurniture hpfTest = searchMatchFurn("PCSRect");
 				
 				int[][] testArr = FOUR_SEATER_DESIGN_RANGE;
-				testConf(hpfTest, testArr);
+				//testConf(hpfTest, testArr);
 
 				testArr = FIVE_SEATER_DESIGN_RANGE;
-				testConf(hpfTest, testArr);
+				//testConf(hpfTest, testArr);
 				
 				testArr = SIX_SEATER_DESIGN_RANGE;
-				testConf(hpfTest, testArr);
+				//testConf(hpfTest, testArr);
 				
 				testArr = SEVEN_SEATER_DESIGN_RANGE;
-				testConf(hpfTest, testArr);
+				//testConf(hpfTest, testArr);
 				
 				testArr = EIGHT_SEATER_DESIGN_RANGE;
 				testConf(hpfTest, testArr);
@@ -835,7 +835,7 @@ public class PhoenixPCS extends Plugin
 			pcsConfigList.add(pcsConf);
 			
 			// Config 11 : 28,29,30,31,32,33 - 14.5 ft
-			pcsConf = new PCSConfig((y3 + x)*CONV_FT_CM, (5*x)*CONV_FT_CM);
+			pcsConf = new PCSConfig((y3 + x)*CONV_FT_CM, (5*x + 1.0f)*CONV_FT_CM);
 			pcsConfigList.add(pcsConf);
 		}
 		
@@ -889,8 +889,8 @@ public class PhoenixPCS extends Plugin
 										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
 										{0.0f, (9*x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 90.0f},	
 										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y1 + (x*0.5f))*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, ((2*x) + 1)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, ((2*x) + 1)*CONV_FT_CM, 0.0f}	};
+										{9.0f, (5*x*0.5f)*CONV_FT_CM, ((2*x) + 0.5f)*CONV_FT_CM, 0.0f},
+										{11.0f, (5*x*0.5f)*CONV_FT_CM, ((2*x) + 0.5f)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf5);
 			
@@ -934,8 +934,8 @@ public class PhoenixPCS extends Plugin
 			float[][] seatingConf10 = {	{2.0f, (3*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
 										{2.0f, (7*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
 										{7.0f, (2*x)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 180.0f},
-										{9.0f, (3*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (3*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+										{9.0f, (3*x*0.5f)*CONV_FT_CM, (2*x + 1)*CONV_FT_CM, 90.0f},
+										{11.0f, (3*x*0.5f)*CONV_FT_CM, (2*x + 1)*CONV_FT_CM, 90.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf10);
 			
@@ -943,24 +943,24 @@ public class PhoenixPCS extends Plugin
 			float[][] seatingConf11 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 270.0f},
 										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
 										{7.0f, (2*x)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x + 1)*CONV_FT_CM, 90.0f},
+										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x + 1)*CONV_FT_CM, 90.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf11);
 			
 			// Seating Config 12
 			float[][] seatingConf12 = {	{5.0f, (2*x)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
 										{7.0f, (2*x)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 180.0f},
-										{9.0f, (3*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (3*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+										{9.0f, (3*x*0.5f)*CONV_FT_CM, (2*x + 1)*CONV_FT_CM, 90.0f},
+										{11.0f, (3*x*0.5f)*CONV_FT_CM, (2*x + 1)*CONV_FT_CM, 90.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf12);
 			
 			// Seating Config 13
 			float[][] seatingConf13 = {	{6.0f, (2*x)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
 										{7.0f, (2*x)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
+										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x + 1)*CONV_FT_CM, 90.0f},
+										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x + 1)*CONV_FT_CM, 90.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf13);
 			
@@ -1095,9 +1095,9 @@ public class PhoenixPCS extends Plugin
 			float[][] seatingConf27 = {	{2.0f, (x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 270.0f},
 										{2.0f, ((7*x*0.5f) + 2.0f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 90.0f},
 										{8.0f, ((2*x) + 1.0f)*CONV_FT_CM, (7*x*0.5f)*CONV_FT_CM, 180.0f},	
-										{7.0f, ((4*x) + 2.0f)*CONV_FT_CM, (y3 + (x*0.5f))*CONV_FT_CM, 180.0f},
-										{9.0f, ((2*x) + 1.0f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
-										{11.0f, ((2*x) + 1.0f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f}	};
+										{7.0f, ((2*x) + 1.0f)*CONV_FT_CM, (y3 + (x*0.5f))*CONV_FT_CM, 180.0f},
+										{9.0f, ((2*x) + 1.0f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 90.0f},
+										{11.0f, ((2*x) + 1.0f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 90.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf27);
 			
@@ -1109,28 +1109,28 @@ public class PhoenixPCS extends Plugin
 										{1.0f, (9*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
 										{8.0f, (5*x*0.5f)*CONV_FT_CM, (7*x*0.5f)*CONV_FT_CM, 180.0f},
 										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 0.0f}	};
+										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
+										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf28);
 			
 			// Seating Config 29
 			float[][] seatingConf29 = {	{1.0f, (x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 270.0f},
-										{3.0f, (5*x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
+										{3.0f, (3*x)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
 										{8.0f, (5*x*0.5f)*CONV_FT_CM, (7*x*0.5f)*CONV_FT_CM, 180.0f},
 										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 0.0f}	};
+										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
+										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf29);
 			
 			// Seating Config 30
-			float[][] seatingConf30 = {	{4.0f, (5*x*0.5f)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
+			float[][] seatingConf30 = {	{4.0f, (2*x)*CONV_FT_CM, (3*x*0.5f)*CONV_FT_CM, 0.0f},
 										{1.0f, (9*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 90.0f},
 										{8.0f, (5*x*0.5f)*CONV_FT_CM, (7*x*0.5f)*CONV_FT_CM, 180.0f},
 										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 0.0f}	};
+										{9.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f},
+										{11.0f, (5*x*0.5f)*CONV_FT_CM, (2*x)*CONV_FT_CM, 0.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf30);
 			
@@ -1139,8 +1139,8 @@ public class PhoenixPCS extends Plugin
 										{2.0f, (5*x*0.5f)*CONV_FT_CM, (x*0.5f)*CONV_FT_CM, 0.0f},
 										{2.0f, (9*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
 										{7.0f, (5*x*0.5f)*CONV_FT_CM, (y2 + (x*0.5f))*CONV_FT_CM, 180.0f},
-										{9.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 0.0f},
-										{11.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 0.0f}	};
+										{9.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f},
+										{11.0f, (5*x*0.5f)*CONV_FT_CM, (5*x*0.5f)*CONV_FT_CM, 90.0f}	};
 			
 			pcsSeatingConfigList.add(seatingConf31);
 			

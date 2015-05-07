@@ -37,4 +37,4 @@ Issues
 1. All placements are not snapping to walls - Fixed
 2. Orientation inverted in config - Fixed
 3. Placement with Accessibility box - Done
-4. Change in PCS configs - WIP
+4. Change PCS configs for maintaining accessibility 
