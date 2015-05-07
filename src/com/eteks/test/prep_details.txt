@@ -40,3 +40,7 @@ Issues
 4. Change PCS configs for maintaining accessibility - Fixed
 5. Increase the length of PCS rect to expand it till the back wall rather than snapping
 6. Corner table placement
+
+Shared
+------
+1. 1st draw

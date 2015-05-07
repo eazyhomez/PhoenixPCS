@@ -577,8 +577,8 @@ public class PhoenixPCS extends Plugin
 				try
 				{
 					accBox.setName("PCSAccessBox");
-					accBox.setX((accP1.x + accP2.x)/2);
-					accBox.setY((accP1.y + accP2.y)/2);
+					accBox.setX((accP1.x + accP2.x)/2.0f);
+					accBox.setY((accP1.y + accP2.y)/2.0f);
 					accBox.setWidth(d);
 					accBox.setDepth(ACCESS_CHECK_SIZE);
 					accBox.setAngle(angle);
@@ -590,7 +590,7 @@ public class PhoenixPCS extends Plugin
 					if(bSuccess)
 					{
 						home.deletePieceOfFurniture(accBox);
-						JOptionPane.showMessageDialog(null, "PCS Design generated !!!");
+						//JOptionPane.showMessageDialog(null, "PCS Design generated !!!");
 						
 						String name = pcsRect.getName();
 						home.deletePieceOfFurniture(pcsRect);
@@ -698,7 +698,7 @@ public class PhoenixPCS extends Plugin
 			for(int w = 0; w < wallLists.size(); w++)
 			{
 				Wall ws = wallLists.get(w);
-				Points wallMidP = new Points(((ws.getXStart() + ws.getXEnd())/2), ((ws.getYStart() + ws.getYEnd())/2));
+				Points wallMidP = new Points(((ws.getXStart() + ws.getXEnd())/2.0f), ((ws.getYStart() + ws.getYEnd())/2.0f));
 				
 				float d = calcDistance(wallMidP, midP);
 				
@@ -1272,7 +1272,7 @@ public class PhoenixPCS extends Plugin
 							
 							for(Points snapP : snapPList)
 							{
-								Points centerFS = new Points(((fs.startP.x + fs.endP.x)/2),(fs.startP.y + fs.endP.y)/2);								
+								Points centerFS = new Points(((fs.startP.x + fs.endP.x)/2.0f),(fs.startP.y + fs.endP.y)/2.0f);								
 								
 								Points snapCoords = new Points((snapP.x - centerFS.x), (snapP.y - centerFS.y));	
 								
@@ -1299,8 +1299,8 @@ public class PhoenixPCS extends Plugin
 										float currX = hpRef.getX();
 										float currY = hpRef.getY();
 										
-										float newX = (currX + furnCenter.x) / 2;
-										float newY = (currY + furnCenter.y) / 2;
+										float newX = (currX + furnCenter.x) / 2.0f;
+										float newY = (currY + furnCenter.y) / 2.0f;
 										
 										hpRef.setX(newX);
 										hpRef.setY(newY);
@@ -1310,7 +1310,7 @@ public class PhoenixPCS extends Plugin
 										float currDep = hpRef.getDepth();
 										hpRef.setDepth(currDep + elongLen);
 										
-										JOptionPane.showMessageDialog(null, "Stretch !!!");
+										//JOptionPane.showMessageDialog(null, "Stretch !!!");
 									}
 									
 									bValid = checkInsideRoom(livingRoom, hpRef.getPoints(), PLACEMENT_TOLERANCE);
@@ -1439,8 +1439,10 @@ public class PhoenixPCS extends Plugin
 				Points pcsPoint = calcFurnMids(ws.startP, ws.endP, (0.5f * hpfP.getDepth()), livingRoom);
 				placeFurnParallelToWall(ls, hpfP, pcsPoint);
 
+				storeFurnParams(hpfP);
 				boolean bIntersects = checkIntersectWithAllFurns(hpfP, accessBox.bAddAccess, bIgnoreAccBox);		// do not ignore AccBox as of now
-
+				clearFurnParams(hpfP);
+				
 				if(!bIntersects)
 				{
 					HomePieceOfFurniture hpPlaced = searchMatchFurn(hpfP.getName());						
@@ -1448,22 +1450,25 @@ public class PhoenixPCS extends Plugin
 					
 					boolean bValid = checkAndSnap(hpPlaced, inWSList, tolr);
 					
+					//JOptionPane.showMessageDialog(null, "bValid : " + bValid);
+					
 					if(bValid)
 					{
 						bSuccess = checkInsideHome(finalWSList, hpPlaced, PLACEMENT_TOLERANCE);
 						
 						if(bSuccess)
 						{	
-							//JOptionPane.showMessageDialog(null, bSuccess);
+							//JOptionPane.showMessageDialog(null, "bSuccess : " + bSuccess);
 							placeRealFurn(hpPlaced, pcsSeatingIndx);
 						}
 					}
 					else
+					{
 						bSuccess = false;
+					}
 				}
 				
-				if(!bSuccess)
-					home.deletePieceOfFurniture(hpfP);
+				home.deletePieceOfFurniture(hpfP);	
 				
 				counter++;
 			}
@@ -2133,9 +2138,9 @@ public class PhoenixPCS extends Plugin
 		{
 			List<Points> retPList = new ArrayList<Points>();
 			
-			Points wsMidP = new Points(((ws.startP.x + ws.endP.x)/2),(ws.startP.y + ws.endP.y)/2);
+			Points wsMidP = new Points(((ws.startP.x + ws.endP.x)/2.0f),(ws.startP.y + ws.endP.y)/2.0f);
 			
-			Points centerP = new Points(((ls.startP.x + ls.endP.x)/2),(ls.startP.y + ls.endP.y)/2);
+			Points centerP = new Points(((ls.startP.x + ls.endP.x)/2.0f),(ls.startP.y + ls.endP.y)/2.0f);
 			
 			//putMarkers(ws.startP, 5);
 			//putMarkers(ws.endP, 5);
@@ -2530,6 +2535,8 @@ public class PhoenixPCS extends Plugin
 				
 				//JOptionPane.showMessageDialog(null, "rotated 180");
 			}
+			//else
+				//JOptionPane.showMessageDialog(null, "No rotation !!!");
 			
 			return rotation;
 		}
