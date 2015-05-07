@@ -8,6 +8,7 @@ import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeMap;
 
+import javax.sound.sampled.Line;
 import javax.swing.JOptionPane;
 
 import com.eteks.sweethome3d.io.HomeFileRecorder;
@@ -50,7 +51,8 @@ public class PhoenixPCS extends Plugin
 		public List<String> wallIds = new ArrayList<String>();
 		public List<float[][]> wallRects = new ArrayList<float[][]>();
 		public List<Float> wallThicks = new ArrayList<Float>();
-
+		public List<Wall> wallLists = new ArrayList<Wall>();
+		
 		public int MARKBOX_COUNT = 8;
 		public List<String> markBoxName = new ArrayList<String>();
 		public HomePieceOfFurniture[] markBoxes = new HomePieceOfFurniture[MARKBOX_COUNT];		
@@ -662,121 +664,92 @@ public class PhoenixPCS extends Plugin
 					else
 						realFurn = catFurnList.get(indx).get(0).clone();				
 					
-					// Wallpaper behind Media Cabinet
-					if(indx == 7)	
-					{
-						float[][] fGrpRect = furnGrp.getPoints();
-						Points p2 = new Points(fGrpRect[2][0], fGrpRect[2][1]);
-						Points p3 = new Points(fGrpRect[3][0], fGrpRect[3][1]);
-						
-						populateWallFurn(p2, p3, catTextArr, 0);
-
-						realFurn.setDepth(hp.getDepth());
-					}
-
 					realFurn.setName(hp.getName());
 					realFurn.setX(hp.getX());
 					realFurn.setY(hp.getY());
-				
-					if(!hp.getName().contains("media_cabinet"))
+					realFurn.setAngle(hp.getAngle());
+					
+					// Wallpaper behind Media Cabinet
+					if(indx == 7)	
+					{
+						Points hpMid = new Points(hp.getX(), hp.getY());						
+						populateWallFurn(hpMid, catTextArr, 0);
+
+						realFurn.setDepth(hp.getDepth());
+					}
+					else
 					{
 						realFurn.setWidth(hp.getWidth());
 						realFurn.setDepth(hp.getDepth());
 					}
 
-					realFurn.setAngle(hp.getAngle());	
-					
 					home.addPieceOfFurniture(realFurn);
 					home.deletePieceOfFurniture(hp);
 					hpList.add(realFurn);
 				}
 			}
 			
-			/*
-			boolean bIntersects = false;
-			
-			for(HomePieceOfFurniture realF : hpList)
-			{
-				home.addPieceOfFurniture(realF);
-				storeFurnParams(realF);
-				
-				bIntersects = checkIntersectWithAllFurns(realF, false, false);  // TODO : add accessibility
-				
-				JOptionPane.showMessageDialog(null, "bIntersects : " + bIntersects);
-				
-				if(bIntersects)
-					break;
-			}
-			
-			for(HomePieceOfFurniture realF : hpList)
-			{
-				if(bIntersects)
-					home.deletePieceOfFurniture(realF);
-				
-				clearFurnParams(realF);
-			}
-			
-			if(bIntersects)
-				hpList = new ArrayList<HomePieceOfFurniture>();
-			*/
-			
 			return hpList;
 		}
 		
-		public void populateWallFurn(Points fStartP, Points fEndP, String textName, int prefIndx)
-		{			
-			bckWall = getBackWall(fStartP, fEndP, WALL_TOLERANCE);
-			
-			Points wallSP = new Points(bckWall.getXStart(), bckWall.getYStart());
-			//Points wallEP = new Points(bckWall.getXEnd(), bckWall.getYEnd());	
-			
-			float dist1 = calcDistance(wallSP, fStartP);
-			float dist2 = calcDistance(wallSP, fEndP);
-			
-			//JOptionPane.showMessageDialog(null, "dist1 : " + dist1 + ", dist2 : " + dist2);
-					
-			List<HomeTexture> htList = searchMatchTexture(textName);
-			
-			if(dist1 >= dist2)
-			{			
-				if(htList.size() > prefIndx)
-					bckWall.setRightSideTexture(htList.get(prefIndx));	// apply on right side
-				else if(htList.size() > 0)
-					bckWall.setRightSideTexture(htList.get(0));
-				
-				//JOptionPane.showMessageDialog(null, bckWall + " - R");
-			}
-			else
-			{
-				if(htList.size() > prefIndx)
-					bckWall.setLeftSideTexture(htList.get(prefIndx)); // apply on left side
-				else if(htList.size() > 0)
-					bckWall.setLeftSideTexture(htList.get(0));
-				
-				//JOptionPane.showMessageDialog(null, bckWall + " - L");
-			}
-			
-		}
-		
-		public Wall getBackWall(Points fStartP, Points fEndP, float tolr)
-		{
-			Wall backWall = null;			
+		public void populateWallFurn(Points midP, String textName, int prefIndx)
+		{				
 			float minDist = INFINITY;
+			float[][] wRect = new float[0][0];
 			
-			Points midP = new Points(((fStartP.x + fEndP.x)/2), ((fStartP.y + fEndP.y)/2));
-			
-			for(Wall w : home.getWalls())
-			{				
-				Points wallMidP = new Points(((w.getXStart() + w.getXEnd())/2), ((w.getYStart() + w.getYEnd())/2));
+			for(int w = 0; w < wallLists.size(); w++)
+			{
+				Wall ws = wallLists.get(w);
+				Points wallMidP = new Points(((ws.getXStart() + ws.getXEnd())/2), ((ws.getYStart() + ws.getYEnd())/2));
 				
 				float d = calcDistance(wallMidP, midP);
 				
 				if(d < minDist)
-					backWall = w;
+				{
+					minDist = d;
+					bckWall = ws;
+					wRect = wallRects.get(w);
+				}
 			}
 			
-			//JOptionPane.showMessageDialog(null, "backWall : " + backWall);
-			return backWall;
+			Points wallSP = new Points(bckWall.getXStart(), bckWall.getYStart());			
+			Points wallEP = new Points(bckWall.getXEnd(), bckWall.getYEnd());
+			Points wallMP =  new Points(((wallSP.x + wallEP.x) / 2), ((wallSP.y + wallEP.y) / 2));
+			
+			Points w0 = new Points(wRect[0][0], wRect[0][1]);
+			Points w1 = new Points(wRect[1][0], wRect[1][1]);
+			Points w2 = new Points(wRect[2][0], wRect[2][1]);
+			Points w3 = new Points(wRect[3][0], wRect[3][1]);
+
+			List<HomeTexture> htList = searchMatchTexture(textName);
+			
+			boolean b1 = checkPointOnSameSide(midP, wallMP, w0, w1);
+			
+			if(b1)
+			{
+				//Points midWS =  new Points(((w0.x + w1.x) / 2), ((w0.y + w1.y) / 2));
+				//putMarkers(midWS, 1);
+				
+				if(htList.size() > prefIndx)
+					bckWall.setRightSideTexture(htList.get(prefIndx));	// apply on right side
+				else if(htList.size() > 0)
+					bckWall.setRightSideTexture(htList.get(0));
+			}
+			
+			boolean b2 = checkPointOnSameSide(midP, wallMP, w2, w3);
+			
+			if(b2)
+			{	
+				//Points midWS =  new Points(((w0.x + w1.x) / 2), ((w0.y + w1.y) / 2));
+				//putMarkers(midWS, 3);
+				
+				if(htList.size() > prefIndx)
+					bckWall.setLeftSideTexture(htList.get(prefIndx)); // apply on left side
+				else if(htList.size() > 0)
+					bckWall.setLeftSideTexture(htList.get(0));
+			}
+			
+			JOptionPane.showMessageDialog(null, "b1 : " + b1 + ", b2 : " + b2);
 		}
 
 		public void saveDesign(Home h, String name)
@@ -1448,7 +1421,7 @@ public class PhoenixPCS extends Plugin
 						
 						if(bSuccess)
 						{	
-							;//JOptionPane.showMessageDialog(null, bSuccess);
+							//JOptionPane.showMessageDialog(null, bSuccess);
 							placeRealFurn(hpPlaced, pcsSeatingIndx);
 						}
 					}
@@ -2049,7 +2022,7 @@ public class PhoenixPCS extends Plugin
 		{
 			int wallCount = 1;
 
-			String furnRect = "";
+			//String furnRect = "";
 
 			for(Wall w: h.getWalls())
 			{
@@ -2059,12 +2032,12 @@ public class PhoenixPCS extends Plugin
 				wallRects.add(wRect);
 				wallThicks.add(w.getThickness());		
 	
+				wallLists.add(w);
+				
 				w.setHeight(WALL_HEIGHT);
-				//furnRect += ("Wall_"+ wallCount +" : " + wRect[0][0] + "," + wRect[0][1] + " / " + wRect[1][0] + "," + wRect[1][1] + " / " + wRect[2][0] + "," + wRect[2][1] + " / " + wRect[3][0] + "," + wRect[3][1] + "\n\n");
+				//furnRect = ("Wall_"+ wallCount +" : " + wRect[0][0] + "," + wRect[0][1] + " / " + wRect[1][0] + "," + wRect[1][1] + " / " + wRect[2][0] + "," + wRect[2][1] + " / " + wRect[3][0] + "," + wRect[3][1] + "\n\n");
 
 				wallCount++;
-				
-				//JOptionPane.showMessageDialog(null, "R : " + w.getRightSideColor() + ", L : " + w.getLeftSideColor());
 			}
 
 			//JOptionPane.showMessageDialog(null, furnRect);
@@ -2091,7 +2064,10 @@ public class PhoenixPCS extends Plugin
 			if(w != null)
 			{
 				w.setRightSideColor(orgWallColor);
+				w.setRightSideTexture(null);
+				
 				w.setLeftSideColor(orgWallColor);
+				w.setLeftSideTexture(null);
 			}
 		}
 		
