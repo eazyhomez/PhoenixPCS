@@ -147,7 +147,7 @@ public class PhoenixPCS extends Plugin
 		public String[] configLabelArr = {"4 Seater", "5 Seater", "6 Seater", "7 Seater", "8 Seater", "9 Seater"};
 		
 		public String[] seatingTypeArr = {"1_seater_sofa", "2_seater_sofa", "3_seater_sofa", "5_seater_RL_sofa", "5_seater_LL_sofa", "6_seater_RL_sofa", "6_seater_LL_sofa" , "media_cabinet", "settee", "center_table", "corner_table", "area_rug"};
-		public float[][] seatingDimsArr = {{(2.5f*CONV_FT_CM), (2.5f*CONV_FT_CM)}, {(2.5f*CONV_FT_CM), (2f*2.5f*CONV_FT_CM)}, {(2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(2f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(2f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(3.0f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(3.0f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(2f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(1f*2.5f*CONV_FT_CM), (5f*2.5f*CONV_FT_CM)}, {(3.0f*2.5f*CONV_FT_CM), (5f*2.5f*CONV_FT_CM)}, {(2f*2.5f*CONV_FT_CM), (2f*2.5f*CONV_FT_CM)}, {(4.0f*2.5f*CONV_FT_CM), (6.0f*2.5f*CONV_FT_CM)}};
+		public float[][] seatingDimsArr = {{(2.5f*CONV_FT_CM), (2.5f*CONV_FT_CM)}, {(2.5f*CONV_FT_CM), (2f*2.5f*CONV_FT_CM)}, {(2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(2f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(2f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(3.0f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(3.0f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(2.0f*2.5f*CONV_FT_CM), (3.0f*2.5f*CONV_FT_CM)}, {(1f*2.5f*CONV_FT_CM), (5f*2.5f*CONV_FT_CM)}, {(3.0f*2.5f*CONV_FT_CM), (5f*2.5f*CONV_FT_CM)}, {(2f*2.5f*CONV_FT_CM), (2f*2.5f*CONV_FT_CM)}, {(4.0f*2.5f*CONV_FT_CM), (6.0f*2.5f*CONV_FT_CM)}};
 		
 		public int[] seatingPref = {0,0,0,0,0,0,0,0,0,3,4,0};
 		
@@ -362,7 +362,7 @@ public class PhoenixPCS extends Plugin
 				*/
 				
 				// 4. Config check  ------- //
-				
+				/*
 				HomePieceOfFurniture hpfTest = searchMatchFurn("PCSRect");
 				
 				int[][] testArr = FOUR_SEATER_DESIGN_RANGE;
@@ -382,14 +382,14 @@ public class PhoenixPCS extends Plugin
 				
 				testArr = NINE_SEATER_DESIGN_RANGE;
 				testConf(hpfTest, testArr);
-				
+				*/
 				
 				// 5. Increase the length of PCS rect to expand it till the back wall if free  ------- //
 				
 				
 				
 				// ==================== Demo ========================= //
-				/*
+				
 				getLivingRoom();
 				float[][] livinRect = livingRoom.getPoints();
 				
@@ -404,7 +404,7 @@ public class PhoenixPCS extends Plugin
 				validDesignCount = 0;
 				int nameCounter = 1;
 				
-				for(int c = 0 ; c < activePCSConfList.size(); c++)
+				for(int c = 0 ; c < 1/*activePCSConfList.size()*/; c++)
 				{		
 					int[][] pcsConfArr = activePCSConfList.get(c);
 					
@@ -423,7 +423,7 @@ public class PhoenixPCS extends Plugin
 						nameCounter++;
 					}					
 				}				
-				*/
+				
 				
 				long endTime = System.currentTimeMillis(); //System.nanoTime();				
 				//JOptionPane.showMessageDialog(null, "No. of Designs generated : " + validDesignCount);
@@ -589,16 +589,19 @@ public class PhoenixPCS extends Plugin
 					if(bSuccess)
 					{
 						home.deletePieceOfFurniture(accBox);
-						JOptionPane.showMessageDialog(null, "PCS Design generated !!!");
+						//JOptionPane.showMessageDialog(null, "PCS Design generated !!!");
 						
 						String name = pcsRect.getName();
-						//----> home.deletePieceOfFurniture(pcsRect);
+						home.deletePieceOfFurniture(pcsRect);
 						
 						realFurnList = populateFurn(furnGrp, refIndxList);
 						
-						//----> saveDesign(home, name);
-						
-						validDesignCount++;
+						if(realFurnList.size() > 0)
+						{
+							saveDesign(home, name);
+							validDesignCount++;
+						}						
+
 						//Design des = new Design(furnGrp, seatingIndx, p);
 						//validDesignList.add(des);
 						
@@ -661,13 +664,19 @@ public class PhoenixPCS extends Plugin
 					// Wallpaper behind Media Cabinet
 					if(indx == 7)	
 					{
-						populateWallFurn(hp, furnGrp.getPoints(), catTextArr, 0);
+						float[][] fGrpRect = furnGrp.getPoints();
+						Points p2 = new Points(fGrpRect[2][0], fGrpRect[2][1]);
+						Points p3 = new Points(fGrpRect[3][0], fGrpRect[3][1]);
+						
+						populateWallFurn(p2, p3, catTextArr, 0);
+
+						realFurn.setDepth(hp.getDepth());
 					}
-					
+
 					realFurn.setName(hp.getName());
 					realFurn.setX(hp.getX());
 					realFurn.setY(hp.getY());
-					
+				
 					if(!hp.getName().contains("media_cabinet"))
 					{
 						realFurn.setWidth(hp.getWidth());
@@ -677,18 +686,29 @@ public class PhoenixPCS extends Plugin
 					realFurn.setAngle(hp.getAngle());	
 					
 					home.deletePieceOfFurniture(hp);
-					home.addPieceOfFurniture(realFurn);
 					hpList.add(realFurn);
 				}
 			}
+			
+			for(HomePieceOfFurniture realF : hpList)
+			{
+				home.addPieceOfFurniture(realF);
+				
+				boolean bIntersects = checkIntersectWithAllFurns(realF, false, false);  // TODO : add accessibility
+				
+				if(bIntersects)
+				{
+					home.deletePieceOfFurniture(realF);
+					hpList = new ArrayList<HomePieceOfFurniture>();
+					break;
+				}	
+			}
+			
 			return hpList;
 		}
 		
-		public void populateWallFurn(HomePieceOfFurniture hp, float[][] fGrpRect, String textName, int prefIndx)
+		public void populateWallFurn(Points fStartP, Points fEndP, String textName, int prefIndx)
 		{			
-			Points fStartP = new Points(fGrpRect[2][0], fGrpRect[2][1]);
-			Points fEndP = new Points(fGrpRect[3][0], fGrpRect[3][1]);
-			
 			bckWall = getBackWall(fStartP, fEndP, WALL_TOLERANCE);
 			
 			Points wallSP = new Points(bckWall.getXStart(), bckWall.getYStart());
@@ -719,6 +739,7 @@ public class PhoenixPCS extends Plugin
 				
 				//JOptionPane.showMessageDialog(null, bckWall + " - L");
 			}
+			
 		}
 		
 		public Wall getBackWall(Points fStartP, Points fEndP, float tolr)
@@ -1391,7 +1412,7 @@ public class PhoenixPCS extends Plugin
 						if(bSuccess)
 						{	
 							;//JOptionPane.showMessageDialog(null, bSuccess);
-							//placeRealFurn(hpPlaced, pcsSeatingIndx);
+							placeRealFurn(hpPlaced, pcsSeatingIndx);
 						}
 					}
 					else
